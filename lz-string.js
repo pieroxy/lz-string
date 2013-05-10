@@ -1,4 +1,7 @@
-//LZ-based compression algorithm
+// This code is licensed under the WTFPL
+// For more information see LICENSE.txt or http://www.wtfpl.net/
+//
+// LZ-based compression algorithm
 var LZString = {
 
   writeBit : function(value, data) {
