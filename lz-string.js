@@ -3,7 +3,7 @@
 // under the terms of the WTFPL, Version 2
 // For more information see LICENSE.txt or http://www.wtfpl.net/
 //
-// LZ-based compression algorithm
+// LZ-based compression algorithm, version 1.0.1
 var LZString = {
 
   writeBit : function(value, data) {
