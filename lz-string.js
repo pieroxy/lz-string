@@ -126,6 +126,7 @@ var LZString = {
         numBits = 3,
         entry = "",
         result = "",
+        i,
         w,
         c,
         errorCount=0,
