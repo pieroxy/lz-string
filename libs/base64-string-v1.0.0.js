@@ -1,4 +1,5 @@
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...) 
+// v1.0.0
 var Base64String = {
   
   // private property
