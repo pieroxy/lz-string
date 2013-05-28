@@ -6,7 +6,7 @@
 // See the rationale behind the optimizations here:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.1.0-rc1
+// LZ-based compression algorithm, version 1.1.0
 var LZString = {
   compress: function (uncompressed) {
     var i, value,
