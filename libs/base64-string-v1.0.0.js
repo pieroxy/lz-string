@@ -1,5 +1,14 @@
+// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
+// This work is free. You can redistribute it and/or modify it
+// under the terms of the WTFPL, Version 2
+// For more information see LICENSE.txt or http://www.wtfpl.net/
+//
+// This lib is part of the lz-string project.
+// For more information, the home page:
+// http://pieroxy.net/blog/pages/lz-string/index.html
+//
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...) 
-// v1.0.0
+// version 1.0.0
 var Base64String = {
   
   // private property
