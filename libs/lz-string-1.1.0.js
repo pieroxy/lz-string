@@ -4,7 +4,7 @@
 // For more information see LICENSE.txt or http://www.wtfpl.net/
 //
 // See the rationale behind the optimizations here:
-// http://pieroxy.net/blog/pages/lz-string/testing.html
+// http://pieroxy.net/blog/pages/lz-string/index.html
 //
 // LZ-based compression algorithm, version 1.1.0
 var LZString = {
