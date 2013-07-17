@@ -8,7 +8,7 @@
 // http://pieroxy.net/blog/pages/lz-string/index.html
 //
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...) 
-// version 1.1.0-rc1
+// version 1.1.0
 var Base64String = {
   
   compressToUTF16 : function (input) {
