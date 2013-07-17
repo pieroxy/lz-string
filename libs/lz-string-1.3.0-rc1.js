@@ -651,6 +651,5 @@ var LZString = {
       }
       
     }
-    return result;
   }
 };
