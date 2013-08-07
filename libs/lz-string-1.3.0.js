@@ -146,7 +146,7 @@ var LZString = {
           current = (c & 31) << 10;
           break;
         case 5:
-          output += f(current + (c >> 6))+32);
+          output += f((current + (c >> 6))+32);
           current = (c & 63) << 9;
           break;
         case 6:
