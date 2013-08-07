@@ -83,27 +83,21 @@ var LZString = {
       
       if (ol%2==0) {
         output_ = chr1 << 8;
-        flush = true;
         
         if (enc3 != 64) {
           output += f(output_ | chr2);
-          flush = false;
         }
         if (enc4 != 64) {
           output_ = chr3 << 8;
-          flush = true;
         }
       } else {
         output = output + f(output_ | chr1);
-        flush = false;
         
         if (enc3 != 64) {
           output_ = chr2 << 8;
-          flush = true;
         }
         if (enc4 != 64) {
           output += f(output_ | chr3);
-          flush = false;
         }
       }
       ol+=3;
@@ -289,7 +283,6 @@ var LZString = {
         context_enlargeIn= 2, // Compensate for the first entry which should not count
         context_dictSize= 3,
         context_numBits= 2,
-        context_result= "",
         context_data_string="", 
         context_data_val=0, 
         context_data_position=0,
@@ -510,7 +503,6 @@ var LZString = {
         bits, resb, maxpower, power,
         c,
         errorCount=0,
-        literal,
         f = this._f,
         data = {string:compressed, val:compressed.charCodeAt(0), position:32768, index:1};
     
