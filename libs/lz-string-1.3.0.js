@@ -12,6 +12,7 @@ var LZString = {
   
   // private property
   _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+  _f : function(d){return String.fromCharCode(d)},
   
   compressToBase64 : function (input) {
     var output = "";
@@ -65,7 +66,7 @@ var LZString = {
         output_,
         chr1, chr2, chr3,
         enc1, enc2, enc3, enc4,
-        i = 0;
+        i = 0, f=this._f;
     
     input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
     
@@ -85,7 +86,7 @@ var LZString = {
         flush = true;
         
         if (enc3 != 64) {
-          output += String.fromCharCode(output_ | chr2);
+          output += f(output_ | chr2);
           flush = false;
         }
         if (enc4 != 64) {
@@ -93,7 +94,7 @@ var LZString = {
           flush = true;
         }
       } else {
-        output = output + String.fromCharCode(output_ | chr1);
+        output = output + f(output_ | chr1);
         flush = false;
         
         if (enc3 != 64) {
@@ -101,7 +102,7 @@ var LZString = {
           flush = true;
         }
         if (enc4 != 64) {
-          output += String.fromCharCode(output_ | chr3);
+          output += f(output_ | chr3);
           flush = false;
         }
       }
@@ -116,7 +117,8 @@ var LZString = {
     var output = "",
         i,c,
         current,
-        status = 0;
+        status = 0,
+        f = this._f;
     
     input = this.compress(input);
     
@@ -124,69 +126,69 @@ var LZString = {
       c = input.charCodeAt(i);
       switch (status++) {
         case 0:
-          output += String.fromCharCode((c >> 1)+32);
+          output += f((c >> 1)+32);
           current = (c & 1) << 14;
           break;
         case 1:
-          output += String.fromCharCode((current + (c >> 2))+32);
+          output += f((current + (c >> 2))+32);
           current = (c & 3) << 13;
           break;
         case 2:
-          output += String.fromCharCode((current + (c >> 3))+32);
+          output += f((current + (c >> 3))+32);
           current = (c & 7) << 12;
           break;
         case 3:
-          output += String.fromCharCode((current + (c >> 4))+32);
+          output += f((current + (c >> 4))+32);
           current = (c & 15) << 11;
           break;
         case 4:
-          output += String.fromCharCode((current + (c >> 5))+32);
+          output += f((current + (c >> 5))+32);
           current = (c & 31) << 10;
           break;
         case 5:
-          output += String.fromCharCode((current + (c >> 6))+32);
+          output += f(current + (c >> 6))+32);
           current = (c & 63) << 9;
           break;
         case 6:
-          output += String.fromCharCode((current + (c >> 7))+32);
+          output += f((current + (c >> 7))+32);
           current = (c & 127) << 8;
           break;
         case 7:
-          output += String.fromCharCode((current + (c >> 8))+32);
+          output += f((current + (c >> 8))+32);
           current = (c & 255) << 7;
           break;
         case 8:
-          output += String.fromCharCode((current + (c >> 9))+32);
+          output += f((current + (c >> 9))+32);
           current = (c & 511) << 6;
           break;
         case 9:
-          output += String.fromCharCode((current + (c >> 10))+32);
+          output += f((current + (c >> 10))+32);
           current = (c & 1023) << 5;
           break;
         case 10:
-          output += String.fromCharCode((current + (c >> 11))+32);
+          output += f((current + (c >> 11))+32);
           current = (c & 2047) << 4;
           break;
         case 11:
-          output += String.fromCharCode((current + (c >> 12))+32);
+          output += f((current + (c >> 12))+32);
           current = (c & 4095) << 3;
           break;
         case 12:
-          output += String.fromCharCode((current + (c >> 13))+32);
+          output += f((current + (c >> 13))+32);
           current = (c & 8191) << 2;
           break;
         case 13:
-          output += String.fromCharCode((current + (c >> 14))+32);
+          output += f((current + (c >> 14))+32);
           current = (c & 16383) << 1;
           break;
         case 14:
-          output += String.fromCharCode((current + (c >> 15))+32, (c & 32767)+32);
+          output += f((current + (c >> 15))+32, (c & 32767)+32);
           status = 0;
           break;
       }
     }
     
-    return output + String.fromCharCode(current + 32);
+    return output + f(current + 32);
   },
   
 
@@ -194,7 +196,8 @@ var LZString = {
     var output = "",
         current,c,
         status=0,
-        i = 0;
+        i = 0,
+        f = this._f;
     
     while (i < input.length) {
       c = input.charCodeAt(i) - 32;
@@ -204,63 +207,63 @@ var LZString = {
           current = c << 1;
           break;
         case 1:
-          output += String.fromCharCode(current | (c >> 14));
+          output += f(current | (c >> 14));
           current = (c&16383) << 2;
           break;
         case 2:
-          output += String.fromCharCode(current | (c >> 13));
+          output += f(current | (c >> 13));
           current = (c&8191) << 3;
           break;
         case 3:
-          output += String.fromCharCode(current | (c >> 12));
+          output += f(current | (c >> 12));
           current = (c&4095) << 4;
           break;
         case 4:
-          output += String.fromCharCode(current | (c >> 11));
+          output += f(current | (c >> 11));
           current = (c&2047) << 5;
           break;
         case 5:
-          output += String.fromCharCode(current | (c >> 10));
+          output += f(current | (c >> 10));
           current = (c&1023) << 6;
           break;
         case 6:
-          output += String.fromCharCode(current | (c >> 9));
+          output += f(current | (c >> 9));
           current = (c&511) << 7;
           break;
         case 7:
-          output += String.fromCharCode(current | (c >> 8));
+          output += f(current | (c >> 8));
           current = (c&255) << 8;
           break;
         case 8:
-          output += String.fromCharCode(current | (c >> 7));
+          output += f(current | (c >> 7));
           current = (c&127) << 9;
           break;
         case 9:
-          output += String.fromCharCode(current | (c >> 6));
+          output += f(current | (c >> 6));
           current = (c&63) << 10;
           break;
         case 10:
-          output += String.fromCharCode(current | (c >> 5));
+          output += f(current | (c >> 5));
           current = (c&31) << 11;
           break;
         case 11:
-          output += String.fromCharCode(current | (c >> 4));
+          output += f(current | (c >> 4));
           current = (c&15) << 12;
           break;
         case 12:
-          output += String.fromCharCode(current | (c >> 3));
+          output += f(current | (c >> 3));
           current = (c&7) << 13;
           break;
         case 13:
-          output += String.fromCharCode(current | (c >> 2));
+          output += f(current | (c >> 2));
           current = (c&3) << 14;
           break;
         case 14:
-          output += String.fromCharCode(current | (c >> 1));
+          output += f(current | (c >> 1));
           current = (c&1) << 15;
           break;
         case 15:
-          output += String.fromCharCode(current | c);
+          output += f(current | c);
           status=0;
           break;
       }
@@ -290,7 +293,8 @@ var LZString = {
         context_data_string="", 
         context_data_val=0, 
         context_data_position=0,
-        ii;
+        ii,
+        f=this._f;
     
     for (ii = 0; ii < uncompressed.length; ii += 1) {
       context_c = uncompressed.charAt(ii);
@@ -309,7 +313,7 @@ var LZString = {
               context_data_val = (context_data_val << 1);
               if (context_data_position == 15) {
                 context_data_position = 0;
-                context_data_string += String.fromCharCode(context_data_val);
+                context_data_string += f(context_data_val);
                 context_data_val = 0;
               } else {
                 context_data_position++;
@@ -320,7 +324,7 @@ var LZString = {
               context_data_val = (context_data_val << 1) | (value&1);
               if (context_data_position == 15) {
                 context_data_position = 0;
-                context_data_string += String.fromCharCode(context_data_val);
+                context_data_string += f(context_data_val);
                 context_data_val = 0;
               } else {
                 context_data_position++;
@@ -333,7 +337,7 @@ var LZString = {
               context_data_val = (context_data_val << 1) | value;
               if (context_data_position == 15) {
                 context_data_position = 0;
-                context_data_string += String.fromCharCode(context_data_val);
+                context_data_string += f(context_data_val);
                 context_data_val = 0;
               } else {
                 context_data_position++;
@@ -345,7 +349,7 @@ var LZString = {
               context_data_val = (context_data_val << 1) | (value&1);
               if (context_data_position == 15) {
                 context_data_position = 0;
-                context_data_string += String.fromCharCode(context_data_val);
+                context_data_string += f(context_data_val);
                 context_data_val = 0;
               } else {
                 context_data_position++;
@@ -365,7 +369,7 @@ var LZString = {
             context_data_val = (context_data_val << 1) | (value&1);
             if (context_data_position == 15) {
               context_data_position = 0;
-              context_data_string += String.fromCharCode(context_data_val);
+              context_data_string += f(context_data_val);
               context_data_val = 0;
             } else {
               context_data_position++;
@@ -394,7 +398,7 @@ var LZString = {
             context_data_val = (context_data_val << 1);
             if (context_data_position == 15) {
               context_data_position = 0;
-              context_data_string += String.fromCharCode(context_data_val);
+              context_data_string += f(context_data_val);
               context_data_val = 0;
             } else {
               context_data_position++;
@@ -405,7 +409,7 @@ var LZString = {
             context_data_val = (context_data_val << 1) | (value&1);
             if (context_data_position == 15) {
               context_data_position = 0;
-              context_data_string += String.fromCharCode(context_data_val);
+              context_data_string += f(context_data_val);
               context_data_val = 0;
             } else {
               context_data_position++;
@@ -418,7 +422,7 @@ var LZString = {
             context_data_val = (context_data_val << 1) | value;
             if (context_data_position == 15) {
               context_data_position = 0;
-              context_data_string += String.fromCharCode(context_data_val);
+              context_data_string += f(context_data_val);
               context_data_val = 0;
             } else {
               context_data_position++;
@@ -430,7 +434,7 @@ var LZString = {
             context_data_val = (context_data_val << 1) | (value&1);
             if (context_data_position == 15) {
               context_data_position = 0;
-              context_data_string += String.fromCharCode(context_data_val);
+              context_data_string += f(context_data_val);
               context_data_val = 0;
             } else {
               context_data_position++;
@@ -450,7 +454,7 @@ var LZString = {
           context_data_val = (context_data_val << 1) | (value&1);
           if (context_data_position == 15) {
             context_data_position = 0;
-            context_data_string += String.fromCharCode(context_data_val);
+            context_data_string += f(context_data_val);
             context_data_val = 0;
           } else {
             context_data_position++;
@@ -473,7 +477,7 @@ var LZString = {
       context_data_val = (context_data_val << 1) | (value&1);
       if (context_data_position == 15) {
         context_data_position = 0;
-        context_data_string += String.fromCharCode(context_data_val);
+        context_data_string += f(context_data_val);
         context_data_val = 0;
       } else {
         context_data_position++;
@@ -485,7 +489,7 @@ var LZString = {
     while (true) {
       context_data_val = (context_data_val << 1);
       if (context_data_position == 15) {
-        context_data_string += String.fromCharCode(context_data_val);
+        context_data_string += f(context_data_val);
         break;
       }
       else context_data_position++;
@@ -507,6 +511,7 @@ var LZString = {
         c,
         errorCount=0,
         literal,
+        f = this._f,
         data = {string:compressed, val:compressed.charCodeAt(0), position:32768, index:1};
     
     for (i = 0; i < 3; i += 1) {
@@ -542,7 +547,7 @@ var LZString = {
             bits |= (resb>0 ? 1 : 0) * power;
             power <<= 1;
           }
-        c = String.fromCharCode(bits);
+        c = f(bits);
         break;
       case 1: 
           bits = 0;
@@ -558,7 +563,7 @@ var LZString = {
             bits |= (resb>0 ? 1 : 0) * power;
             power <<= 1;
           }
-        c = String.fromCharCode(bits);
+        c = f(bits);
         break;
       case 2: 
         return "";
@@ -597,7 +602,7 @@ var LZString = {
             power <<= 1;
           }
 
-          dictionary[dictSize++] = String.fromCharCode(bits);
+          dictionary[dictSize++] = f(bits);
           c = dictSize-1;
           enlargeIn--;
           break;
@@ -615,7 +620,7 @@ var LZString = {
             bits |= (resb>0 ? 1 : 0) * power;
             power <<= 1;
           }
-          dictionary[dictSize++] = String.fromCharCode(bits);
+          dictionary[dictSize++] = f(bits);
           c = dictSize-1;
           enlargeIn--;
           break;
