@@ -502,7 +502,6 @@ var LZString = {
         w,
         bits, resb, maxpower, power,
         c,
-        errorCount=0,
         f = this._f,
         data = {string:compressed, val:compressed.charCodeAt(0), position:32768, index:1};
     
@@ -579,7 +578,6 @@ var LZString = {
 
       switch (c = bits) {
         case 0: 
-          if (errorCount++ > 10000) return "Error";
           bits = 0;
           maxpower = Math.pow(2,8);
           power=1;
