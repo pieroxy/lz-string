@@ -6,7 +6,7 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.3.0
+// LZ-based compression algorithm, version 1.3.1-rc1
 var LZString = {
   
   
@@ -291,16 +291,16 @@ var LZString = {
     
     for (ii = 0; ii < uncompressed.length; ii += 1) {
       context_c = uncompressed.charAt(ii);
-      if (!context_dictionary.hasOwnProperty(context_c)) {
+      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
         context_dictionary[context_c] = context_dictSize++;
         context_dictionaryToCreate[context_c] = true;
       }
       
       context_wc = context_w + context_c;
-      if (context_dictionary.hasOwnProperty(context_wc)) {
+      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
         context_w = context_wc;
       } else {
-        if (context_dictionaryToCreate.hasOwnProperty(context_w)) {
+        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
           if (context_w.charCodeAt(0)<256) {
             for (i=0 ; i<context_numBits ; i++) {
               context_data_val = (context_data_val << 1);
@@ -385,7 +385,7 @@ var LZString = {
     
     // Output the code for w.
     if (context_w !== "") {
-      if (context_dictionaryToCreate.hasOwnProperty(context_w)) {
+      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
         if (context_w.charCodeAt(0)<256) {
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1);
