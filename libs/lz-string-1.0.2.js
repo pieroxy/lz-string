@@ -3,7 +3,7 @@
 // under the terms of the WTFPL, Version 2
 // For more information see LICENSE.txt or http://www.wtfpl.net/
 //
-// LZ-based compression algorithm, version 1.0.1
+// LZ-based compression algorithm, version 1.0.2-rc1
 var LZString = {
 
   writeBit : function(value, data) {
@@ -27,7 +27,7 @@ var LZString = {
   },
   
   produceW : function (context) {
-    if (context.dictionaryToCreate.hasOwnProperty(context.w)) {
+    if (Object.prototype.hasOwnProperty.call(context.dictionaryToCreate,context.w)) {
       if (context.w.charCodeAt(0)<256) {
         this.writeBits(context.numBits, 0, context.data);
         this.writeBits(8, context.w, context.data);
@@ -67,13 +67,13 @@ var LZString = {
     
     for (i = 0; i < uncompressed.length; i += 1) {
       context.c = uncompressed.charAt(i);
-      if (!context.dictionary.hasOwnProperty(context.c)) {
+      if (!Object.prototype.hasOwnProperty.call(context.dictionary,context.c)) {
         context.dictionary[context.c] = context.dictSize++;
         context.dictionaryToCreate[context.c] = true;
       }
       
       context.wc = context.w + context.c;
-      if (context.dictionary.hasOwnProperty(context.wc)) {
+      if (Object.prototype.hasOwnProperty.call(context.dictionary,context.wc)) {
         context.w = context.wc;
       } else {
         this.produceW(context);
