@@ -15,6 +15,7 @@ var LZString = {
   _f : function(d){return String.fromCharCode(d)},
   
   compressToBase64 : function (input) {
+    if (input == null) return "";
     var output = "";
     var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
     var i = 0;
@@ -61,6 +62,7 @@ var LZString = {
   },
   
   decompressFromBase64 : function (input) {
+    if (input == null) return "";
     var output = "",
         ol = 0, 
         output_,
@@ -108,6 +110,7 @@ var LZString = {
   },
 
   compressToUTF16 : function (input) {
+    if (input == null) return "";
     var output = "",
         i,c,
         current,
@@ -187,6 +190,7 @@ var LZString = {
   
 
   decompressFromUTF16 : function (input) {
+    if (input == null) return "";
     var output = "",
         current,c,
         status=0,
@@ -274,6 +278,7 @@ var LZString = {
 
   
   compress: function (uncompressed) {
+    if (uncompressed == null) return "";
     var i, value,
         context_dictionary= {},
         context_dictionaryToCreate= {},
