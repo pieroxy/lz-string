@@ -496,6 +496,7 @@ var LZString = {
   },
   
   decompress: function (compressed) {
+    if (compressed == null) return "";
     var dictionary = [],
         next,
         enlargeIn = 4,
