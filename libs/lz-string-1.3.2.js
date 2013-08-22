@@ -12,7 +12,7 @@ var LZString = {
   
   // private property
   _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-  _f : function(d){return String.fromCharCode(d)},
+  _f : String.fromCharCode,
   
   compressToBase64 : function (input) {
     if (input == null) return "";
