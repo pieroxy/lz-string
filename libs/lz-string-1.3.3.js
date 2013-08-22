@@ -6,7 +6,7 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.3.2
+// LZ-based compression algorithm, version 1.3.3
 var LZString = {
   
   
