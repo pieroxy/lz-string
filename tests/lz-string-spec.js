@@ -1,37 +1,37 @@
 var compressionTests = function(compress, decompress) {
     it('compresses and decompresses  "Hello world!"', function() {
-        var compressed = LZString[compress]('Hello world!');
+        var compressed = compress('Hello world!');
         expect(compressed).not.toBe('Hello world!');
-        var decompressed = LZString[decompress](compressed);
+        var decompressed = decompress(compressed);
         expect(decompressed).toBe('Hello world!');
     });
 
     it('compresses and decompresses null', function() {
-        var compressed = LZString[compress](null);
+        var compressed = compress(null);
         expect(compressed).toBe('');
         expect(typeof compressed).toBe(typeof '');
-        var decompressed = LZString[decompress](compressed);
+        var decompressed = decompress(compressed);
         expect(decompressed).toBe(null);
     });
 
     it('compresses and decompresses undefined', function() {
-        var compressed = LZString[compress]();
+        var compressed = compress();
         expect(compressed).toBe('');
         expect(typeof compressed).toBe(typeof '');
-        var decompressed = LZString[decompress](compressed);
+        var decompressed = decompress(compressed);
         expect(decompressed).toBe(null);
     });
 
     it('decompresses null', function() {
-        var decompressed = LZString[decompress](null);
+        var decompressed = decompress(null);
         expect(decompressed).toBe('');
     });
 
     it('compresses and decompresses an empty string', function() {
-        var compressed = LZString[compress]('');
+        var compressed = compress('');
         expect(compressed).not.toBe('');
         expect(typeof compressed).toBe(typeof '');
-        var decompressed = LZString[decompress](compressed);
+        var decompressed = decompress(compressed);
         expect(decompressed).toBe('');
     });
 
@@ -49,30 +49,30 @@ var compressionTests = function(compress, decompress) {
             testString += String.fromCharCode(i);
         }
         //console.log(testString);
-        var compressed = LZString[compress](testString);
+        var compressed = compress(testString);
         expect(compressed).not.toBe(testString);
-        var decompressed = LZString[decompress](compressed);
+        var decompressed = decompress(compressed);
         expect(decompressed).toBe(testString);
     });
 
     it('compresses and decompresses a string that repeats',
         function() {
         var testString = 'aaaaabaaaaacaaaaadaaaaaeaaaaa';
-        var compressed = LZString[compress](testString);
+        var compressed = compress(testString);
         expect(compressed).not.toBe(testString);
         expect(compressed.length).toBeLessThan(testString.length);
-        var decompressed = LZString[decompress](compressed);
+        var decompressed = decompress(compressed);
         expect(decompressed).toBe(testString);
     });
 };
 
 describe('LZString', function() {
     describe('base 64', function() {
-        compressionTests('compressToBase64',
-                         'decompressFromBase64');
+        compressionTests(LZString.compressToBase64,
+                         LZString.decompressFromBase64);
     });
     describe('UTF-16', function() {
-        compressionTests('compressToUTF16',
-                         'decompressFromUTF16');
+        compressionTests(LZString.compressToUTF16,
+                         LZString.decompressFromUTF16);
     });
 });
