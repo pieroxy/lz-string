@@ -20,7 +20,7 @@ var LZString = {
     var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
     var i = 0;
     
-    input = this.compress(input);
+    input = LZString.compress(input);
     
     while (i < input.length*2) {
       
@@ -53,8 +53,8 @@ var LZString = {
       }
       
       output = output +
-        this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
-          this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+        LZString._keyStr.charAt(enc1) + LZString._keyStr.charAt(enc2) +
+          LZString._keyStr.charAt(enc3) + LZString._keyStr.charAt(enc4);
       
     }
     
@@ -68,16 +68,16 @@ var LZString = {
         output_,
         chr1, chr2, chr3,
         enc1, enc2, enc3, enc4,
-        i = 0, f=this._f;
+        i = 0, f=LZString._f;
     
     input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
     
     while (i < input.length) {
       
-      enc1 = this._keyStr.indexOf(input.charAt(i++));
-      enc2 = this._keyStr.indexOf(input.charAt(i++));
-      enc3 = this._keyStr.indexOf(input.charAt(i++));
-      enc4 = this._keyStr.indexOf(input.charAt(i++));
+      enc1 = LZString._keyStr.indexOf(input.charAt(i++));
+      enc2 = LZString._keyStr.indexOf(input.charAt(i++));
+      enc3 = LZString._keyStr.indexOf(input.charAt(i++));
+      enc4 = LZString._keyStr.indexOf(input.charAt(i++));
       
       chr1 = (enc1 << 2) | (enc2 >> 4);
       chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -105,7 +105,7 @@ var LZString = {
       ol+=3;
     }
     
-    return this.decompress(output);
+    return LZString.decompress(output);
     
   },
 
@@ -115,9 +115,9 @@ var LZString = {
         i,c,
         current,
         status = 0,
-        f = this._f;
+        f = LZString._f;
     
-    input = this.compress(input);
+    input = LZString.compress(input);
     
     for (i=0 ; i<input.length ; i++) {
       c = input.charCodeAt(i);
@@ -195,7 +195,7 @@ var LZString = {
         current,c,
         status=0,
         i = 0,
-        f = this._f;
+        f = LZString._f;
     
     while (i < input.length) {
       c = input.charCodeAt(i) - 32;
@@ -270,7 +270,7 @@ var LZString = {
       i++;
     }
     
-    return this.decompress(output);
+    return LZString.decompress(output);
     //return output;
     
   },
@@ -292,7 +292,7 @@ var LZString = {
         context_data_val=0, 
         context_data_position=0,
         ii,
-        f=this._f;
+        f=LZString._f;
     
     for (ii = 0; ii < uncompressed.length; ii += 1) {
       context_c = uncompressed.charAt(ii);
@@ -509,7 +509,7 @@ var LZString = {
         w,
         bits, resb, maxpower, power,
         c,
-        f = this._f,
+        f = LZString._f,
         data = {string:compressed, val:compressed.charCodeAt(0), position:32768, index:1};
     
     for (i = 0; i < 3; i += 1) {
