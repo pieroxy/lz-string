@@ -1,5 +1,6 @@
 lz-string
 =========
+LZ-based compression algorithm for JavaScript
 
 ## Install via [npm](https://npmjs.org/)
 
@@ -7,6 +8,5 @@ lz-string
 $ npm install lz-string
 ```
 
-LZ-based compression algorithm for JavaScript
-
+## Home page
 Home page for this program with examples, documentation and a live demo: http://pieroxy.net/blog/pages/lz-string/index.html
