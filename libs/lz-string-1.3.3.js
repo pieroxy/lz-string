@@ -568,6 +568,10 @@ var LZString = {
     dictionary[3] = c;
     w = result = c;
     while (true) {
+      if (data.index > data.string.length) {
+        return "";
+      }
+      
       bits = 0;
       maxpower = Math.pow(2,numBits);
       power=1;
