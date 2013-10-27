@@ -64,6 +64,20 @@ var compressionTests = function(compress, decompress) {
         var decompressed = decompress(compressed);
         expect(decompressed).toBe(testString);
     });
+
+    it('compresses and decompresses a long string',
+        function() {
+        var testString = '';
+        var i;
+        for (i=0 ; i<1000 ; i++)
+          testString += Math.random() + " ";
+            
+        var compressed = compress(testString);
+        expect(compressed).not.toBe(testString);
+        expect(compressed.length).toBeLessThan(testString.length);
+        var decompressed = decompress(compressed);
+        expect(decompressed).toBe(testString);
+    });
 };
 
 describe('LZString', function() {
