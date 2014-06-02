@@ -19,21 +19,23 @@ var LZString = {
     var output = "";
     var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
     var i = 0;
+    var inputLen;
     
     input = LZString.compress(input);
+    inputLen = input.length;
     
-    while (i < input.length*2) {
+    while (i < inputLen<<1) {
       
-      if (i%2==0) {
+      if (i%2===0) {
         chr1 = input.charCodeAt(i/2) >> 8;
         chr2 = input.charCodeAt(i/2) & 255;
-        if (i/2+1 < input.length) 
+        if (i/2+1 < inputLen) 
           chr3 = input.charCodeAt(i/2+1) >> 8;
         else 
           chr3 = NaN;
       } else {
         chr1 = input.charCodeAt((i-1)/2) & 255;
-        if ((i+1)/2 < input.length) {
+        if ((i+1)/2 < inputLen) {
           chr2 = input.charCodeAt((i+1)/2) >> 8;
           chr3 = input.charCodeAt((i+1)/2) & 255;
         } else 
@@ -83,22 +85,22 @@ var LZString = {
       chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
       chr3 = ((enc3 & 3) << 6) | enc4;
       
-      if (ol%2==0) {
+      if (ol%2===0) {
         output_ = chr1 << 8;
         
-        if (enc3 != 64) {
+        if (enc3 !== 64) {
           output += f(output_ | chr2);
         }
-        if (enc4 != 64) {
+        if (enc4 !== 64) {
           output_ = chr3 << 8;
         }
       } else {
         output = output + f(output_ | chr1);
         
-        if (enc3 != 64) {
+        if (enc3 !== 64) {
           output_ = chr2 << 8;
         }
-        if (enc4 != 64) {
+        if (enc4 !== 64) {
           output += f(output_ | chr3);
         }
       }
@@ -296,20 +298,20 @@ var LZString = {
     
     for (ii = 0; ii < uncompressed.length; ii += 1) {
       context_c = uncompressed.charAt(ii);
-      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
+      if (!context_dictionary.hasOwnProperty(context_c)) {
         context_dictionary[context_c] = context_dictSize++;
         context_dictionaryToCreate[context_c] = true;
       }
       
       context_wc = context_w + context_c;
-      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
+      if (context_dictionary.hasOwnProperty(context_wc)) {
         context_w = context_wc;
       } else {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+        if (context_dictionaryToCreate.hasOwnProperty(context_w)) {
           if (context_w.charCodeAt(0)<256) {
             for (i=0 ; i<context_numBits ; i++) {
               context_data_val = (context_data_val << 1);
-              if (context_data_position == 15) {
+              if (context_data_position === 15) {
                 context_data_position = 0;
                 context_data_string += f(context_data_val);
                 context_data_val = 0;
@@ -320,7 +322,7 @@ var LZString = {
             value = context_w.charCodeAt(0);
             for (i=0 ; i<8 ; i++) {
               context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == 15) {
+              if (context_data_position === 15) {
                 context_data_position = 0;
                 context_data_string += f(context_data_val);
                 context_data_val = 0;
@@ -333,7 +335,7 @@ var LZString = {
             value = 1;
             for (i=0 ; i<context_numBits ; i++) {
               context_data_val = (context_data_val << 1) | value;
-              if (context_data_position == 15) {
+              if (context_data_position === 15) {
                 context_data_position = 0;
                 context_data_string += f(context_data_val);
                 context_data_val = 0;
@@ -345,7 +347,7 @@ var LZString = {
             value = context_w.charCodeAt(0);
             for (i=0 ; i<16 ; i++) {
               context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == 15) {
+              if (context_data_position === 15) {
                 context_data_position = 0;
                 context_data_string += f(context_data_val);
                 context_data_val = 0;
@@ -356,7 +358,7 @@ var LZString = {
             }
           }
           context_enlargeIn--;
-          if (context_enlargeIn == 0) {
+          if (context_enlargeIn === 0) {
             context_enlargeIn = Math.pow(2, context_numBits);
             context_numBits++;
           }
@@ -365,7 +367,7 @@ var LZString = {
           value = context_dictionary[context_w];
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == 15) {
+            if (context_data_position === 15) {
               context_data_position = 0;
               context_data_string += f(context_data_val);
               context_data_val = 0;
@@ -378,7 +380,7 @@ var LZString = {
           
         }
         context_enlargeIn--;
-        if (context_enlargeIn == 0) {
+        if (context_enlargeIn === 0) {
           context_enlargeIn = Math.pow(2, context_numBits);
           context_numBits++;
         }
@@ -390,11 +392,11 @@ var LZString = {
     
     // Output the code for w.
     if (context_w !== "") {
-      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+      if (context_dictionaryToCreate.hasOwnProperty(context_w)) {
         if (context_w.charCodeAt(0)<256) {
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1);
-            if (context_data_position == 15) {
+            if (context_data_position === 15) {
               context_data_position = 0;
               context_data_string += f(context_data_val);
               context_data_val = 0;
@@ -405,7 +407,7 @@ var LZString = {
           value = context_w.charCodeAt(0);
           for (i=0 ; i<8 ; i++) {
             context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == 15) {
+            if (context_data_position === 15) {
               context_data_position = 0;
               context_data_string += f(context_data_val);
               context_data_val = 0;
@@ -418,7 +420,7 @@ var LZString = {
           value = 1;
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1) | value;
-            if (context_data_position == 15) {
+            if (context_data_position === 15) {
               context_data_position = 0;
               context_data_string += f(context_data_val);
               context_data_val = 0;
@@ -430,7 +432,7 @@ var LZString = {
           value = context_w.charCodeAt(0);
           for (i=0 ; i<16 ; i++) {
             context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == 15) {
+            if (context_data_position === 15) {
               context_data_position = 0;
               context_data_string += f(context_data_val);
               context_data_val = 0;
@@ -441,7 +443,7 @@ var LZString = {
           }
         }
         context_enlargeIn--;
-        if (context_enlargeIn == 0) {
+        if (context_enlargeIn === 0) {
           context_enlargeIn = Math.pow(2, context_numBits);
           context_numBits++;
         }
@@ -450,7 +452,7 @@ var LZString = {
         value = context_dictionary[context_w];
         for (i=0 ; i<context_numBits ; i++) {
           context_data_val = (context_data_val << 1) | (value&1);
-          if (context_data_position == 15) {
+          if (context_data_position === 15) {
             context_data_position = 0;
             context_data_string += f(context_data_val);
             context_data_val = 0;
@@ -463,7 +465,7 @@ var LZString = {
         
       }
       context_enlargeIn--;
-      if (context_enlargeIn == 0) {
+      if (context_enlargeIn === 0) {
         context_enlargeIn = Math.pow(2, context_numBits);
         context_numBits++;
       }
@@ -473,7 +475,7 @@ var LZString = {
     value = 2;
     for (i=0 ; i<context_numBits ; i++) {
       context_data_val = (context_data_val << 1) | (value&1);
-      if (context_data_position == 15) {
+      if (context_data_position === 15) {
         context_data_position = 0;
         context_data_string += f(context_data_val);
         context_data_val = 0;
@@ -486,7 +488,7 @@ var LZString = {
     // Flush the last char
     while (true) {
       context_data_val = (context_data_val << 1);
-      if (context_data_position == 15) {
+      if (context_data_position === 15) {
         context_data_string += f(context_data_val);
         break;
       }
@@ -497,7 +499,7 @@ var LZString = {
   
   decompress: function (compressed) {
     if (compressed == null) return "";
-    if (compressed == "") return null;
+    if (compressed === "") return null;
     var dictionary = [],
         next,
         enlargeIn = 4,
@@ -519,10 +521,10 @@ var LZString = {
     bits = 0;
     maxpower = Math.pow(2,2);
     power=1;
-    while (power!=maxpower) {
+    while (power!==maxpower) {
       resb = data.val & data.position;
       data.position >>= 1;
-      if (data.position == 0) {
+      if (data.position === 0) {
         data.position = 32768;
         data.val = data.string.charCodeAt(data.index++);
       }
@@ -535,10 +537,10 @@ var LZString = {
           bits = 0;
           maxpower = Math.pow(2,8);
           power=1;
-          while (power!=maxpower) {
+          while (power!==maxpower) {
             resb = data.val & data.position;
             data.position >>= 1;
-            if (data.position == 0) {
+            if (data.position === 0) {
               data.position = 32768;
               data.val = data.string.charCodeAt(data.index++);
             }
@@ -551,10 +553,10 @@ var LZString = {
           bits = 0;
           maxpower = Math.pow(2,16);
           power=1;
-          while (power!=maxpower) {
+          while (power!==maxpower) {
             resb = data.val & data.position;
             data.position >>= 1;
-            if (data.position == 0) {
+            if (data.position === 0) {
               data.position = 32768;
               data.val = data.string.charCodeAt(data.index++);
             }
@@ -576,10 +578,10 @@ var LZString = {
       bits = 0;
       maxpower = Math.pow(2,numBits);
       power=1;
-      while (power!=maxpower) {
+      while (power!==maxpower) {
         resb = data.val & data.position;
         data.position >>= 1;
-        if (data.position == 0) {
+        if (data.position === 0) {
           data.position = 32768;
           data.val = data.string.charCodeAt(data.index++);
         }
@@ -592,10 +594,10 @@ var LZString = {
           bits = 0;
           maxpower = Math.pow(2,8);
           power=1;
-          while (power!=maxpower) {
+          while (power!==maxpower) {
             resb = data.val & data.position;
             data.position >>= 1;
-            if (data.position == 0) {
+            if (data.position === 0) {
               data.position = 32768;
               data.val = data.string.charCodeAt(data.index++);
             }
@@ -611,10 +613,10 @@ var LZString = {
           bits = 0;
           maxpower = Math.pow(2,16);
           power=1;
-          while (power!=maxpower) {
+          while (power!==maxpower) {
             resb = data.val & data.position;
             data.position >>= 1;
-            if (data.position == 0) {
+            if (data.position === 0) {
               data.position = 32768;
               data.val = data.string.charCodeAt(data.index++);
             }
@@ -629,7 +631,7 @@ var LZString = {
           return result;
       }
       
-      if (enlargeIn == 0) {
+      if (enlargeIn === 0) {
         enlargeIn = Math.pow(2, numBits);
         numBits++;
       }
@@ -651,7 +653,7 @@ var LZString = {
       
       w = entry;
       
-      if (enlargeIn == 0) {
+      if (enlargeIn === 0) {
         enlargeIn = Math.pow(2, numBits);
         numBits++;
       }
@@ -660,6 +662,6 @@ var LZString = {
   }
 };
 
-if( typeof module !== 'undefined' && module != null ) {
+if( typeof module !== 'undefined' && module !== null ) {
   module.exports = LZString
 }
