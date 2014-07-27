@@ -1,4 +1,4 @@
-var compressionTests = function(compress, decompress) {
+var compressionTests = function(compress, decompress, uint8array_mode) {
     it('compresses and decompresses  "Hello world!"', function() {
         var compressed = compress('Hello world!');
         expect(compressed).not.toBe('Hello world!');
@@ -8,16 +8,26 @@ var compressionTests = function(compress, decompress) {
 
     it('compresses and decompresses null', function() {
         var compressed = compress(null);
-        expect(compressed).toBe('');
-        expect(typeof compressed).toBe(typeof '');
+        if (uint8array_mode===false){
+            expect(compressed).toBe('');
+            expect(typeof compressed).toBe(typeof '');
+        } else {    //uint8array
+            expect(compressed instanceof Uint8Array).toBe(true);
+            expect(compressed.length).toBe(0);  //empty array
+        }
         var decompressed = decompress(compressed);
         expect(decompressed).toBe(null);
     });
 
     it('compresses and decompresses undefined', function() {
         var compressed = compress();
-        expect(compressed).toBe('');
-        expect(typeof compressed).toBe(typeof '');
+        if (uint8array_mode===false){
+            expect(compressed).toBe('');
+            expect(typeof compressed).toBe(typeof '');
+        } else {    //uint8array
+            expect(compressed instanceof Uint8Array).toBe(true);
+            expect(compressed.length).toBe(0);  //empty array
+        }
         var decompressed = decompress(compressed);
         expect(decompressed).toBe(null);
     });
@@ -29,8 +39,13 @@ var compressionTests = function(compress, decompress) {
 
     it('compresses and decompresses an empty string', function() {
         var compressed = compress('');
-        expect(compressed).not.toBe('');
-        expect(typeof compressed).toBe(typeof '');
+        if (uint8array_mode===false){
+            expect(compressed).not.toBe('');
+            expect(typeof compressed).toBe(typeof '');
+        } else {    //uint8array
+            expect(compressed instanceof Uint8Array).toBe(true);
+            expect(compressed.length).not.toBe(0);  //not an empty array when compress
+        }
         var decompressed = decompress(compressed);
         expect(decompressed).toBe('');
     });
@@ -71,7 +86,7 @@ var compressionTests = function(compress, decompress) {
         var i;
         for (i=0 ; i<1000 ; i++)
           testString += Math.random() + " ";
-            
+
         var compressed = compress(testString);
         expect(compressed).not.toBe(testString);
         expect(compressed.length).toBeLessThan(testString.length);
@@ -82,11 +97,21 @@ var compressionTests = function(compress, decompress) {
 
 describe('LZString', function() {
     describe('base 64', function() {
-        compressionTests(LZString.compressToBase64,
-                         LZString.decompressFromBase64);
+        compressionTests(LZString.compressToBase64
+                         ,LZString.decompressFromBase64
+                         ,false //uint8array_mode: false
+                         );
     });
     describe('UTF-16', function() {
-        compressionTests(LZString.compressToUTF16,
-                         LZString.decompressFromUTF16);
+        compressionTests(LZString.compressToUTF16
+                         ,LZString.decompressFromUTF16
+                         ,false //uint8array_mode: false
+                         );
+    });
+    describe('uint8array', function() {
+        compressionTests(LZString.compressToUint8Array
+                         ,LZString.decompressFromUint8Array
+                         ,true  //uint8array_mode: true
+                         );
     });
 });
