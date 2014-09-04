@@ -5,7 +5,8 @@ LZ-based compression algorithm for JavaScript
 ## Install via [npm](https://npmjs.org/)
 
 ```shell
-$ npm install lz-string
+$ npm install -g lz-string
+$ lz-string input.js > output.txt
 ```
 
 ## Home page
