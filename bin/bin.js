@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-var lzString = require('../libs/reference/lz-string-1.3.3.js');
+var lzString = require('../libs/lz-string.js');
 var fs = require('fs');
 
 if (process.argv.length < 3) {
