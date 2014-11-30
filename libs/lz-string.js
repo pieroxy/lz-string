@@ -6,7 +6,7 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.3.3
+// LZ-based compression algorithm, version 1.3.4
 var LZString = {
   
   
@@ -276,7 +276,41 @@ var LZString = {
   },
 
 
-  
+  //compress into uint8array (UCS-2 big endian format)
+  compressToUint8Array: function (uncompressed) {
+
+    var compressed = LZString.compress(uncompressed);
+    var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
+
+    for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
+      var current_value = compressed.charCodeAt(i);
+      buf[i*2] = current_value >>> 8;
+      buf[i*2+1] = current_value % 256;
+    }
+    return buf;
+
+  },
+
+  //decompress from uint8array (UCS-2 big endian format)
+  decompressFromUint8Array:function (compressed) {
+
+    if (compressed===null || compressed===undefined){
+        return LZString.decompress(compressed);
+    } else {
+
+        var buf=new Array(compressed.length/2); // 2 bytes per character
+
+        for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
+          buf[i]=compressed[i*2]*256+compressed[i*2+1];
+        }
+
+        return LZString.decompress(String.fromCharCode.apply(null, buf));
+
+    }
+
+  },
+
+
   compress: function (uncompressed) {
     if (uncompressed == null) return "";
     var i, value,
