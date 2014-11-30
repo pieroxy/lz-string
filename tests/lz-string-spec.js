@@ -108,6 +108,12 @@ describe('LZString', function() {
                          ,false //uint8array_mode: false
                          );
     });
+    describe('URI Encoded', function() {
+        compressionTests(LZString.compressToEncodedURIComponent
+                         ,LZString.decompressFromEncodedURIComponent
+                         ,false //uint8array_mode: false
+                         );
+    });
     describe('uint8array', function() {
         compressionTests(LZString.compressToUint8Array
                          ,LZString.decompressFromUint8Array
