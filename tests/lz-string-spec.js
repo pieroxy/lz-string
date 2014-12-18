@@ -121,3 +121,19 @@ describe('LZString', function() {
                          );
     });
 });
+
+
+describe('Specific URL Encoded', function() {
+    it("check that all chars are URL safe", function() {
+        var testString = '';
+        var i;
+        for (i=0 ; i<1000 ; i++)
+          testString += Math.random() + " ";
+
+        var compressed = LZString.compressToEncodedURIComponent(testString);
+        expect(compressed.indexOf("=")).toBe(-1);
+        expect(compressed.indexOf("/")).toBe(-1);
+        var decompressed = LZString.decompressFromEncodedURIComponent(compressed);
+        expect(decompressed).toBe(testString);
+    });
+});

@@ -6,7 +6,7 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.3.5
+// LZ-based compression algorithm, version 1.3.6
 var LZString = {
   
   
@@ -312,12 +312,12 @@ var LZString = {
 
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (uncompressed) {
-    return LZString.compressToBase64(uncompressed).replace("=","$").replace("/","-");
+    return LZString.compressToBase64(uncompressed).replace(/=/g,"$").replace(/\//g,"-");
   },
 
   //decompress from an output of compressToEncodedURIComponent
   decompressFromEncodedURIComponent:function (compressed) {
-    if (compressed) compressed = compressed.replace("$","=").replace("-","/");
+    if (compressed) compressed = compressed.replace(/$/g,"=").replace(/-/g,"/");
     return LZString.decompressFromBase64(compressed);
   },
 
