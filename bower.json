@@ -1,0 +1,11 @@
+{
+  "name": "lz-string",
+  "version": "1.3.5",
+  "main": "libs/lz-string.min.js",
+  "ignore": [
+    "libs/",
+    "reference/",
+    "tests/"
+  ],
+  "keywords": ["compression", "lzw", "string"]
+}
