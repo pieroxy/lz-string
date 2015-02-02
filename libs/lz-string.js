@@ -53,8 +53,8 @@ var LZString = {
       }
       
       output = output +
-        LZString._keyStr.charAt(enc1) + LZString._keyStr.charAt(enc2) +
-          LZString._keyStr.charAt(enc3) + LZString._keyStr.charAt(enc4);
+        LZString._keyStr[enc1] + LZString._keyStr[enc2] +
+          LZString._keyStr[enc3] + LZString._keyStr[enc4];
       
     }
     
@@ -74,10 +74,10 @@ var LZString = {
     
     while (i < input.length) {
       
-      enc1 = LZString._keyStr.indexOf(input.charAt(i++));
-      enc2 = LZString._keyStr.indexOf(input.charAt(i++));
-      enc3 = LZString._keyStr.indexOf(input.charAt(i++));
-      enc4 = LZString._keyStr.indexOf(input.charAt(i++));
+      enc1 = LZString._keyStr.indexOf(input[i++]);
+      enc2 = LZString._keyStr.indexOf(input[i++]);
+      enc3 = LZString._keyStr.indexOf(input[i++]);
+      enc4 = LZString._keyStr.indexOf(input[i++]);
       
       chr1 = (enc1 << 2) | (enc2 >> 4);
       chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -340,7 +340,7 @@ var LZString = {
         f=LZString._f;
     
     for (ii = 0; ii < uncompressed.length; ii += 1) {
-      context_c = uncompressed.charAt(ii);
+      context_c = uncompressed[ii];
       if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
         context_dictionary[context_c] = context_dictSize++;
         context_dictionaryToCreate[context_c] = true;
@@ -683,7 +683,7 @@ var LZString = {
         entry = dictionary[c];
       } else {
         if (c === dictSize) {
-          entry = w + w.charAt(0);
+          entry = w + w[0];
         } else {
           return null;
         }
@@ -691,7 +691,7 @@ var LZString = {
       result += entry;
       
       // Add w+entry[0] to the dictionary.
-      dictionary[dictSize++] = w + entry.charAt(0);
+      dictionary[dictSize++] = w + entry[0];
       enlargeIn--;
       
       w = entry;
