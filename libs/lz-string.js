@@ -262,8 +262,8 @@ var LZString = {
 
         var result = "";
         buf.forEach(function (c) {
-		result = result + String.fromCharCode(c);
-	    });
+	  result = result + String.fromCharCode(c);
+	});
         return LZString.decompress(result);
 
     }
