@@ -6,107 +6,40 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.3.9
+// LZ-based compression algorithm, version 1.4.0-alpha
 var LZString = {
-  
-  
+
   // private property
-  _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   _f : String.fromCharCode,
-  
+  _keyStrBase64 : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+  _keyStrUriSafe : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",
+  _getBaseValue : function(alphabet, character) {
+    if (!LZString._baseReverseDic) LZString._baseReverseDic = {};
+    if (!LZString._baseReverseDic[alphabet]) {
+      LZString._baseReverseDic[alphabet] = {};
+      for (var i=0 ; i<alphabet.length ; i++) {
+        LZString._baseReverseDic[alphabet][alphabet[i]] = i;
+      }
+    }
+    return LZString._baseReverseDic[alphabet][character];
+  },
+
   compressToBase64 : function (input) {
     if (input == null) return "";
-    var output = "";
-    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    var i = 0;
-    
-    input = LZString.compress(input);
-    
-    while (i < input.length*2) {
-      
-      if (i%2==0) {
-        chr1 = input.charCodeAt(i/2) >> 8;
-        chr2 = input.charCodeAt(i/2) & 255;
-        if (i/2+1 < input.length) 
-          chr3 = input.charCodeAt(i/2+1) >> 8;
-        else 
-          chr3 = NaN;
-      } else {
-        chr1 = input.charCodeAt((i-1)/2) & 255;
-        if ((i+1)/2 < input.length) {
-          chr2 = input.charCodeAt((i+1)/2) >> 8;
-          chr3 = input.charCodeAt((i+1)/2) & 255;
-        } else 
-          chr2=chr3=NaN;
-      }
-      i+=3;
-      
-      enc1 = chr1 >> 2;
-      enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-      enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-      enc4 = chr3 & 63;
-      
-      if (isNaN(chr2)) {
-        enc3 = enc4 = 64;
-      } else if (isNaN(chr3)) {
-        enc4 = 64;
-      }
-      
-      output = output +
-        LZString._keyStr[enc1] + LZString._keyStr[enc2] +
-          LZString._keyStr[enc3] + LZString._keyStr[enc4];
-      
+    var res = LZString._compress(input, 6, function(a){return LZString._keyStrBase64.charAt(a);});
+    switch (res.length % 4) { // To produce valid Base64
+    default: // When could this happen ?
+    case 0 : return res;
+    case 1 : return res+"===";
+    case 2 : return res+"==";
+    case 3 : return res+"=";
     }
-    
-    return output;
   },
-  
+
   decompressFromBase64 : function (input) {
     if (input == null) return "";
-    var output = "",
-        ol = 0, 
-        output_,
-        chr1, chr2, chr3,
-        enc1, enc2, enc3, enc4,
-        i = 0, f=LZString._f;
-    
-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    
-    while (i < input.length) {
-      
-      enc1 = LZString._keyStr.indexOf(input[i++]);
-      enc2 = LZString._keyStr.indexOf(input[i++]);
-      enc3 = LZString._keyStr.indexOf(input[i++]);
-      enc4 = LZString._keyStr.indexOf(input[i++]);
-      
-      chr1 = (enc1 << 2) | (enc2 >> 4);
-      chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-      chr3 = ((enc3 & 3) << 6) | enc4;
-      
-      if (ol%2==0) {
-        output_ = chr1 << 8;
-        
-        if (enc3 != 64) {
-          output += f(output_ | chr2);
-        }
-        if (enc4 != 64) {
-          output_ = chr3 << 8;
-        }
-      } else {
-        output = output + f(output_ | chr1);
-        
-        if (enc3 != 64) {
-          output_ = chr2 << 8;
-        }
-        if (enc4 != 64) {
-          output += f(output_ | chr3);
-        }
-      }
-      ol+=3;
-    }
-    
-    return LZString.decompress(output);
-    
+    if (input == "") return null;
+    return LZString._decompress(input.length, 32, function(index) { return LZString._getBaseValue(LZString._keyStrBase64, input.charAt(index)); });
   },
 
   compressToUTF16 : function (input) {
@@ -153,15 +86,18 @@ var LZString = {
 
   },
 
+
   //compress into a string that is already URI encoded
-  compressToEncodedURIComponent: function (uncompressed) {
-    return LZString.compressToBase64(uncompressed).replace(/=/g,"$").replace(/\//g,"-");
+  compressToEncodedURIComponent: function (input) {
+    if (input == null) return "";
+    return LZString._compress(input, 6, function(a){return LZString._keyStrUriSafe.charAt(a);});
   },
 
   //decompress from an output of compressToEncodedURIComponent
-  decompressFromEncodedURIComponent:function (compressed) {
-    if (compressed) compressed = compressed.replace(/$/g,"=").replace(/-/g,"/");
-    return LZString.decompressFromBase64(compressed);
+  decompressFromEncodedURIComponent:function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
+    return LZString._decompress(input.length, 32, function(index) { return LZString._getBaseValue(LZString._keyStrUriSafe, input.charAt(index)); });
   },
 
   compress: function (uncompressed) {
