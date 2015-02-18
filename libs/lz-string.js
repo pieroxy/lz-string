@@ -260,7 +260,11 @@ var LZString = {
           buf[i]=compressed[i*2]*256+compressed[i*2+1];
         }
 
-        return LZString.decompress(String.fromCharCode.apply(null, buf));
+        var result = "";
+        buf.forEach(function (c) {
+	  result = result + String.fromCharCode(c);
+	});
+        return LZString.decompress(result);
 
     }
 
