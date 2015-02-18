@@ -111,130 +111,17 @@ var LZString = {
 
   compressToUTF16 : function (input) {
     if (input == null) return "";
-    var output = "",
-        i,c,
-        current,
-        status = 0,
-        f = LZString._f;
-    
-    input = LZString.compress(input);
-    
-    for (i=0 ; i<input.length ; i++) {
-      c = input.charCodeAt(i);
-      switch (status) {
-        case 0:
-          output += f((c >> 1)+32);
-          current = (c & 1) << 14;
-          status++;
-          break;
-
-        case 14:
-          output += f((current + (c >> 15))+32, (c & 32767)+32);
-          status = 0;
-          break;
-
-        default:
-          output += f((current + (c >> (status + 1)))+32);
-          current = (c & ((2 << status) - 1)) << (14 - status);
-          status++;
-          break;
-      }
-    }
-    
-    return output + f(current + 32);
-  },
-  
-
-  decompressFromUTF16 : function (input) {
-    if (input == null) return "";
-    var output = "",
-        current,c,
-        status=0,
-        i = 0,
-        f = LZString._f;
-    
-    while (i < input.length) {
-      c = input.charCodeAt(i) - 32;
-      
-      switch (status++) {
-        case 0:
-          current = c << 1;
-          break;
-        case 1:
-          output += f(current | (c >> 14));
-          current = (c&16383) << 2;
-          break;
-        case 2:
-          output += f(current | (c >> 13));
-          current = (c&8191) << 3;
-          break;
-        case 3:
-          output += f(current | (c >> 12));
-          current = (c&4095) << 4;
-          break;
-        case 4:
-          output += f(current | (c >> 11));
-          current = (c&2047) << 5;
-          break;
-        case 5:
-          output += f(current | (c >> 10));
-          current = (c&1023) << 6;
-          break;
-        case 6:
-          output += f(current | (c >> 9));
-          current = (c&511) << 7;
-          break;
-        case 7:
-          output += f(current | (c >> 8));
-          current = (c&255) << 8;
-          break;
-        case 8:
-          output += f(current | (c >> 7));
-          current = (c&127) << 9;
-          break;
-        case 9:
-          output += f(current | (c >> 6));
-          current = (c&63) << 10;
-          break;
-        case 10:
-          output += f(current | (c >> 5));
-          current = (c&31) << 11;
-          break;
-        case 11:
-          output += f(current | (c >> 4));
-          current = (c&15) << 12;
-          break;
-        case 12:
-          output += f(current | (c >> 3));
-          current = (c&7) << 13;
-          break;
-        case 13:
-          output += f(current | (c >> 2));
-          current = (c&3) << 14;
-          break;
-        case 14:
-          output += f(current | (c >> 1));
-          current = (c&1) << 15;
-          break;
-        case 15:
-          output += f(current | c);
-          status=0;
-          break;
-      }
-      
-      
-      i++;
-    }
-    
-    return LZString.decompress(output);
-    //return output;
-    
+    return LZString._compress(input, 15, function(a){return String.fromCharCode(a+32);}) + " ";
   },
 
+  decompressFromUTF16: function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
+    return LZString._decompress(compressed.length, 16384, function(index) { return compressed.charCodeAt(index) - 32; });
+  },
 
   //compress into uint8array (UCS-2 big endian format)
   compressToUint8Array: function (uncompressed) {
-
     var compressed = LZString.compress(uncompressed);
     var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
 
@@ -244,18 +131,14 @@ var LZString = {
       buf[i*2+1] = current_value % 256;
     }
     return buf;
-
   },
 
   //decompress from uint8array (UCS-2 big endian format)
   decompressFromUint8Array:function (compressed) {
-
     if (compressed===null || compressed===undefined){
         return LZString.decompress(compressed);
     } else {
-
         var buf=new Array(compressed.length/2); // 2 bytes per character
-
         for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
           buf[i]=compressed[i*2]*256+compressed[i*2+1];
         }
@@ -280,7 +163,6 @@ var LZString = {
     if (compressed) compressed = compressed.replace(/$/g,"=").replace(/-/g,"/");
     return LZString.decompressFromBase64(compressed);
   },
-
 
   compress: function (uncompressed) {
     return LZString._compress(uncompressed, 16, function(a){return String.fromCharCode(a);});
