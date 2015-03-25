@@ -97,6 +97,7 @@ var LZString = {
   decompressFromEncodedURIComponent:function (input) {
     if (input == null) return "";
     if (input == "") return null;
+    input = input.replace(/ /g, "+");
     return LZString._decompress(input.length, 32, function(index) { return LZString._getBaseValue(LZString._keyStrUriSafe, input.charAt(index)); });
   },
 
