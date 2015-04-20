@@ -1,6 +1,6 @@
 {
   "name": "lz-string",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "license": "WTFPL",
   "description": "LZ-based compression algorithm",
   "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
