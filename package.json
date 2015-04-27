@@ -27,4 +27,11 @@
     "test": "tests"
   },
   "author": "pieroxy <pieroxy@pieroxy.net>"
+  "npmName": "lz-string",
+  "npmFileMap": [{
+    "basePath": "/libs/",
+    "files": [
+      "*.js"
+    ]
+  }],
 }
