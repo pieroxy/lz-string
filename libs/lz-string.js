@@ -6,7 +6,7 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.4.3
+// LZ-based compression algorithm, version 1.4.4
 var LZString = (function() {
 
 // private property
@@ -19,7 +19,7 @@ function getBaseValue(alphabet, character) {
   if (!baseReverseDic[alphabet]) {
     baseReverseDic[alphabet] = {};
     for (var i=0 ; i<alphabet.length ; i++) {
-      baseReverseDic[alphabet][alphabet[i]] = i;
+      baseReverseDic[alphabet][alphabet.charAt(i)] = i;
     }
   }
   return baseReverseDic[alphabet][character];
@@ -123,7 +123,7 @@ var LZString = {
         ii;
 
     for (ii = 0; ii < uncompressed.length; ii += 1) {
-      context_c = uncompressed[ii];
+      context_c = uncompressed.charAt(ii);
       if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
         context_dictionary[context_c] = context_dictSize++;
         context_dictionaryToCreate[context_c] = true;
@@ -470,7 +470,7 @@ var LZString = {
         entry = dictionary[c];
       } else {
         if (c === dictSize) {
-          entry = w + w[0];
+          entry = w + w.charAt(0);
         } else {
           return null;
         }
@@ -478,7 +478,7 @@ var LZString = {
       result.push(entry);
 
       // Add w+entry[0] to the dictionary.
-      dictionary[dictSize++] = w + entry[0];
+      dictionary[dictSize++] = w + entry.charAt(0);
       enlargeIn--;
 
       w = entry;

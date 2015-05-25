@@ -1,6 +1,6 @@
 {
   "name": "lz-string",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "main": "libs/lz-string.min.js",
   "ignore": [
     "bin/",
