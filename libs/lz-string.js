@@ -138,35 +138,35 @@ return {
         context_data_position++;
       }
     },
-      func2 = function(iterate){
-        for (var i = 0; i < iterate; i++) {
-          context_data_val = (context_data_val << 1) | (value & 1);
+    func2 = function(iterate){
+      for (var i = 0; i < iterate; i++) {
+        context_data_val = (context_data_val << 1) | (value & 1);
+        func1();
+        value >>= 1;
+      }
+    },
+    func3 = function(){
+      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+        var isLessThan256 = context_w.charCodeAt(0) < 256;
+        if(!isLessThan256) value = 1;
+        for (var i = 0; i < context_numBits; i++) {
+          context_data_val = isLessThan256 ? (context_data_val << 1) : (context_data_val << 1) | value;
           func1();
-          value >>= 1;
+          if(!isLessThan256) value = 0;
         }
-      },
-      func3 = function(){
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
-          var isLessThan256 = context_w.charCodeAt(0) < 256;
-          if(!isLessThan256) value = 1;
-          for (var i = 0; i < context_numBits; i++) {
-            context_data_val = isLessThan256 ? (context_data_val << 1) : (context_data_val << 1) | value;
-            func1();
-            if(!isLessThan256) value = 0;
-          }
-          value = context_w.charCodeAt(0);
-          func2(isLessThan256 ? 8 : 16);
-          context_enlargeIn = --context_enlargeIn || Math.pow(2, context_numBits++);
-          delete context_dictionaryToCreate[context_w];
-        } else {
-          value = context_dictionary[context_w];
-          func2(context_numBits);
-        }
+        value = context_w.charCodeAt(0);
+        func2(isLessThan256 ? 8 : 16);
         context_enlargeIn = --context_enlargeIn || Math.pow(2, context_numBits++);
-        // Add wc to the dictionary.
-        context_dictionary[context_wc] = context_dictSize++;
-        context_w = String(context_c);
-      };
+        delete context_dictionaryToCreate[context_w];
+      } else {
+        value = context_dictionary[context_w];
+        func2(context_numBits);
+      }
+      context_enlargeIn = --context_enlargeIn || Math.pow(2, context_numBits++);
+      // Add wc to the dictionary.
+      context_dictionary[context_wc] = context_dictSize++;
+      context_w = String(context_c);
+    };
 
     for (var i = 0; i < uncompressed.length; i++) {
       context_c = uncompressed.charAt(i);
