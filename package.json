@@ -11,6 +11,7 @@
     "string"
   ],
   "main": "libs/lz-string.js",
+  "typings": "typings/lz-string.d.ts",
   "bin": {
     "lz-string": "bin/bin.js"
   },

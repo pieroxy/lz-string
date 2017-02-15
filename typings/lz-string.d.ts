@@ -1,16 +1,14 @@
-declare module LZString {
-  function compressToBase64(input: string): string;
-  function decompressFromBase64(input: string): string;
+export function compressToBase64(input: string): string;
+export function decompressFromBase64(input: string): string;
 
-  function compressToUTF16(input: string): string;
-  function decompressFromUTF16(compressed: string): string;
+export function compressToUTF16(input: string): string;
+export function decompressFromUTF16(compressed: string): string;
 
-  function compressToUint8Array(uncompressed: string): Uint8Array;
-  function decompressFromUint8Array(compressed: Uint8Array): string;
+export function compressToUint8Array(uncompressed: string): Uint8Array;
+export function decompressFromUint8Array(compressed: Uint8Array): string;
 
-  function compressToEncodedURIComponent(input: string): string;
-  function decompressFromEncodedURIComponent(compressed: string): string;
+export function compressToEncodedURIComponent(input: string): string;
+export function decompressFromEncodedURIComponent(compressed: string): string;
 
-  function compress(input: string): string;
-  function decompress(compressed: string): string;
-}
+export function compress(input: string): string;
+export function decompress(compressed: string): string;
