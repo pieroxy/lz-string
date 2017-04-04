@@ -7,6 +7,10 @@ Files have changed locations and name since a recent release. The new release fi
 
 Sorry about the mess in other repos. This will not happen again.
 
+## Note on server side
+
+If you are using one of the ports of lz-string to decode on the server what was encoded in the browser, you might want to use version 1.3.7 as the version 1.3.8 introduced a slight change in the encoding. While the JS versions are completely cross-compatible, the PHP, Go, ... versions might not be as forgiving.
+
 ## Install via [npm](https://npmjs.org/)
 
 ```shell
