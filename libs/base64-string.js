@@ -7,18 +7,18 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/index.html
 //
-// Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...) 
+// Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...)
 // version 1.4.1
 var Base64String = {
-  
+
   compressToUTF16 : function (input) {
     var output = [],
         i,c,
         current,
         status = 0;
-    
+
     input = this.compress(input);
-    
+
     for (i=0 ; i<input.length ; i++) {
       c = input.charCodeAt(i);
       switch (status++) {
@@ -87,17 +87,17 @@ var Base64String = {
     output.push(String.fromCharCode(current + 32));
     return output.join('');
   },
-  
+
 
   decompressFromUTF16 : function (input) {
     var output = [],
         current,c,
         status=0,
         i = 0;
-    
+
     while (i < input.length) {
       c = input.charCodeAt(i) - 32;
-      
+
       switch (status++) {
         case 0:
           current = c << 1;
@@ -163,90 +163,100 @@ var Base64String = {
           status=0;
           break;
       }
-      
-      
+
+
       i++;
     }
-    
+
     return this.decompress(output.join(''));
     //return output;
-    
+
   },
 
 
   // private property
   _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-  
+  _keyStrDec : this._keyStr.split(''),
+  _keyStrEnc : (function (){
+    // IIFE to create a dictionary
+    var dict = {}
+    var i = this._keyStrDec.length;
+    while(i--){
+      dict[this._keyStrDec[i]] = i;
+    }
+    return dict;
+  })(),
+
   decompress : function (input) {
     var output = [];
     var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
     var i = 1;
     var odd = input.charCodeAt(0) >> 8;
-    
+
     while (i < input.length*2 && (i < input.length*2-1 || odd==0)) {
-      
+
       if (i%2==0) {
         chr1 = input.charCodeAt(i/2) >> 8;
         chr2 = input.charCodeAt(i/2) & 255;
-        if (i/2+1 < input.length) 
+        if (i/2+1 < input.length)
           chr3 = input.charCodeAt(i/2+1) >> 8;
-        else 
+        else
           chr3 = NaN;
       } else {
         chr1 = input.charCodeAt((i-1)/2) & 255;
         if ((i+1)/2 < input.length) {
           chr2 = input.charCodeAt((i+1)/2) >> 8;
           chr3 = input.charCodeAt((i+1)/2) & 255;
-        } else 
+        } else
           chr2=chr3=NaN;
       }
       i+=3;
-      
+
       enc1 = chr1 >> 2;
       enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
       enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
       enc4 = chr3 & 63;
-      
+
       if (isNaN(chr2) || (i==input.length*2+1 && odd)) {
         enc3 = enc4 = 64;
       } else if (isNaN(chr3) || (i==input.length*2 && odd)) {
         enc4 = 64;
       }
-      
-      output.push(this._keyStr.charAt(enc1));
-      output.push(this._keyStr.charAt(enc2));
-      output.push(this._keyStr.charAt(enc3));
-      output.push(this._keyStr.charAt(enc4));
+
+      output.push(this._keyStrDec[enc1]);
+      output.push(this._keyStrDec[enc2]);
+      output.push(this._keyStrDec[enc3]);
+      output.push(this._keyStrDec[enc4]);
     }
-    
+
     return output.join('');
   },
-  
+
   compress : function (input) {
     var output = [],
-        ol = 1, 
+        ol = 1,
         output_,
         chr1, chr2, chr3,
         enc1, enc2, enc3, enc4,
         i = 0, flush=false;
-    
+
     input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    
+
     while (i < input.length) {
-      
-      enc1 = this._keyStr.indexOf(input.charAt(i++));
-      enc2 = this._keyStr.indexOf(input.charAt(i++));
-      enc3 = this._keyStr.indexOf(input.charAt(i++));
-      enc4 = this._keyStr.indexOf(input.charAt(i++));
-      
+
+      enc1 = this._keyStrEnc[input.charAt(i++)];
+      enc2 = this._keyStrEnc[input.charAt(i++)];
+      enc3 = this._keyStrEnc[input.charAt(i++)];
+      enc4 = this._keyStrEnc[input.charAt(i++)];
+
       chr1 = (enc1 << 2) | (enc2 >> 4);
       chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
       chr3 = ((enc3 & 3) << 6) | enc4;
-      
+
       if (ol%2==0) {
         output_ = chr1 << 8;
         flush = true;
-        
+
         if (enc3 != 64) {
           output.push(String.fromCharCode(output_ | chr2));
           flush = false;
@@ -258,7 +268,7 @@ var Base64String = {
       } else {
         output.push(String.fromCharCode(output_ | chr1));
         flush = false;
-        
+
         if (enc3 != 64) {
           output_ = chr2 << 8;
           flush = true;
@@ -270,7 +280,7 @@ var Base64String = {
       }
       ol+=3;
     }
-    
+
     if (flush) {
       output.push(String.fromCharCode(output_));
       output = output.join('');
@@ -278,8 +288,8 @@ var Base64String = {
     } else {
       output = output.join('');
     }
-    
+
     return output;
-    
+
   }
 }
