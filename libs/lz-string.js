@@ -15,14 +15,14 @@ var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567
 var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
 var baseReverseDic = {};
 
-function getBaseValue(alphabet, character) {
+function getReverseDic(alphabet){
   if (!baseReverseDic[alphabet]) {
     baseReverseDic[alphabet] = {};
     for (var i=0 ; i<alphabet.length ; i++) {
       baseReverseDic[alphabet][alphabet.charAt(i)] = i;
     }
   }
-  return baseReverseDic[alphabet][character];
+  return baseReverseDic[alphabet];
 }
 
 var LZString = {
@@ -41,7 +41,8 @@ var LZString = {
   decompressFromBase64 : function (input) {
     if (input == null) return "";
     if (input == "") return null;
-    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrBase64, input.charAt(index)); });
+    var reverseDict = getReverseDic(keyStrBase64);
+    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charAt(index)]; });
   },
 
   compressToUTF16 : function (input) {
@@ -100,7 +101,8 @@ var LZString = {
     if (input == null) return "";
     if (input == "") return null;
     input = input.replace(/ /g, "+");
-    return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
+    var reverseDict = getReverseDic(keyStrUriSafe);
+    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charAt(index)]; });
   },
 
   compress: function (uncompressed) {
