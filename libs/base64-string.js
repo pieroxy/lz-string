@@ -9,6 +9,19 @@
 //
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...)
 // version 1.4.1
+
+var Base64String = (function(){
+var f = String.fromCharCode;
+var keyStrEnc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
+var keyStrDec = (function (){
+    var dict = {}
+    var i = keyStrEnc.length;
+    while(i--){
+      dict[keyStrEnc[i]] = i;
+    }
+    return dict;
+  })();
+
 var Base64String = {
 
   compressToUTF16 : function (input) {
@@ -23,68 +36,68 @@ var Base64String = {
       c = input.charCodeAt(i);
       switch (status++) {
         case 0:
-          output.push(String.fromCharCode((c >> 1)+32));
+          output.push(f((c >> 1)+32));
           current = (c & 1) << 14;
           break;
         case 1:
-          output.push(String.fromCharCode((current + (c >> 2))+32));
+          output.push(f((current + (c >> 2))+32));
           current = (c & 3) << 13;
           break;
         case 2:
-          output.push(String.fromCharCode((current + (c >> 3))+32));
+          output.push(f((current + (c >> 3))+32));
           current = (c & 7) << 12;
           break;
         case 3:
-          output.push(String.fromCharCode((current + (c >> 4))+32));
+          output.push(f((current + (c >> 4))+32));
           current = (c & 15) << 11;
           break;
         case 4:
-          output.push(String.fromCharCode((current + (c >> 5))+32));
+          output.push(f((current + (c >> 5))+32));
           current = (c & 31) << 10;
           break;
         case 5:
-          output.push(String.fromCharCode((current + (c >> 6))+32));
+          output.push(f((current + (c >> 6))+32));
           current = (c & 63) << 9;
           break;
         case 6:
-          output.push(String.fromCharCode((current + (c >> 7))+32));
+          output.push(f((current + (c >> 7))+32));
           current = (c & 127) << 8;
           break;
         case 7:
-          output.push(String.fromCharCode((current + (c >> 8))+32));
+          output.push(f((current + (c >> 8))+32));
           current = (c & 255) << 7;
           break;
         case 8:
-          output.push(String.fromCharCode((current + (c >> 9))+32));
+          output.push(f((current + (c >> 9))+32));
           current = (c & 511) << 6;
           break;
         case 9:
-          output.push(String.fromCharCode((current + (c >> 10))+32));
+          output.push(f((current + (c >> 10))+32));
           current = (c & 1023) << 5;
           break;
         case 10:
-          output.push(String.fromCharCode((current + (c >> 11))+32));
+          output.push(f((current + (c >> 11))+32));
           current = (c & 2047) << 4;
           break;
         case 11:
-          output.push(String.fromCharCode((current + (c >> 12))+32));
+          output.push(f((current + (c >> 12))+32));
           current = (c & 4095) << 3;
           break;
         case 12:
-          output.push(String.fromCharCode((current + (c >> 13))+32));
+          output.push(f((current + (c >> 13))+32));
           current = (c & 8191) << 2;
           break;
         case 13:
-          output.push(String.fromCharCode((current + (c >> 14))+32));
+          output.push(f((current + (c >> 14))+32));
           current = (c & 16383) << 1;
           break;
         case 14:
-          output.push(String.fromCharCode((current + (c >> 15))+32, (c & 32767)+32));
+          output.push(f((current + (c >> 15))+32, (c & 32767)+32));
           status = 0;
           break;
       }
     }
-    output.push(String.fromCharCode(current + 32));
+    output.push(f(current + 32));
     return output.join('');
   },
 
@@ -103,63 +116,63 @@ var Base64String = {
           current = c << 1;
           break;
         case 1:
-          output.push(String.fromCharCode(current | (c >> 14)));
+          output.push(f(current | (c >> 14)));
           current = (c&16383) << 2;
           break;
         case 2:
-          output.push(String.fromCharCode(current | (c >> 13)));
+          output.push(f(current | (c >> 13)));
           current = (c&8191) << 3;
           break;
         case 3:
-          output.push(String.fromCharCode(current | (c >> 12)));
+          output.push(f(current | (c >> 12)));
           current = (c&4095) << 4;
           break;
         case 4:
-          output.push(String.fromCharCode(current | (c >> 11)));
+          output.push(f(current | (c >> 11)));
           current = (c&2047) << 5;
           break;
         case 5:
-          output.push(String.fromCharCode(current | (c >> 10)));
+          output.push(f(current | (c >> 10)));
           current = (c&1023) << 6;
           break;
         case 6:
-          output.push(String.fromCharCode(current | (c >> 9)));
+          output.push(f(current | (c >> 9)));
           current = (c&511) << 7;
           break;
         case 7:
-          output.push(String.fromCharCode(current | (c >> 8)));
+          output.push(f(current | (c >> 8)));
           current = (c&255) << 8;
           break;
         case 8:
-          output.push(String.fromCharCode(current | (c >> 7)));
+          output.push(f(current | (c >> 7)));
           current = (c&127) << 9;
           break;
         case 9:
-          output.push(String.fromCharCode(current | (c >> 6)));
+          output.push(f(current | (c >> 6)));
           current = (c&63) << 10;
           break;
         case 10:
-          output.push(String.fromCharCode(current | (c >> 5)));
+          output.push(f(current | (c >> 5)));
           current = (c&31) << 11;
           break;
         case 11:
-          output.push(String.fromCharCode(current | (c >> 4)));
+          output.push(f(current | (c >> 4)));
           current = (c&15) << 12;
           break;
         case 12:
-          output.push(String.fromCharCode(current | (c >> 3)));
+          output.push(f(current | (c >> 3)));
           current = (c&7) << 13;
           break;
         case 13:
-          output.push(String.fromCharCode(current | (c >> 2)));
+          output.push(f(current | (c >> 2)));
           current = (c&3) << 14;
           break;
         case 14:
-          output.push(String.fromCharCode(current | (c >> 1)));
+          output.push(f(current | (c >> 1)));
           current = (c&1) << 15;
           break;
         case 15:
-          output.push(String.fromCharCode(current | c));
+          output.push(f(current | c));
           status=0;
           break;
       }
@@ -172,20 +185,6 @@ var Base64String = {
     //return output;
 
   },
-
-
-  // private property
-  _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-  _keyStrDec : this._keyStr.split(''),
-  _keyStrEnc : (function (){
-    // IIFE to create a dictionary
-    var dict = {}
-    var i = this._keyStrDec.length;
-    while(i--){
-      dict[this._keyStrDec[i]] = i;
-    }
-    return dict;
-  })(),
 
   decompress : function (input) {
     var output = [];
@@ -223,10 +222,10 @@ var Base64String = {
         enc4 = 64;
       }
 
-      output.push(this._keyStrDec[enc1]);
-      output.push(this._keyStrDec[enc2]);
-      output.push(this._keyStrDec[enc3]);
-      output.push(this._keyStrDec[enc4]);
+      output.push(keyStrDec[enc1]);
+      output.push(keyStrDec[enc2]);
+      output.push(keyStrDec[enc3]);
+      output.push(keyStrDec[enc4]);
     }
 
     return output.join('');
@@ -244,10 +243,10 @@ var Base64String = {
 
     while (i < input.length) {
 
-      enc1 = this._keyStrEnc[input.charAt(i++)];
-      enc2 = this._keyStrEnc[input.charAt(i++)];
-      enc3 = this._keyStrEnc[input.charAt(i++)];
-      enc4 = this._keyStrEnc[input.charAt(i++)];
+      enc1 = keyStrEnc[input.charAt(i++)];
+      enc2 = keyStrEnc[input.charAt(i++)];
+      enc3 = keyStrEnc[input.charAt(i++)];
+      enc4 = keyStrEnc[input.charAt(i++)];
 
       chr1 = (enc1 << 2) | (enc2 >> 4);
       chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -258,7 +257,7 @@ var Base64String = {
         flush = true;
 
         if (enc3 != 64) {
-          output.push(String.fromCharCode(output_ | chr2));
+          output.push(f(output_ | chr2));
           flush = false;
         }
         if (enc4 != 64) {
@@ -266,7 +265,7 @@ var Base64String = {
           flush = true;
         }
       } else {
-        output.push(String.fromCharCode(output_ | chr1));
+        output.push(f(output_ | chr1));
         flush = false;
 
         if (enc3 != 64) {
@@ -274,7 +273,7 @@ var Base64String = {
           flush = true;
         }
         if (enc4 != 64) {
-          output.push(String.fromCharCode(output_ | chr3));
+          output.push(f(output_ | chr3));
           flush = false;
         }
       }
@@ -282,14 +281,24 @@ var Base64String = {
     }
 
     if (flush) {
-      output.push(String.fromCharCode(output_));
+      output.push(f(output_));
       output = output.join('');
-      output = String.fromCharCode(output.charCodeAt(0)|256) + output.substring(1);
+      output = f(output.charCodeAt(0)|256) + output.substring(1);
     } else {
       output = output.join('');
     }
 
     return output;
 
-  }
+  },
+
+  compressToArray : function (input) {
+
+  },
+
+  decompressToArray : function (input) {
+
+  },
 }
+return Base64String;
+})()
