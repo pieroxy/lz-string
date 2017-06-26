@@ -11,15 +11,15 @@ var LZString = (function() {
 
 // private property
 var f = String.fromCharCode;
-var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
+var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split('');
 var baseReverseDic = {};
 
-function getReverseDic(alphabet){
+function getReverseDict(alphabet){
   if (!baseReverseDic[alphabet]) {
     baseReverseDic[alphabet] = {};
     for (var i=0 ; i<alphabet.length ; i++) {
-      baseReverseDic[alphabet][alphabet.charAt(i)] = i;
+      baseReverseDic[alphabet][alphabet[i]] = i;
     }
   }
   return baseReverseDic[alphabet];
@@ -28,7 +28,7 @@ function getReverseDic(alphabet){
 var LZString = {
   compressToBase64 : function (input) {
     if (input == null) return "";
-    var res = LZString._compress(input, 6, function(a){return keyStrBase64.charAt(a);});
+    var res = LZString._compress(input, 6, function(a){return keyStrBase64[a];});
     switch (res.length % 4) { // To produce valid Base64
     default: // When could this happen ?
     case 0 : return res;
@@ -41,7 +41,7 @@ var LZString = {
   decompressFromBase64 : function (input) {
     if (input == null) return "";
     if (input == "") return null;
-    var reverseDict = getReverseDic(keyStrBase64);
+    var reverseDict = getReverseDict(keyStrBase64);
     return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charAt(index)]; });
   },
 
@@ -93,7 +93,7 @@ var LZString = {
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (input) {
     if (input == null) return "";
-    return LZString._compress(input, 6, function(a){return keyStrUriSafe.charAt(a);});
+    return LZString._compress(input, 6, function(a){return keyStrUriSafe[a];});
   },
 
   //decompress from an output of compressToEncodedURIComponent
@@ -101,7 +101,7 @@ var LZString = {
     if (input == null) return "";
     if (input == "") return null;
     input = input.replace(/ /g, "+");
-    var reverseDict = getReverseDic(keyStrUriSafe);
+    var reverseDict = getReverseDict(keyStrUriSafe);
     return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charAt(index)]; });
   },
 
