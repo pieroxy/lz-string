@@ -12,12 +12,12 @@
 
 var Base64String = (function(){
 var f = String.fromCharCode;
-var keyStrEnc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
-var keyStrDec = (function (){
-    var dict = {}
-    var i = keyStrEnc.length;
+var keyEnc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
+var keyDec = (function (){
+    var dict = {},
+        i = keyEnc.length;
     while(i--){
-      dict[keyStrEnc[i]] = i;
+      dict[keyEnc[i]] = i;
     }
     return dict;
   })();
@@ -30,10 +30,10 @@ var Base64String = {
         current,
         status = 0;
 
-    input = this.compress(input);
+    input = this.compressToArray(input);
 
     for (i=0 ; i<input.length ; i++) {
-      c = input.charCodeAt(i);
+      c = input[i].charCodeAt();
       switch (status++) {
         case 0:
           output.push(f((c >> 1)+32));
@@ -181,22 +181,22 @@ var Base64String = {
       i++;
     }
 
-    return this.decompress(output.join(''));
-    //return output;
+    return this.decompressFromArray(output);
 
   },
 
   decompress : function (input) {
-    var output = [];
-    var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    var i = 1;
-    var odd = input.charCodeAt(0) >> 8;
+    var output = [],
+        chrc, chr1, chr2, chr3,
+        i = 1,
+        odd = input.charCodeAt(0) >> 8;
 
     while (i < input.length*2 && (i < input.length*2-1 || odd==0)) {
 
       if (i%2==0) {
-        chr1 = input.charCodeAt(i/2) >> 8;
-        chr2 = input.charCodeAt(i/2) & 255;
+        chrc = input.charCodeAt(i/2);
+        chr1 = chrc >> 8;
+        chr2 = chrc & 255;
         if (i/2+1 < input.length)
           chr3 = input.charCodeAt(i/2+1) >> 8;
         else
@@ -204,34 +204,76 @@ var Base64String = {
       } else {
         chr1 = input.charCodeAt((i-1)/2) & 255;
         if ((i+1)/2 < input.length) {
-          chr2 = input.charCodeAt((i+1)/2) >> 8;
-          chr3 = input.charCodeAt((i+1)/2) & 255;
+          chrc = input.charCodeAt((i+1)/2);
+          chr2 = chrc >> 8;
+          chr3 = chrc & 255;
         } else
           chr2=chr3=NaN;
       }
       i+=3;
 
-      enc1 = chr1 >> 2;
-      enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-      enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-      enc4 = chr3 & 63;
-
-      if (isNaN(chr2) || (i==input.length*2+1 && odd)) {
-        enc3 = enc4 = 64;
-      } else if (isNaN(chr3) || (i==input.length*2 && odd)) {
-        enc4 = 64;
-      }
-
-      output.push(keyStrDec[enc1]);
-      output.push(keyStrDec[enc2]);
-      output.push(keyStrDec[enc3]);
-      output.push(keyStrDec[enc4]);
+      this._chrToOutput(i, input.length, chr1, chr2, chr3, output);
     }
 
     return output.join('');
   },
 
+  decompressFromArray : function (input) {
+    var output = [],
+        chrc, chr1, chr2, chr3,
+        i = 1,
+        odd = input[0].charCodeAt() >> 8;
+
+    while (i < input.length*2 && (i < input.length*2-1 || odd==0)) {
+
+      if (i%2==0) {
+        chrc = input[i/2].charCodeAt();
+        chr1 = chrc >> 8;
+        chr2 = chrc & 255;
+        if (i/2+1 < input.length)
+          chr3 = input[i/2+1].charCodeAt() >> 8;
+        else
+          chr3 = NaN;
+      } else {
+        chr1 = input[(i-1)/2].charCodeAt() & 255;
+        if ((i+1)/2 < input.length) {
+          chrc = input[(i+1)/2].charCodeAt()
+          chr2 = chrc >> 8;
+          chr3 = chrc & 255;
+        } else
+          chr2=chr3=NaN;
+      }
+      i+=3;
+
+      this._chrToOutput(i, input.length, chr1, chr2, chr3, output);
+    }
+
+    return output.join('');
+  },
+
+  // private function to reduce code duplication between
+  // decompress and decompressFromArray
+  _chrToOutput : function (i, length, chr1, chr2, chr3, output) {
+      var enc1 = chr1 >> 2,
+          enc2 = ((chr1 & 3) << 4) | (chr2 >> 4),
+          enc3 = ((chr2 & 15) << 2) | (chr3 >> 6),
+          enc4 = chr3 & 63;
+      if (isNaN(chr2) || (i==length*2+1 && odd)) {
+        enc3 = enc4 = 64;
+      } else if (isNaN(chr3) || (i==length*2 && odd)) {
+        enc4 = 64;
+      }
+      output.push(keyDec[enc1]);
+      output.push(keyDec[enc2]);
+      output.push(keyDec[enc3]);
+      output.push(keyDec[enc4]);
+  },
+
   compress : function (input) {
+    return this.compressToArray(input).join('');
+  },
+
+  compressToArray : function (input) {
     var output = [],
         ol = 1,
         output_,
@@ -243,10 +285,10 @@ var Base64String = {
 
     while (i < input.length) {
 
-      enc1 = keyStrEnc[input.charAt(i++)];
-      enc2 = keyStrEnc[input.charAt(i++)];
-      enc3 = keyStrEnc[input.charAt(i++)];
-      enc4 = keyStrEnc[input.charAt(i++)];
+      enc1 = keyEnc[input.charAt(i++)];
+      enc2 = keyEnc[input.charAt(i++)];
+      enc3 = keyEnc[input.charAt(i++)];
+      enc4 = keyEnc[input.charAt(i++)];
 
       chr1 = (enc1 << 2) | (enc2 >> 4);
       chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -282,23 +324,11 @@ var Base64String = {
 
     if (flush) {
       output.push(f(output_));
-      output = output.join('');
-      output = f(output.charCodeAt(0)|256) + output.substring(1);
-    } else {
-      output = output.join('');
+      output[0] = f(output[0].charCodeAt()|256);
     }
-
     return output;
-
   },
 
-  compressToArray : function (input) {
-
-  },
-
-  decompressToArray : function (input) {
-
-  },
 }
 return Base64String;
 })()
