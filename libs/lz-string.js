@@ -28,14 +28,14 @@ function getReverseDict(alphabet){
 var LZString = {
   compressToBase64 : function (input) {
     if (input == null) return "";
-    var res = LZString._compress(input, 6, function(a){return keyStrBase64[a];});
-    switch (res.length % 4) { // To produce valid Base64
-    default: // When could this happen ?
-    case 0 : return res;
-    case 1 : return res+"===";
-    case 2 : return res+"==";
-    case 3 : return res+"=";
+    var res = LZString._compressToArray(input, 6, function(a){return keyStrBase64[a];});
+    // To produce valid Base64
+    var i = res.length % 4;
+    while(i--){
+      res.push("=");
     }
+
+    return res.join('');
   },
 
   decompressFromBase64 : function (input) {
@@ -47,7 +47,9 @@ var LZString = {
 
   compressToUTF16 : function (input) {
     if (input == null) return "";
-    return LZString._compress(input, 15, function(a){return f(a+32);}) + " ";
+    var compressed = LZString._compressToArray(input, 15, function(a){return f(a+32);});
+    compressed.push(" ");
+    return compressed.join('');
   },
 
   decompressFromUTF16: function (compressed) {
@@ -58,11 +60,11 @@ var LZString = {
 
   //compress into uint8array (UCS-2 big endian format)
   compressToUint8Array: function (uncompressed) {
-    var compressed = LZString.compress(uncompressed);
+    var compressed = LZString.compressToArray(uncompressed);
     var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
 
     for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
-      var current_value = compressed.charCodeAt(i);
+      var current_value = compressed[i].charCodeAt(0);
       buf[i*2] = current_value >>> 8;
       buf[i*2+1] = current_value % 256;
     }
@@ -72,7 +74,7 @@ var LZString = {
   //decompress from uint8array (UCS-2 big endian format)
   decompressFromUint8Array:function (compressed) {
     if (compressed===null || compressed===undefined){
-        return LZString.decompress(compressed);
+        return LZString.decompressFromArray(compressed);
     } else {
         var buf=new Array(compressed.length/2); // 2 bytes per character
         for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
@@ -83,7 +85,7 @@ var LZString = {
         buf.forEach(function (c) {
           result.push(f(c));
         });
-        return LZString.decompress(result.join(''));
+        return LZString.decompressFromArray(result);
 
     }
 
@@ -93,7 +95,7 @@ var LZString = {
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (input) {
     if (input == null) return "";
-    return LZString._compress(input, 6, function(a){return keyStrUriSafe[a];});
+    return LZString._compressToArray(input, 6, function(a){return keyStrUriSafe[a];}).join('');
   },
 
   //decompress from an output of compressToEncodedURIComponent
@@ -106,10 +108,13 @@ var LZString = {
   },
 
   compress: function (uncompressed) {
-    return LZString._compress(uncompressed, 16, function(a){return f(a);});
+    return LZString.compressToArray(uncompressed).join('');
   },
-  _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
-    if (uncompressed == null) return "";
+  compressToArray: function (uncompressed){
+    return LZString._compressToArray(uncompressed, 16, function(a){return f(a);});
+  },
+  _compressToArray: function (uncompressed, bitsPerChar, getCharFromInt){
+    if (uncompressed == null) return [];
     var i, value,
         context_dictionary= {},
         context_dictionaryToCreate= {},
@@ -322,7 +327,7 @@ var LZString = {
       }
       else context_data_position++;
     }
-    return context_data.join('');
+    return context_data;
   },
 
   decompress: function (compressed) {
@@ -330,6 +335,11 @@ var LZString = {
     if (compressed == "") return null;
     return LZString._decompress(compressed.length, 32768, function(index) { return compressed.charCodeAt(index); });
   },
+
+  decompressFromArray: function (compressed) {
+    if (compressed == null) return "";
+    if (compressed.length == 0) return null;
+    return LZString._decompress(compressed.length, 32768, function(index) { return compressed[index].charCodeAt(0); });  },
 
   _decompress: function (length, resetValue, getNextValue) {
     var dictionary = [],
