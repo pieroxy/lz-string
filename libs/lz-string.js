@@ -75,20 +75,10 @@ var LZString = {
   decompressFromUint8Array:function (compressed) {
     if (compressed===null || compressed===undefined){
         return LZString.decompressFromArray(compressed);
-    } else {
-        var buf=new Array(compressed.length/2); // 2 bytes per character
-        for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
-          buf[i]=compressed[i*2]*256+compressed[i*2+1];
-        }
-
-        var result = [];
-        buf.forEach(function (c) {
-          result.push(f(c));
-        });
-        return LZString.decompressFromArray(result);
-
+    } else if (compressed.length == 0){
+      return null;
     }
-
+    return LZString._decompress(compressed.length, 128, function (index) { return compressed[index]; });
   },
 
 
