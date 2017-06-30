@@ -105,219 +105,228 @@ var LZString = {
   },
   _compressToArray: function (uncompressed, bitsPerChar, getCharFromInt){
     if (uncompressed == null) return [];
-    var i, value,
-        context_dictionary= {},
-        context_dictionaryToCreate= {},
-        context_c="",
-        context_wc="",
-        context_w="",
-        context_enlargeIn= 2, // Compensate for the first entry which should not count
-        context_dictSize= 3,
-        context_numBits= 2,
-        context_data=[],
-        context_data_val=0,
-        context_data_position=0,
-        ii;
+    var i=0, j=0, value=0,
+        dictionary={},
+        dictionaryToCreate={},
+        c=0,
+        node=dictionary,
+        node_c=0,
+        new_node={},
+        enlargeIn= 2, // Compensate for the first entry which should not count
+        dictSize= 3,
+        numBits= 2,
+        data=[],
+        data_val=0,
+        data_position=0;
 
-    for (ii = 0; ii < uncompressed.length; ii += 1) {
-      context_c = uncompressed.charAt(ii);
-      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
-        context_dictionary[context_c] = context_dictSize++;
-        context_dictionaryToCreate[context_c] = true;
+    for (j = 0; j < uncompressed.length; j++) {
+      c = uncompressed.charCodeAt(j);
+
+      // Is c a new character that needs to
+      // be stored at the root?
+      if (dictionary[c] == undefined) {
+        new_node = {};
+        new_node[-1] = dictSize++;
+        new_node[-2] = c;
+        dictionary[c] = new_node;
+        dictionaryToCreate[c] = true;
       }
 
-      context_wc = context_w + context_c;
-      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
-        context_w = context_wc;
+      new_node = node[c];
+      if (new_node) {
+        node = new_node;
       } else {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
-          if (context_w.charCodeAt(0)<256) {
-            for (i=0 ; i<context_numBits ; i++) {
-              context_data_val = (context_data_val << 1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
+        node_c = node[-2];
+        if (dictionaryToCreate[node_c]) {
+          if (node_c<256) {
+            for (i=0 ; i<numBits ; i++) {
+              data_val = (data_val << 1);
+              if (data_position == bitsPerChar-1) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
               } else {
-                context_data_position++;
+                data_position++;
               }
             }
-            value = context_w.charCodeAt(0);
+            value = node_c;
             for (i=0 ; i<8 ; i++) {
-              context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
+              data_val = (data_val << 1) | (value&1);
+              if (data_position == bitsPerChar-1) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
               } else {
-                context_data_position++;
+                data_position++;
               }
-              value = value >> 1;
+              value >>= 1;
             }
           } else {
             value = 1;
-            for (i=0 ; i<context_numBits ; i++) {
-              context_data_val = (context_data_val << 1) | value;
-              if (context_data_position ==bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
+            for (i=0 ; i<numBits ; i++) {
+              data_val = (data_val << 1) | value;
+              if (data_position ==bitsPerChar-1) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
               } else {
-                context_data_position++;
+                data_position++;
               }
               value = 0;
             }
-            value = context_w.charCodeAt(0);
+            value = node_c;
             for (i=0 ; i<16 ; i++) {
-              context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
+              data_val = (data_val << 1) | (value&1);
+              if (data_position == bitsPerChar-1) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
               } else {
-                context_data_position++;
+                data_position++;
               }
-              value = value >> 1;
+              value >>= 1;
             }
           }
-          context_enlargeIn--;
-          if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
-            context_numBits++;
+          enlargeIn--;
+          if (enlargeIn == 0) {
+            enlargeIn = Math.pow(2, numBits);
+            numBits++;
           }
-          delete context_dictionaryToCreate[context_w];
+          dictionaryToCreate[node_c] = false;
         } else {
-          value = context_dictionary[context_w];
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
+          value = node[-1];
+          for (i=0 ; i<numBits ; i++) {
+            data_val = (data_val << 1) | (value&1);
+            if (data_position == bitsPerChar-1) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
             } else {
-              context_data_position++;
+              data_position++;
             }
-            value = value >> 1;
+            value >>= 1;
           }
-
-
         }
-        context_enlargeIn--;
-        if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
-          context_numBits++;
+        enlargeIn--;
+        if (enlargeIn == 0) {
+          enlargeIn = Math.pow(2, numBits);
+          numBits++;
         }
-        // Add wc to the dictionary.
-        context_dictionary[context_wc] = context_dictSize++;
-        context_w = String(context_c);
+        // Add prefix to the dictionary.
+        new_node = {};
+        new_node[-1] = dictSize++;
+        new_node[-2] = c;
+        node[c] = new_node;
+        node = dictionary[c];
       }
     }
 
-    // Output the code for w.
-    if (context_w !== "") {
-      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
-        if (context_w.charCodeAt(0)<256) {
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
+    // Output the code for node.
+    if (node !== undefined) {
+      node_c = node[-2];
+      if (dictionaryToCreate[node_c]) {
+        if (node_c<256) {
+          for (i=0 ; i<numBits ; i++) {
+            data_val = (data_val << 1);
+            if (data_position == bitsPerChar-1) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
             } else {
-              context_data_position++;
+              data_position++;
             }
           }
-          value = context_w.charCodeAt(0);
+          value = node_c;
           for (i=0 ; i<8 ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
+            data_val = (data_val << 1) | (value&1);
+            if (data_position == bitsPerChar-1) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
             } else {
-              context_data_position++;
+              data_position++;
             }
             value = value >> 1;
           }
         } else {
           value = 1;
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1) | value;
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
+          for (i=0 ; i<numBits ; i++) {
+            data_val = (data_val << 1) | value;
+            if (data_position == bitsPerChar-1) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
             } else {
-              context_data_position++;
+              data_position++;
             }
             value = 0;
           }
-          value = context_w.charCodeAt(0);
+          value = node_c;
           for (i=0 ; i<16 ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
+            data_val = (data_val << 1) | (value&1);
+            if (data_position == bitsPerChar-1) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
             } else {
-              context_data_position++;
+              data_position++;
             }
             value = value >> 1;
           }
         }
-        context_enlargeIn--;
-        if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
-          context_numBits++;
+        enlargeIn--;
+        if (enlargeIn == 0) {
+          enlargeIn = Math.pow(2, numBits);
+          numBits++;
         }
-        delete context_dictionaryToCreate[context_w];
+        dictionaryToCreate[node_c] = false;
       } else {
-        value = context_dictionary[context_w];
-        for (i=0 ; i<context_numBits ; i++) {
-          context_data_val = (context_data_val << 1) | (value&1);
-          if (context_data_position == bitsPerChar-1) {
-            context_data_position = 0;
-            context_data.push(getCharFromInt(context_data_val));
-            context_data_val = 0;
+        value = node[-1];
+        for (i=0 ; i<numBits ; i++) {
+          data_val = (data_val << 1) | (value&1);
+          if (data_position == bitsPerChar-1) {
+            data_position = 0;
+            data.push(getCharFromInt(data_val));
+            data_val = 0;
           } else {
-            context_data_position++;
+            data_position++;
           }
-          value = value >> 1;
+          value >>= 1;
         }
 
 
       }
-      context_enlargeIn--;
-      if (context_enlargeIn == 0) {
-        context_enlargeIn = Math.pow(2, context_numBits);
-        context_numBits++;
+      enlargeIn--;
+      if (enlargeIn == 0) {
+        enlargeIn = Math.pow(2, numBits);
+        numBits++;
       }
     }
 
     // Mark the end of the stream
     value = 2;
-    for (i=0 ; i<context_numBits ; i++) {
-      context_data_val = (context_data_val << 1) | (value&1);
-      if (context_data_position == bitsPerChar-1) {
-        context_data_position = 0;
-        context_data.push(getCharFromInt(context_data_val));
-        context_data_val = 0;
+    for (i=0 ; i<numBits ; i++) {
+      data_val = (data_val << 1) | (value&1);
+      if (data_position == bitsPerChar-1) {
+        data_position = 0;
+        data.push(getCharFromInt(data_val));
+        data_val = 0;
       } else {
-        context_data_position++;
+        data_position++;
       }
-      value = value >> 1;
+      value >>= 1;
     }
 
     // Flush the last char
     while (true) {
-      context_data_val = (context_data_val << 1);
-      if (context_data_position == bitsPerChar-1) {
-        context_data.push(getCharFromInt(context_data_val));
+      data_val = (data_val << 1);
+      if (data_position == bitsPerChar-1) {
+        data.push(getCharFromInt(data_val));
         break;
       }
-      else context_data_position++;
+      else data_position++;
     }
-    return context_data;
+    return data;
   },
 
   decompress: function (compressed) {
