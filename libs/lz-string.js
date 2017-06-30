@@ -11,15 +11,15 @@ var LZString = (function() {
 
 // private property
 var f = String.fromCharCode;
-var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
-var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split('');
+var Base64CharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
+var UriSafeCharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split('');
 var baseReverseDic = {};
 
 function getReverseDict(alphabet){
   if (!baseReverseDic[alphabet]) {
     baseReverseDic[alphabet] = {};
     for (var i=0 ; i<alphabet.length ; i++) {
-      baseReverseDic[alphabet][alphabet[i]] = i;
+      baseReverseDic[alphabet][alphabet[i].charCodeAt(0)] = i;
     }
   }
   return baseReverseDic[alphabet];
@@ -28,7 +28,7 @@ function getReverseDict(alphabet){
 var LZString = {
   compressToBase64 : function (input) {
     if (input == null) return "";
-    var res = LZString._compressToArray(input, 6, function(a){return keyStrBase64[a];});
+    var res = LZString._compressToArray(input, 6, function(a){return Base64CharArray[a];});
     // To produce valid Base64
     var i = res.length % 4;
     while(i--){
@@ -41,8 +41,8 @@ var LZString = {
   decompressFromBase64 : function (input) {
     if (input == null) return "";
     if (input == "") return null;
-    var reverseDict = getReverseDict(keyStrBase64);
-    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charAt(index)]; });
+    var reverseDict = getReverseDict(Base64CharArray);
+    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charCodeAt(index)]; });
   },
 
   compressToUTF16 : function (input) {
@@ -66,7 +66,7 @@ var LZString = {
     for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
       var current_value = compressed[i].charCodeAt(0);
       buf[i*2] = current_value >>> 8;
-      buf[i*2+1] = current_value % 256;
+      buf[i*2+1] = current_value & 0xFF;
     }
     return buf;
   },
@@ -85,7 +85,7 @@ var LZString = {
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (input) {
     if (input == null) return "";
-    return LZString._compressToArray(input, 6, function(a){return keyStrUriSafe[a];}).join('');
+    return LZString._compressToArray(input, 6, function(a){return UriSafeCharArray[a];}).join('');
   },
 
   //decompress from an output of compressToEncodedURIComponent
@@ -93,8 +93,8 @@ var LZString = {
     if (input == null) return "";
     if (input == "") return null;
     input = input.replace(/ /g, "+");
-    var reverseDict = getReverseDict(keyStrUriSafe);
-    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charAt(index)]; });
+    var reverseDict = getReverseDict(UriSafeCharArray);
+    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charCodeAt(index)]; });
   },
 
   compress: function (uncompressed) {
