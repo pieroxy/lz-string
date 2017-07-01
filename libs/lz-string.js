@@ -109,6 +109,7 @@ var LZString = {
         dictionary={},
         dictionaryToCreate={},
         c=0,
+        c0=2,
         node=dictionary,
         node_c=0,
         new_node={},
@@ -121,22 +122,22 @@ var LZString = {
 
     for (j = 0; j < uncompressed.length; j++) {
       c = uncompressed.charCodeAt(j);
-
+      c0 = c+2;
       // Is c a new character that needs to
       // be stored at the root?
-      if (dictionary[c] == undefined) {
+      if (dictionary[c0] == undefined) {
         new_node = {};
-        new_node[-1] = dictSize++;
-        new_node[-2] = c;
-        dictionary[c] = new_node;
+        new_node[0] = dictSize++;
+        new_node[1] = c;
+        dictionary[c0] = new_node;
         dictionaryToCreate[c] = true;
       }
 
-      new_node = node[c];
+      new_node = node[c0];
       if (new_node) {
         node = new_node;
       } else {
-        node_c = node[-2];
+        node_c = node[1];
         if (dictionaryToCreate[node_c]) {
           if (node_c<256) {
             for (i=0 ; i<numBits ; i++) {
@@ -194,7 +195,7 @@ var LZString = {
           }
           dictionaryToCreate[node_c] = false;
         } else {
-          value = node[-1];
+          value = node[0];
           for (i=0 ; i<numBits ; i++) {
             data_val = (data_val << 1) | (value&1);
             if (data_position == bitsPerChar-1) {
@@ -214,16 +215,16 @@ var LZString = {
         }
         // Add prefix to the dictionary.
         new_node = {};
-        new_node[-1] = dictSize++;
-        new_node[-2] = c;
-        node[c] = new_node;
-        node = dictionary[c];
+        new_node[0] = dictSize++;
+        new_node[1] = c;
+        node[c0] = new_node;
+        node = dictionary[c0];
       }
     }
 
     // Output the code for node.
     if (node !== undefined) {
-      node_c = node[-2];
+      node_c = node[1];
       if (dictionaryToCreate[node_c]) {
         if (node_c<256) {
           for (i=0 ; i<numBits ; i++) {
@@ -281,7 +282,7 @@ var LZString = {
         }
         dictionaryToCreate[node_c] = false;
       } else {
-        value = node[-1];
+        value = node[0];
         for (i=0 ; i<numBits ; i++) {
           data_val = (data_val << 1) | (value&1);
           if (data_position == bitsPerChar-1) {
