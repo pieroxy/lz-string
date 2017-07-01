@@ -142,23 +142,19 @@ var LZString = {
           if (node_c<256) {
             for (i=0 ; i<numBits ; i++) {
               data_val = (data_val << 1);
-              if (data_position == bitsPerChar-1) {
+              if (++data_position == bitsPerChar) {
                 data_position = 0;
                 data.push(getCharFromInt(data_val));
                 data_val = 0;
-              } else {
-                data_position++;
               }
             }
             value = node_c;
             for (i=0 ; i<8 ; i++) {
               data_val = (data_val << 1) | (value&1);
-              if (data_position == bitsPerChar-1) {
+              if (++data_position == bitsPerChar) {
                 data_position = 0;
                 data.push(getCharFromInt(data_val));
                 data_val = 0;
-              } else {
-                data_position++;
               }
               value >>= 1;
             }
@@ -166,52 +162,42 @@ var LZString = {
             value = 1;
             for (i=0 ; i<numBits ; i++) {
               data_val = (data_val << 1) | value;
-              if (data_position ==bitsPerChar-1) {
+              if (++data_position ==bitsPerChar) {
                 data_position = 0;
                 data.push(getCharFromInt(data_val));
                 data_val = 0;
-              } else {
-                data_position++;
               }
               value = 0;
             }
             value = node_c;
             for (i=0 ; i<16 ; i++) {
               data_val = (data_val << 1) | (value&1);
-              if (data_position == bitsPerChar-1) {
+              if (++data_position == bitsPerChar) {
                 data_position = 0;
                 data.push(getCharFromInt(data_val));
                 data_val = 0;
-              } else {
-                data_position++;
               }
               value >>= 1;
             }
           }
-          enlargeIn--;
-          if (enlargeIn == 0) {
-            enlargeIn = Math.pow(2, numBits);
-            numBits++;
+          if (--enlargeIn == 0) {
+            enlargeIn = Math.pow(2, numBits++);
           }
           dictionaryToCreate[node_c] = false;
         } else {
           value = node[0];
           for (i=0 ; i<numBits ; i++) {
             data_val = (data_val << 1) | (value&1);
-            if (data_position == bitsPerChar-1) {
+            if (++data_position == bitsPerChar) {
               data_position = 0;
               data.push(getCharFromInt(data_val));
               data_val = 0;
-            } else {
-              data_position++;
             }
             value >>= 1;
           }
         }
-        enlargeIn--;
-        if (enlargeIn == 0) {
-          enlargeIn = Math.pow(2, numBits);
-          numBits++;
+        if (--enlargeIn == 0) {
+          enlargeIn = Math.pow(2, numBits++);
         }
         // Add prefix to the dictionary.
         new_node = {};
@@ -229,23 +215,19 @@ var LZString = {
         if (node_c<256) {
           for (i=0 ; i<numBits ; i++) {
             data_val = (data_val << 1);
-            if (data_position == bitsPerChar-1) {
+            if (++data_position == bitsPerChar) {
               data_position = 0;
               data.push(getCharFromInt(data_val));
               data_val = 0;
-            } else {
-              data_position++;
             }
           }
           value = node_c;
           for (i=0 ; i<8 ; i++) {
             data_val = (data_val << 1) | (value&1);
-            if (data_position == bitsPerChar-1) {
+            if (++data_position == bitsPerChar) {
               data_position = 0;
               data.push(getCharFromInt(data_val));
               data_val = 0;
-            } else {
-              data_position++;
             }
             value = value >> 1;
           }
@@ -253,24 +235,20 @@ var LZString = {
           value = 1;
           for (i=0 ; i<numBits ; i++) {
             data_val = (data_val << 1) | value;
-            if (data_position == bitsPerChar-1) {
+            if (++data_position == bitsPerChar) {
               data_position = 0;
               data.push(getCharFromInt(data_val));
               data_val = 0;
-            } else {
-              data_position++;
             }
             value = 0;
           }
           value = node_c;
           for (i=0 ; i<16 ; i++) {
             data_val = (data_val << 1) | (value&1);
-            if (data_position == bitsPerChar-1) {
+            if (++data_position == bitsPerChar) {
               data_position = 0;
               data.push(getCharFromInt(data_val));
               data_val = 0;
-            } else {
-              data_position++;
             }
             value = value >> 1;
           }
@@ -285,22 +263,17 @@ var LZString = {
         value = node[0];
         for (i=0 ; i<numBits ; i++) {
           data_val = (data_val << 1) | (value&1);
-          if (data_position == bitsPerChar-1) {
+          if (++data_position == bitsPerChar) {
             data_position = 0;
             data.push(getCharFromInt(data_val));
             data_val = 0;
-          } else {
-            data_position++;
           }
           value >>= 1;
         }
-
-
       }
-      enlargeIn--;
-      if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
-        numBits++;
+
+      if (--enlargeIn == 0) {
+        enlargeIn = Math.pow(2, numBits++);
       }
     }
 
@@ -308,25 +281,19 @@ var LZString = {
     value = 2;
     for (i=0 ; i<numBits ; i++) {
       data_val = (data_val << 1) | (value&1);
-      if (data_position == bitsPerChar-1) {
+      if (++data_position == bitsPerChar) {
         data_position = 0;
         data.push(getCharFromInt(data_val));
         data_val = 0;
-      } else {
-        data_position++;
       }
       value >>= 1;
     }
 
     // Flush the last char
-    while (true) {
+    while (data_position++ < bitsPerChar) {
       data_val = (data_val << 1);
-      if (data_position == bitsPerChar-1) {
-        data.push(getCharFromInt(data_val));
-        break;
-      }
-      else data_position++;
     }
+    data.push(getCharFromInt(data_val));
     return data;
   },
 
