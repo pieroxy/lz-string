@@ -323,6 +323,9 @@ var LZString = {
         data_position = resetValue,
         data_index = 1;
 
+    // Get first token, guaranteed to be either
+    // a new character token (8 or 16 bits)
+    // or end of stream token.
     while (power!=maxpower) {
       bits += ((data_val >> --data_position)&1) << power++;
       if (data_position == 0) {
@@ -331,10 +334,12 @@ var LZString = {
       }
     }
 
+    // if end of stream token, return empty string
     if (bits == 2){
       return "";
     }
-    //Math.pow(2,8 + 8*bits);
+
+    // else, get character
     maxpower = bits*8+8;
     bits = power = 0;
     while (power!=maxpower) {
@@ -349,12 +354,14 @@ var LZString = {
     w = c;
     result.push(c);
 
+    // read rest of string
     while (true) {
       if (data_index > length) {
         return "";
       }
 
-      maxpower = numBits;//Math.pow(2,numBits);
+      // read out next token
+      maxpower = numBits;
       bits = power = 0;
       while (power!=maxpower) {
         bits += ((data_val >> --data_position)&1) << power++;
@@ -364,7 +371,7 @@ var LZString = {
         }
       }
 
-      // 0 or 1
+      // 0 or 1 implies new character token
       if ((bits&1) == bits){
         maxpower = (8+8*bits);
         bits = power=0;
@@ -381,6 +388,7 @@ var LZString = {
           enlargeIn = Math.pow(2, numBits++);
         }
       } else if (bits == 2){
+        // end of stream token
         return result.join('');
       }
 
