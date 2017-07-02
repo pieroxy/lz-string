@@ -309,6 +309,7 @@ var LZString = {
     return LZString._decompress(compressed.length, 32768, function(index) { return compressed[index].charCodeAt(0); });  },
 
   _decompress: function (length, resetValue, getNextValue) {
+    resetValue = Math.log2(resetValue) + 1;
     var dictionary = [0, 1, 2],
         enlargeIn = 4,
         dictSize = 4,
@@ -317,7 +318,6 @@ var LZString = {
         result = [],
         w = "",
         bits = 0,
-        resb = 0,
         maxpower = 2,
         power = 0,
         c = "",
@@ -326,13 +326,11 @@ var LZString = {
         data_index = 1;
 
     while (power!=maxpower) {
-      resb = data_val & data_position;
-      data_position >>= 1;
+      bits += ((data_val >> --data_position)&1) << power++;
       if (data_position == 0) {
         data_position = resetValue;
         data_val = getNextValue(data_index++);
       }
-      bits |= (resb>0 ? 1 : 0) << power++;
     }
 
     if (bits == 2){
@@ -340,17 +338,13 @@ var LZString = {
     }
     //Math.pow(2,8 + 8*bits);
     maxpower = bits*8+8;
-
-    bits = 0;
-    power = 0;
+    bits = power = 0;
     while (power!=maxpower) {
-      resb = data_val & data_position;
-      data_position >>= 1;
+      bits += ((data_val >> --data_position)&1) << power++;
       if (data_position == 0) {
         data_position = resetValue;
         data_val = getNextValue(data_index++);
       }
-      bits |= (resb>0 ? 1 : 0) << power++;
     }
     c = f(bits);
     dictionary[3] = c;
@@ -362,31 +356,26 @@ var LZString = {
         return "";
       }
 
-      bits = 0;
       maxpower = numBits;//Math.pow(2,numBits);
-      power = 0;
+      bits = power = 0;
       while (power!=maxpower) {
-        resb = data_val & data_position;
-        data_position >>= 1;
+        bits += ((data_val >> --data_position)&1) << power++;
         if (data_position == 0) {
           data_position = resetValue;
           data_val = getNextValue(data_index++);
         }
-        bits |= (resb>0 ? 1 : 0) << power++;
       }
 
-      if (bits == 0 || bits == 1){
-        power=0;
-        maxpower = (8+8*bits);//Math.pow(2,8 + 8*bits);
-        bits = 0;
+      // 0 or 1
+      if ((bits&1) == bits){
+        maxpower = (8+8*bits);
+        bits = power=0;
         while (power!=maxpower) {
-          resb = data_val & data_position;
-          data_position >>= 1;
+          bits += ((data_val >> --data_position)&1) << power++;
           if (data_position == 0) {
             data_position = resetValue;
             data_val = getNextValue(data_index++);
           }
-          bits |= (resb>0 ? 1 : 0) << power++;
         }
         dictionary[dictSize] = f(bits);
         bits = dictSize++;
@@ -396,7 +385,6 @@ var LZString = {
       } else if (bits == 2){
         return result.join('');
       }
-
 
       if (dictionary[bits]) {
         entry = dictionary[bits];
