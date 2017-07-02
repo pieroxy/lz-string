@@ -110,7 +110,6 @@ var LZString = (
           c = 0,
           c0 = 2,
           node = dictionary,
-          node_c = 0,
           new_node = {},
           enlargeIn = 2, // Compensate for the first entry which should not count
           dictSize = 3,
@@ -136,67 +135,67 @@ var LZString = (
           if (new_node) {
             node = new_node;
           } else {
-            node_c = node[1];
-            if (dictionaryToCreate[node_c]) {
-              if (node_c < 256) {
+            value = node[1];
+            if (dictionaryToCreate[value]) {
+              if (value < 256) {
+                // insert "new 8 bit charCode" token
+                // into bitstream (value 0)
                 for (i = 0; i < numBits; i++) {
-                  data_val = (data_val << 1);
+                  data_val <<= 1;
                   if (++data_position == bitsPerChar) {
                     data_position = 0;
                     data.push(getCharFromInt(data_val));
                     data_val = 0;
                   }
                 }
-                value = node_c;
+                // insert 8 bit charcode
                 for (i = 0; i < 8; i++) {
-                  data_val = (data_val << 1) | (value & 1);
+                  data_val = value>>i & 1 | data_val<<1;
                   if (++data_position == bitsPerChar) {
                     data_position = 0;
                     data.push(getCharFromInt(data_val));
                     data_val = 0;
                   }
-                  value >>= 1;
                 }
               } else {
-                value = 1;
+                // insert "new 16 bit charCode" token
+                // into bitstream (value 1)
                 for (i = 0; i < numBits; i++) {
-                  data_val = (data_val << 1) | value;
+                  data_val = 1>>i | data_val<<1;
                   if (++data_position == bitsPerChar) {
                     data_position = 0;
                     data.push(getCharFromInt(data_val));
                     data_val = 0;
                   }
-                  value = 0;
                 }
-                value = node_c;
+                // insert 16 bit charCode
                 for (i = 0; i < 16; i++) {
-                  data_val = (data_val << 1) | (value & 1);
+                  data_val = value>>i & 1 | data_val<<1;
                   if (++data_position == bitsPerChar) {
                     data_position = 0;
                     data.push(getCharFromInt(data_val));
                     data_val = 0;
                   }
-                  value >>= 1;
                 }
               }
               if (--enlargeIn == 0) {
-                enlargeIn = Math.pow(2, numBits++);
+                enlargeIn = 1 << numBits++;
               }
-              dictionaryToCreate[node_c] = false;
+              dictionaryToCreate[value] = false;
             } else {
+              // insert dictionary token into bitstream
               value = node[0];
               for (i = 0; i < numBits; i++) {
-                data_val = (data_val << 1) | (value & 1);
+                data_val = value>>i & 1 | data_val<<1;
                 if (++data_position == bitsPerChar) {
                   data_position = 0;
                   data.push(getCharFromInt(data_val));
                   data_val = 0;
                 }
-                value >>= 1;
               }
             }
             if (--enlargeIn == 0) {
-              enlargeIn = Math.pow(2, numBits++);
+              enlargeIn = 1 << numBits++;
             }
             // Add prefix to the dictionary.
             new_node = {};
@@ -209,89 +208,76 @@ var LZString = (
 
         // Output the code for node.
         if (node !== undefined) {
-          node_c = node[1];
-          if (dictionaryToCreate[node_c]) {
-            if (node_c < 256) {
+          value = node[1];
+          if (dictionaryToCreate[value]) {
+            if (value < 256) {
               for (i = 0; i < numBits; i++) {
-                data_val = (data_val << 1);
+                data_val <<= 1;
                 if (++data_position == bitsPerChar) {
                   data_position = 0;
                   data.push(getCharFromInt(data_val));
                   data_val = 0;
                 }
               }
-              value = node_c;
               for (i = 0; i < 8; i++) {
-                data_val = (data_val << 1) | (value & 1);
+                data_val = value>>i & 1 | data_val<<1;
                 if (++data_position == bitsPerChar) {
                   data_position = 0;
                   data.push(getCharFromInt(data_val));
                   data_val = 0;
                 }
-                value = value >> 1;
               }
             } else {
-              value = 1;
               for (i = 0; i < numBits; i++) {
-                data_val = (data_val << 1) | value;
+                data_val = 1>>i | data_val<<1;
                 if (++data_position == bitsPerChar) {
                   data_position = 0;
                   data.push(getCharFromInt(data_val));
                   data_val = 0;
                 }
-                value = 0;
               }
-              value = node_c;
               for (i = 0; i < 16; i++) {
-                data_val = (data_val << 1) | (value & 1);
+                data_val = value>>i & 1 | data_val<<1;
                 if (++data_position == bitsPerChar) {
                   data_position = 0;
                   data.push(getCharFromInt(data_val));
                   data_val = 0;
                 }
-                value = value >> 1;
               }
             }
-            enlargeIn--;
-            if (enlargeIn == 0) {
-              enlargeIn = Math.pow(2, numBits);
-              numBits++;
+            if (--enlargeIn == 0) {
+              enlargeIn = 1 << numBits++;
             }
-            dictionaryToCreate[node_c] = false;
+            dictionaryToCreate[value] = false;
           } else {
             value = node[0];
             for (i = 0; i < numBits; i++) {
-              data_val = (data_val << 1) | (value & 1);
+              data_val = value>>i & 1 | data_val << 1;
               if (++data_position == bitsPerChar) {
                 data_position = 0;
                 data.push(getCharFromInt(data_val));
                 data_val = 0;
               }
-              value >>= 1;
             }
           }
 
           if (--enlargeIn == 0) {
-            enlargeIn = Math.pow(2, numBits++);
+            enlargeIn = 1 << numBits++;
           }
         }
 
         // Mark the end of the stream
-        value = 2;
         for (i = 0; i < numBits; i++) {
-          data_val = (data_val << 1) | (value & 1);
+          data_val = 2>>i & 1 | data_val<<1;
           if (++data_position == bitsPerChar) {
             data_position = 0;
             data.push(getCharFromInt(data_val));
             data_val = 0;
           }
-          value >>= 1;
         }
 
         // Flush the last char
-        while (data_position++ < bitsPerChar) {
-          data_val = (data_val << 1);
-        }
+        data_val <<= bitsPerChar - data_position;
         data.push(getCharFromInt(data_val));
         return data;
       },
