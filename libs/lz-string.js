@@ -20,11 +20,15 @@ var f = String.fromCharCode,
     Base64ReverseDic[Base64CharArray[i].charCodeAt(0)] = i;
     UriSafeReverseDic[UriSafeCharArray[i].charCodeAt(0)] = i;
   }
+  var getChar16Bits = function(a){return f(a);},
+    getCharFromBase64 = function(a){return Base64CharArray[a];},
+    getCharFromURISafe = function(a){return UriSafeCharArray[a];},
+    getCharFromUTF16 = function(a){return f(a+32);};
 
 var LZString = {
   compressToBase64 : function (input) {
     if (input == null) return "";
-    var res = LZString._compressToArray(input, 6, function(a){return Base64CharArray[a];});
+    var res = LZString._compressToArray(input, 6, getCharFromBase64);
     // To produce valid Base64
     var i = res.length % 4;
     while(i--){
@@ -42,7 +46,7 @@ var LZString = {
 
   compressToUTF16 : function (input) {
     if (input == null) return "";
-    var compressed = LZString._compressToArray(input, 15, function(a){return f(a+32);});
+    var compressed = LZString._compressToArray(input, 15, getCharFromUTF16);
     compressed.push(" ");
     return compressed.join('');
   },
@@ -80,7 +84,7 @@ var LZString = {
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (input) {
     if (input == null) return "";
-    return LZString._compressToArray(input, 6, function(a){return UriSafeCharArray[a];}).join('');
+    return LZString._compressToArray(input, 6, getCharFromURISafe).join('');
   },
 
   //decompress from an output of compressToEncodedURIComponent
@@ -95,7 +99,7 @@ var LZString = {
     return LZString.compressToArray(uncompressed).join('');
   },
   compressToArray: function (uncompressed){
-    return LZString._compressToArray(uncompressed, 16, function(a){return f(a);});
+    return LZString._compressToArray(uncompressed, 16, getChar16Bits);
   },
   _compressToArray: function (uncompressed, bitsPerChar, getCharFromInt){
     if (uncompressed == null) return [];
