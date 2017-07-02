@@ -355,11 +355,7 @@ var LZString = {
     result.push(c);
 
     // read rest of string
-    while (true) {
-      if (data_index > length) {
-        return "";
-      }
-
+    while (data_index <= length) {
       // read out next token
       maxpower = numBits;
       bits = power = 0;
@@ -372,7 +368,7 @@ var LZString = {
       }
 
       // 0 or 1 implies new character token
-      if ((bits&1) == bits){
+      if (bits < 2){
         maxpower = (8+8*bits);
         bits = power=0;
         while (power!=maxpower) {
@@ -385,22 +381,18 @@ var LZString = {
         dictionary[dictSize] = f(bits);
         bits = dictSize++;
         if (--enlargeIn == 0) {
-          enlargeIn = Math.pow(2, numBits++);
+          enlargeIn = 1 << numBits++;
         }
       } else if (bits == 2){
         // end of stream token
         return result.join('');
       }
 
-      if (dictionary[bits]) {
-        entry = dictionary[bits];
-      } else if (bits === dictSize) {
-        entry = w + w.charAt(0);
-      } else {
+      if (bits > dictionary.length){
         return null;
       }
+      entry = bits < dictionary.length ? dictionary[bits] : w + w.charAt(0);
       result.push(entry);
-
       // Add w+entry[0] to the dictionary.
       dictionary[dictSize++] = w + entry.charAt(0);
 
@@ -411,6 +403,7 @@ var LZString = {
       }
 
     }
+    return "";
   }
 };
   return LZString;
