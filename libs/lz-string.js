@@ -10,20 +10,16 @@
 var LZString = (function() {
 
 // private property
-var f = String.fromCharCode;
-var Base64CharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('');
-var UriSafeCharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split('');
-var baseReverseDic = {};
-
-function getReverseDict(alphabet){
-  if (!baseReverseDic[alphabet]) {
-    baseReverseDic[alphabet] = {};
-    for (var i=0 ; i<alphabet.length ; i++) {
-      baseReverseDic[alphabet][alphabet[i].charCodeAt(0)] = i;
-    }
+var f = String.fromCharCode,
+  Base64CharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split(''),
+  UriSafeCharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split(''),
+  Base64ReverseDic = {},
+  UriSafeReverseDic = {},
+  i = 65;
+  while(i--) {
+    Base64ReverseDic[Base64CharArray[i].charCodeAt(0)] = i;
+    UriSafeReverseDic[UriSafeCharArray[i].charCodeAt(0)] = i;
   }
-  return baseReverseDic[alphabet];
-}
 
 var LZString = {
   compressToBase64 : function (input) {
@@ -41,8 +37,7 @@ var LZString = {
   decompressFromBase64 : function (input) {
     if (input == null) return "";
     if (input == "") return null;
-    var reverseDict = getReverseDict(Base64CharArray);
-    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charCodeAt(index)]; });
+    return LZString._decompress(input.length, 32, function(index) { return Base64ReverseDic[input.charCodeAt(index)]; });
   },
 
   compressToUTF16 : function (input) {
@@ -93,8 +88,7 @@ var LZString = {
     if (input == null) return "";
     if (input == "") return null;
     input = input.replace(/ /g, "+");
-    var reverseDict = getReverseDict(UriSafeCharArray);
-    return LZString._decompress(input.length, 32, function(index) { return reverseDict[input.charCodeAt(index)]; });
+    return LZString._decompress(input.length, 32, function(index) { return UriSafeReverseDic[input.charCodeAt(index)]; });
   },
 
   compress: function (uncompressed) {
@@ -334,7 +328,7 @@ var LZString = {
     }
 
     if (bits == 2){
-      return ""
+      return "";
     }
     //Math.pow(2,8 + 8*bits);
     maxpower = bits*8+8;
