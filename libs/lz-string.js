@@ -106,71 +106,88 @@ var LZString = (
         if (uncompressed == null) return [];
         var i = 0, j = 0, value = 0,
           dictionary = {},
-          dictionaryToCreate = {},
+          freshNode = true,
           c = 0,
-          c0 = 2,
+          c0 = 1,
           node = dictionary,
           new_node = {},
-          enlargeIn = 2, // Compensate for the first entry which should not count
+          enlargeIn = 2,
           dictSize = 3,
           numBits = 2,
           data = [],
           data_val = 0,
           data_position = 0;
 
-        for (j = 0; j < uncompressed.length; j++) {
-          c = uncompressed.charCodeAt(j);
-          c0 = c + 2;
-          // Is c a new character that needs to
-          // be stored at the root?
-          if (dictionary[c0] == undefined) {
-            new_node = {};
-            new_node[0] = dictSize++;
-            new_node[1] = c;
-            dictionary[c0] = new_node;
-            dictionaryToCreate[c] = true;
+        if (uncompressed.length) {
+          // If there IS a charCode, the first is guaranteed to be new,
+          // so we write it to output stream, add it to the dictionary,
+          // initialize freshNode as true, and set it as the root node.
+
+          c = uncompressed.charCodeAt(0);
+          c0 = c + 1;
+
+          // == Write first charCode token to output ==
+
+          // 8 or 16 bit?
+          value = c < 256 ? 0 : 1
+
+          // insert "new 8/16 bit charCode" token
+          // into bitstream (value 1)
+          for (i = 0; i < numBits; i++) {
+            // Value is 0 (8 bit) or 1 (16 bit).
+            // We shift it into the bitstream in reverse
+            // (shifting has precedence over bitmasking)
+            data_val = value >> i | data_val << 1;
+            if (++data_position == bitsPerChar) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
+            }
+          }
+          // insert charCode
+          // Nasty but effective hack:
+          // loop 8 or 16 times based on token value
+          value = 8 + 8 * value;
+          for (i = 0; i < value; i++) {
+            // shifting has precedence over bitmasking
+            data_val = c >> i & 1 | data_val << 1;
+            if (++data_position == bitsPerChar) {
+              data_position = 0;
+              data.push(getCharFromInt(data_val));
+              data_val = 0;
+            }
           }
 
-          new_node = node[c0];
-          if (new_node) {
-            node = new_node;
-          } else {
-            value = node[1];
-            if (dictionaryToCreate[value]) {
-              if (value < 256) {
-                // insert "new 8 bit charCode" token
-                // into bitstream (value 0)
-                for (i = 0; i < numBits; i++) {
-                  data_val <<= 1;
-                  if (++data_position == bitsPerChar) {
-                    data_position = 0;
-                    data.push(getCharFromInt(data_val));
-                    data_val = 0;
-                  }
-                }
-                // insert 8 bit charcode
-                for (i = 0; i < 8; i++) {
-                  data_val = value>>i & 1 | data_val<<1;
-                  if (++data_position == bitsPerChar) {
-                    data_position = 0;
-                    data.push(getCharFromInt(data_val));
-                    data_val = 0;
-                  }
-                }
+          // Add charCode to the dictionary.
+          new_node = {};
+          new_node[0] = dictSize++;
+          node[c0] = new_node;
+          // start in this node
+          node = new_node;
+          // increase token bitlength if necessary
+          if (--enlargeIn == 0) {
+            enlargeIn = 1 << numBits++;
+          }
+
+          for (j = 1; j < uncompressed.length; j++) {
+            c = uncompressed.charCodeAt(j);
+            c0 = c + 1;
+            // does the new charCode match an existing prefix?
+            new_node = node[c0];
+            if (new_node) {
+              // continue with next prefix
+              node = new_node;
+            } else {
+
+              // write out the current prefix token
+              if (freshNode) {
+                // character token already written to output
+                freshNode = false;
               } else {
-                // insert "new 16 bit charCode" token
-                // into bitstream (value 1)
+                value = node[0];
                 for (i = 0; i < numBits; i++) {
-                  data_val = 1>>i | data_val<<1;
-                  if (++data_position == bitsPerChar) {
-                    data_position = 0;
-                    data.push(getCharFromInt(data_val));
-                    data_val = 0;
-                  }
-                }
-                // insert 16 bit charCode
-                for (i = 0; i < 16; i++) {
-                  data_val = value>>i & 1 | data_val<<1;
+                  // shifting has precedence over bitmasking
+                  data_val = value >> i & 1 | data_val << 1;
                   if (++data_position == bitsPerChar) {
                     data_position = 0;
                     data.push(getCharFromInt(data_val));
@@ -178,15 +195,66 @@ var LZString = (
                   }
                 }
               }
+
+              // Is the new charCode a new character
+              // that needs to be stored at the root?
+              new_node = dictionary[c0];
+              if (new_node == undefined) {
+                // increase token bitlength if necessary
+                if (--enlargeIn == 0) {
+                  enlargeIn = 1 << numBits++;
+                }
+
+                // insert "new 8/16 bit charCode" token,
+                // see comments above for explanation
+                value = c < 256 ? 0 : 1
+                for (i = 0; i < numBits; i++) {
+                  data_val = value >> i | data_val << 1;
+                  if (++data_position == bitsPerChar) {
+                    data_position = 0;
+                    data.push(getCharFromInt(data_val));
+                    data_val = 0;
+                  }
+                }
+                value = 8 + 8 * value;
+                for (i = 0; i < value; i++) {
+                  data_val = c >> i & 1 | data_val << 1;
+                  if (++data_position == bitsPerChar) {
+                    data_position = 0;
+                    data.push(getCharFromInt(data_val));
+                    data_val = 0;
+                  }
+                }
+                new_node = {};
+                new_node[0] = dictSize++;
+                dictionary[c0] = new_node;
+                // Note of that we already wrote
+                // the charCode token to the bitstream
+                freshNode = true;
+              }
+              // add node representing prefix + new charCode to trie
+              new_node = {};
+              new_node[0] = dictSize++;
+              node[c0] = new_node;
+              // increase token bitlength if necessary
               if (--enlargeIn == 0) {
                 enlargeIn = 1 << numBits++;
               }
-              dictionaryToCreate[value] = false;
+              // set node to first charCode of new prefix
+              node = dictionary[c0];
+            }
+          }
+
+          if (node) { // Write last node to output
+            if (freshNode) {
+              // character token already written to output
+              freshNode = false;
             } else {
-              // insert dictionary token into bitstream
+              // write out the prefix token
               value = node[0];
               for (i = 0; i < numBits; i++) {
-                data_val = value>>i & 1 | data_val<<1;
+                // shifting has precedence over bitmasking
+                data_val = value >> i & 1 | data_val << 1;
                 if (++data_position == bitsPerChar) {
                   data_position = 0;
                   data.push(getCharFromInt(data_val));
@@ -194,81 +262,47 @@ var LZString = (
                 }
               }
             }
+
+            // Is c a new character?
+            new_node = dictionary[c0];
+            if (new_node == undefined) {
+              // increase token bitlength if necessary
+              if (--enlargeIn == 0) {
+                enlargeIn = 1 << numBits++;
+              }
+              // insert "new 8/16 bit charCode" token,
+              // see comments above for explanation
+              value = c < 256 ? 0 : 1
+              for (i = 0; i < numBits; i++) {
+                data_val = value >> i | data_val << 1;
+                if (++data_position == bitsPerChar) {
+                  data_position = 0;
+                  data.push(getCharFromInt(data_val));
+                  data_val = 0;
+                }
+              }
+              value = 8 + 8 * value;
+              for (i = 0; i < value; i++) {
+                data_val = c >> i & 1 | data_val << 1;
+                if (++data_position == bitsPerChar) {
+                  data_position = 0;
+                  data.push(getCharFromInt(data_val));
+                  data_val = 0;
+                }
+              }
+            }
+            // increase token bitlength if necessary
             if (--enlargeIn == 0) {
               enlargeIn = 1 << numBits++;
             }
-            // Add prefix to the dictionary.
-            new_node = {};
-            new_node[0] = dictSize++;
-            new_node[1] = c;
-            node[c0] = new_node;
-            node = dictionary[c0];
-          }
-        }
 
-        // Output the code for node.
-        if (node !== undefined) {
-          value = node[1];
-          if (dictionaryToCreate[value]) {
-            if (value < 256) {
-              for (i = 0; i < numBits; i++) {
-                data_val <<= 1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
-              }
-              for (i = 0; i < 8; i++) {
-                data_val = value>>i & 1 | data_val<<1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
-              }
-            } else {
-              for (i = 0; i < numBits; i++) {
-                data_val = 1>>i | data_val<<1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
-              }
-              for (i = 0; i < 16; i++) {
-                data_val = value>>i & 1 | data_val<<1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
-              }
-            }
-            if (--enlargeIn == 0) {
-              enlargeIn = 1 << numBits++;
-            }
-            dictionaryToCreate[value] = false;
-          } else {
-            value = node[0];
-            for (i = 0; i < numBits; i++) {
-              data_val = value>>i & 1 | data_val << 1;
-              if (++data_position == bitsPerChar) {
-                data_position = 0;
-                data.push(getCharFromInt(data_val));
-                data_val = 0;
-              }
-            }
-          }
-
-          if (--enlargeIn == 0) {
-            enlargeIn = 1 << numBits++;
           }
         }
 
         // Mark the end of the stream
         for (i = 0; i < numBits; i++) {
-          data_val = 2>>i & 1 | data_val<<1;
+          // shifting has precedence over bitmasking
+          data_val = 2 >> i & 1 | data_val << 1;
           if (++data_position == bitsPerChar) {
             data_position = 0;
             data.push(getCharFromInt(data_val));
@@ -315,7 +349,8 @@ var LZString = (
         // a new character token (8 or 16 bits)
         // or end of stream token.
         while (power != maxpower) {
-          bits += ((data_val >> --data_position) & 1) << power++;
+          // shifting has precedence over bitmasking
+          bits += (data_val >> --data_position & 1) << power++;
           if (data_position == 0) {
             data_position = resetValue;
             data_val = getNextValue(data_index++);
@@ -331,7 +366,8 @@ var LZString = (
         maxpower = bits * 8 + 8;
         bits = power = 0;
         while (power != maxpower) {
-          bits += ((data_val >> --data_position) & 1) << power++;
+          // shifting has precedence over bitmasking
+          bits += (data_val >> --data_position & 1) << power++;
           if (data_position == 0) {
             data_position = resetValue;
             data_val = getNextValue(data_index++);
@@ -348,7 +384,8 @@ var LZString = (
           maxpower = numBits;
           bits = power = 0;
           while (power != maxpower) {
-            bits += ((data_val >> --data_position) & 1) << power++;
+            // shifting has precedence over bitmasking
+            bits += (data_val >> --data_position & 1) << power++;
             if (data_position == 0) {
               data_position = resetValue;
               data_val = getNextValue(data_index++);
@@ -360,7 +397,8 @@ var LZString = (
             maxpower = (8 + 8 * bits);
             bits = power = 0;
             while (power != maxpower) {
-              bits += ((data_val >> --data_position) & 1) << power++;
+              // shifting has precedence over bitmasking
+              bits += (data_val >> --data_position & 1) << power++;
               if (data_position == 0) {
                 data_position = resetValue;
                 data_val = getNextValue(data_index++);
