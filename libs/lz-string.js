@@ -329,7 +329,11 @@ var LZString = (
       },
 
       _decompress: function (length, resetValue, getNextValue) {
-        resetValue = Math.log2(resetValue) + 1;
+        // "Math.log2(resetValue)" is ES6, so we use
+        // this while loop instead for backwards compatibility
+        var _resetValue = 0;
+        while(resetValue >> ++_resetValue){}
+
         var dictionary = [0, 1, 2],
           enlargeIn = 4,
           dictSize = 4,
@@ -342,7 +346,7 @@ var LZString = (
           power = 0,
           c = "",
           data_val = getNextValue(0),
-          data_position = resetValue,
+          data_position = _resetValue,
           data_index = 1;
 
         // Get first token, guaranteed to be either
@@ -352,7 +356,7 @@ var LZString = (
           // shifting has precedence over bitmasking
           bits += (data_val >> --data_position & 1) << power++;
           if (data_position == 0) {
-            data_position = resetValue;
+            data_position = _resetValue;
             data_val = getNextValue(data_index++);
           }
         }
@@ -369,7 +373,7 @@ var LZString = (
           // shifting has precedence over bitmasking
           bits += (data_val >> --data_position & 1) << power++;
           if (data_position == 0) {
-            data_position = resetValue;
+            data_position = _resetValue;
             data_val = getNextValue(data_index++);
           }
         }
@@ -387,7 +391,7 @@ var LZString = (
             // shifting has precedence over bitmasking
             bits += (data_val >> --data_position & 1) << power++;
             if (data_position == 0) {
-              data_position = resetValue;
+              data_position = _resetValue;
               data_val = getNextValue(data_index++);
             }
           }
@@ -400,7 +404,7 @@ var LZString = (
               // shifting has precedence over bitmasking
               bits += (data_val >> --data_position & 1) << power++;
               if (data_position == 0) {
-                data_position = resetValue;
+                data_position = _resetValue;
                 data_val = getNextValue(data_index++);
               }
             }
