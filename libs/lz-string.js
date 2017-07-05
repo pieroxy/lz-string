@@ -159,8 +159,7 @@ var LZString = (
           }
 
           // Add charCode to the dictionary.
-          new_node = {};
-          new_node[0] = dictSize++;
+          new_node = { 0: dictSize++ };
           node[c0] = new_node;
           // start in this node
           node = new_node;
@@ -225,16 +224,14 @@ var LZString = (
                     data_val = 0;
                   }
                 }
-                new_node = {};
-                new_node[0] = dictSize++;
+                new_node = { 0: dictSize++ };
                 dictionary[c0] = new_node;
                 // Note of that we already wrote
                 // the charCode token to the bitstream
                 freshNode = true;
               }
               // add node representing prefix + new charCode to trie
-              new_node = {};
-              new_node[0] = dictSize++;
+              new_node = { 0: dictSize++ };
               node[c0] = new_node;
               // increase token bitlength if necessary
               if (--enlargeIn == 0) {
