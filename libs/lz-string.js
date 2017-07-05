@@ -242,57 +242,55 @@ var LZString = (
             }
           }
 
-          if (node) { // Write last node to output
-            if (freshNode) {
-              // character token already written to output
-              freshNode = false;
-            } else {
-              // write out the prefix token
-              value = node[0];
-              for (i = 0; i < numBits; i++) {
-                // shifting has precedence over bitmasking
-                data_val = value >> i & 1 | data_val << 1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
+          // === Write last prefix to output ===
+          if (freshNode) {
+            // character token already written to output
+            freshNode = false;
+          } else {
+            // write out the prefix token
+            value = node[0];
+            for (i = 0; i < numBits; i++) {
+              // shifting has precedence over bitmasking
+              data_val = value >> i & 1 | data_val << 1;
+              if (++data_position == bitsPerChar) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
               }
             }
+          }
 
-            // Is c a new character?
-            new_node = dictionary[c0];
-            if (new_node == undefined) {
-              // increase token bitlength if necessary
-              if (--enlargeIn == 0) {
-                enlargeIn = 1 << numBits++;
-              }
-              // insert "new 8/16 bit charCode" token,
-              // see comments above for explanation
-              value = c < 256 ? 0 : 1
-              for (i = 0; i < numBits; i++) {
-                data_val = value >> i | data_val << 1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
-              }
-              value = 8 + 8 * value;
-              for (i = 0; i < value; i++) {
-                data_val = c >> i & 1 | data_val << 1;
-                if (++data_position == bitsPerChar) {
-                  data_position = 0;
-                  data.push(getCharFromInt(data_val));
-                  data_val = 0;
-                }
-              }
-            }
+          // Is c a new character?
+          new_node = dictionary[c0];
+          if (new_node == undefined) {
             // increase token bitlength if necessary
             if (--enlargeIn == 0) {
               enlargeIn = 1 << numBits++;
             }
-
+            // insert "new 8/16 bit charCode" token,
+            // see comments above for explanation
+            value = c < 256 ? 0 : 1
+            for (i = 0; i < numBits; i++) {
+              data_val = value >> i | data_val << 1;
+              if (++data_position == bitsPerChar) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
+              }
+            }
+            value = 8 + 8 * value;
+            for (i = 0; i < value; i++) {
+              data_val = c >> i & 1 | data_val << 1;
+              if (++data_position == bitsPerChar) {
+                data_position = 0;
+                data.push(getCharFromInt(data_val));
+                data_val = 0;
+              }
+            }
+          }
+          // increase token bitlength if necessary
+          if (--enlargeIn == 0) {
+            enlargeIn = 1 << numBits++;
           }
         }
 
@@ -329,7 +327,7 @@ var LZString = (
         // "Math.log2(resetValue)" is ES6, so we use
         // this while loop instead for backwards compatibility
         var _resetValue = 0;
-        while(resetValue >> ++_resetValue){}
+        while (resetValue >> ++_resetValue) { }
 
         var dictionary = [0, 1, 2],
           enlargeIn = 4,
