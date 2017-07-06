@@ -109,19 +109,21 @@ var LZString = (
           freshNode = true,
           c = 0,
           c0 = 1,
-          node = dictionary,
-          new_node = {},
-          enlargeIn = 2,
-          dictSize = 3,
+          new_node = { 0: 3 }, // first node will always be
+          node = new_node,     // initialised like this.
+          enlargeIn = 1,
+          dictSize = 4,
           numBits = 2,
           data = [],
           data_val = 0,
           data_position = 0;
 
         if (uncompressed.length) {
-          // If there IS a charCode, the first is guaranteed to be new,
-          // so we write it to output stream, add it to the dictionary,
-          // initialize freshNode as true, and set it as the root node.
+          // If there is a string, the first charCode is guaranteed to
+          // be new, so we write it to output stream, and add it to the
+          // dictionary. For the same reason we can initialize freshNode
+          // as true, and new_node, node and dictSize as if
+          // it was already added to the dictionary (see above).
 
           c = uncompressed.charCodeAt(0);
           c0 = c + 1;
@@ -144,7 +146,7 @@ var LZString = (
               data_val = 0;
             }
           }
-          // insert charCode
+          // insert charCode bits into bitstream
           // Nasty but effective hack:
           // loop 8 or 16 times based on token value
           value = 8 + 8 * value;
@@ -159,14 +161,7 @@ var LZString = (
           }
 
           // Add charCode to the dictionary.
-          new_node = { 0: dictSize++ };
-          node[c0] = new_node;
-          // start in this node
-          node = new_node;
-          // increase token bitlength if necessary
-          if (--enlargeIn == 0) {
-            enlargeIn = 1 << numBits++;
-          }
+          dictionary[c0] = new_node;
 
           for (j = 1; j < uncompressed.length; j++) {
             c = uncompressed.charCodeAt(j);
@@ -178,11 +173,18 @@ var LZString = (
               node = new_node;
             } else {
 
-              // write out the current prefix token
+              // Prefix+charCode does not exist in trie yet.
+              // We write the prefix to the bitstream, and add
+              // the new charCode to the dictionary if it's new
+              // Then we set `node` to the root node matching
+              // the charCode.
+
               if (freshNode) {
-                // character token already written to output
+                // Prefix is a freshly added character token,
+                // which was already written to the bitstream
                 freshNode = false;
               } else {
+                // write out the current prefix token
                 value = node[0];
                 for (i = 0; i < numBits; i++) {
                   // shifting has precedence over bitmasking
