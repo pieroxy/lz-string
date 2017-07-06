@@ -109,8 +109,7 @@ var LZString = (
           freshNode = true,
           c = 0,
           c0 = 1,
-          new_node = { 0: 3 }, // first node will always be
-          node = new_node,     // initialised like this.
+          node = { 0: 3 }, // first node will always be initialised like this.
           enlargeIn = 1,
           dictSize = 4,
           numBits = 2,
@@ -161,16 +160,15 @@ var LZString = (
           }
 
           // Add charCode to the dictionary.
-          dictionary[c0] = new_node;
+          dictionary[c0] = node;
 
           for (j = 1; j < uncompressed.length; j++) {
             c = uncompressed.charCodeAt(j);
             c0 = c + 1;
             // does the new charCode match an existing prefix?
-            new_node = node[c0];
-            if (new_node) {
+            if (node[c0]) {
               // continue with next prefix
-              node = new_node;
+              node = node[c0];
             } else {
 
               // Prefix+charCode does not exist in trie yet.
@@ -199,8 +197,7 @@ var LZString = (
 
               // Is the new charCode a new character
               // that needs to be stored at the root?
-              new_node = dictionary[c0];
-              if (new_node == undefined) {
+              if (dictionary[c0] == undefined) {
                 // increase token bitlength if necessary
                 if (--enlargeIn == 0) {
                   enlargeIn = 1 << numBits++;
@@ -226,15 +223,13 @@ var LZString = (
                     data_val = 0;
                   }
                 }
-                new_node = { 0: dictSize++ };
-                dictionary[c0] = new_node;
+                dictionary[c0] = { 0: dictSize++ };
                 // Note of that we already wrote
                 // the charCode token to the bitstream
                 freshNode = true;
               }
               // add node representing prefix + new charCode to trie
-              new_node = { 0: dictSize++ };
-              node[c0] = new_node;
+              node[c0] = { 0: dictSize++ };
               // increase token bitlength if necessary
               if (--enlargeIn == 0) {
                 enlargeIn = 1 << numBits++;
@@ -263,8 +258,7 @@ var LZString = (
           }
 
           // Is c a new character?
-          new_node = dictionary[c0];
-          if (new_node == undefined) {
+          if (dictionary[c0] == undefined) {
             // increase token bitlength if necessary
             if (--enlargeIn == 0) {
               enlargeIn = 1 << numBits++;
