@@ -42,7 +42,7 @@ var LZString = (
       decompressFromBase64: function (input) {
         if (input == null) return "";
         if (input == "") return null;
-        return LZString._decompress(input.length, 32, function (index) { return Base64ReverseDic[input.charCodeAt(index)]; });
+        return LZString._decompress(input.length, 6, function (index) { return Base64ReverseDic[input.charCodeAt(index)]; });
       },
 
       compressToUTF16: function (input) {
@@ -55,7 +55,7 @@ var LZString = (
       decompressFromUTF16: function (compressed) {
         if (compressed == null) return "";
         if (compressed == "") return null;
-        return LZString._decompress(compressed.length, 16384, function (index) { return compressed.charCodeAt(index) - 32; });
+        return LZString._decompress(compressed.length, 15, function (index) { return compressed.charCodeAt(index) - 32; });
       },
 
       //compress into uint8array (UCS-2 big endian format)
@@ -78,7 +78,7 @@ var LZString = (
         } else if (compressed.length == 0) {
           return null;
         }
-        return LZString._decompress(compressed.length, 128, function (index) { return compressed[index]; });
+        return LZString._decompress(compressed.length, 8, function (index) { return compressed[index]; });
       },
 
 
@@ -93,7 +93,7 @@ var LZString = (
         if (input == null) return "";
         if (input == "") return null;
         input = input.replace(/ /g, "+");
-        return LZString._decompress(input.length, 32, function (index) { return UriSafeReverseDic[input.charCodeAt(index)]; });
+        return LZString._decompress(input.length, 6, function (index) { return UriSafeReverseDic[input.charCodeAt(index)]; });
       },
 
       compress: function (uncompressed) {
@@ -316,21 +316,16 @@ var LZString = (
       decompress: function (compressed) {
         if (compressed == null) return "";
         if (compressed == "") return null;
-        return LZString._decompress(compressed.length, 32768, function (index) { return compressed.charCodeAt(index); });
+        return LZString._decompress(compressed.length, 16, function (index) { return compressed.charCodeAt(index); });
       },
 
       decompressFromArray: function (compressed) {
         if (compressed == null) return "";
         if (compressed.length == 0) return null;
-        return LZString._decompress(compressed.length, 32768, function (index) { return compressed[index].charCodeAt(0); });
+        return LZString._decompress(compressed.length, 16, function (index) { return compressed[index].charCodeAt(0); });
       },
 
-      _decompress: function (length, resetValue, getNextValue) {
-        // "Math.log2(resetValue)" is ES6, so we use
-        // this while loop instead for backwards compatibility
-        var _resetValue = 0;
-        while (resetValue >> ++_resetValue) { }
-
+      _decompress: function (length, resetBits, getNextValue) {
         var dictionary = [0, 1, 2],
           enlargeIn = 4,
           dictSize = 4,
@@ -343,7 +338,7 @@ var LZString = (
           power = 0,
           c = "",
           data_val = getNextValue(0),
-          data_position = _resetValue,
+          data_position = resetBits,
           data_index = 1;
 
         // Get first token, guaranteed to be either
@@ -353,7 +348,7 @@ var LZString = (
           // shifting has precedence over bitmasking
           bits += (data_val >> --data_position & 1) << power++;
           if (data_position == 0) {
-            data_position = _resetValue;
+            data_position = resetBits;
             data_val = getNextValue(data_index++);
           }
         }
@@ -370,7 +365,7 @@ var LZString = (
           // shifting has precedence over bitmasking
           bits += (data_val >> --data_position & 1) << power++;
           if (data_position == 0) {
-            data_position = _resetValue;
+            data_position = resetBits;
             data_val = getNextValue(data_index++);
           }
         }
@@ -388,7 +383,7 @@ var LZString = (
             // shifting has precedence over bitmasking
             bits += (data_val >> --data_position & 1) << power++;
             if (data_position == 0) {
-              data_position = _resetValue;
+              data_position = resetBits;
               data_val = getNextValue(data_index++);
             }
           }
@@ -401,7 +396,7 @@ var LZString = (
               // shifting has precedence over bitmasking
               bits += (data_val >> --data_position & 1) << power++;
               if (data_position == 0) {
-                data_position = _resetValue;
+                data_position = resetBits;
                 data_val = getNextValue(data_index++);
               }
             }
