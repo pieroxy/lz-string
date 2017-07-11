@@ -110,6 +110,7 @@ var LZString = (
           c = 0,
           c0 = 1,
           node = { 0: 3 }, // first node will always be initialised like this.
+          nextNode,
           enlargeIn = 1,
           dictSize = 4,
           numBits = 2,
@@ -166,9 +167,10 @@ var LZString = (
             c = uncompressed.charCodeAt(j);
             c0 = c + 1;
             // does the new charCode match an existing prefix?
-            if (node[c0]) {
+            nextNode = node[c0];
+            if (nextNode) {
               // continue with next prefix
-              node = node[c0];
+              node = nextNode;
             } else {
 
               // Prefix+charCode does not exist in trie yet.
