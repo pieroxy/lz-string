@@ -9,14 +9,13 @@
 // LZ-based compression algorithm, version 1.4.4
 var LZString = (
 	function () {
-
 		// private property
-		var f = String.fromCharCode,
+		var i = 0,
+			f = String.fromCharCode,
 			reverseDict = {},
 			Base64CharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split(''),
 			//UriSafeCharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split(''),
 			UriSafeCharArray = Base64CharArray.concat(); UriSafeCharArray[63] = '-'; UriSafeCharArray[64] = '$';
-		i = 0;
 		while (i < 65) {
 			if (i > 62) {
 				reverseDict[UriSafeCharArray[i].charCodeAt(0)] = i;
@@ -27,12 +26,13 @@ var LZString = (
 		var getChar16Bits = function (a) { return f(a); },
 			getCharFromBase64 = function (a) { return Base64CharArray[a]; },
 			getCharFromURISafe = function (a) { return UriSafeCharArray[a]; },
-			getCharFromUTF16 = function (a) { return f(a + 32); };
+			getCharFromUTF16 = function (a) { return f(a + 32); },
+			makeNode = function(val){ return { v: val, d: {} };
 
 		var LZString = {
 			compressToBase64: function (input) {
 				if (input == null) return "";
-				var res = LZString._compressToArray(input, 6, getCharFromBase64);
+				var res = LZString._c(input, 6, getCharFromBase64);
 				// To produce valid Base64
 				var i = res.length % 4;
 				while (i--) {
@@ -45,12 +45,12 @@ var LZString = (
 			decompressFromBase64: function (input) {
 				if (input == null) return "";
 				if (input == "") return null;
-				return LZString._decompress(input.length, 6, function (index) { return reverseDict[input.charCodeAt(index)]; });
+				return LZString._d(input.length, 6, function (index) { return reverseDict[input.charCodeAt(index)]; });
 			},
 
 			compressToUTF16: function (input) {
 				if (input == null) return "";
-				var compressed = LZString._compressToArray(input, 15, getCharFromUTF16);
+				var compressed = LZString._c(input, 15, getCharFromUTF16);
 				compressed.push(" ");
 				return compressed.join('');
 			},
@@ -58,7 +58,7 @@ var LZString = (
 			decompressFromUTF16: function (compressed) {
 				if (compressed == null) return "";
 				if (compressed == "") return null;
-				return LZString._decompress(compressed.length, 15, function (index) { return compressed.charCodeAt(index) - 32; });
+				return LZString._d(compressed.length, 15, function (index) { return compressed.charCodeAt(index) - 32; });
 			},
 
 			//compress into uint8array (UCS-2 big endian format)
@@ -81,14 +81,14 @@ var LZString = (
 				} else if (compressed.length == 0) {
 					return null;
 				}
-				return LZString._decompress(compressed.length, 8, function (index) { return compressed[index]; });
+				return LZString._d(compressed.length, 8, function (index) { return compressed[index]; });
 			},
 
 
 			//compress into a string that is already URI encoded
 			compressToEncodedURIComponent: function (input) {
 				if (input == null) return "";
-				return LZString._compressToArray(input, 6, getCharFromURISafe).join('');
+				return LZString._c(input, 6, getCharFromURISafe).join('');
 			},
 
 			//decompress from an output of compressToEncodedURIComponent
@@ -96,23 +96,22 @@ var LZString = (
 				if (input == null) return "";
 				if (input == "") return null;
 				input = input.replace(/ /g, "+");
-				return LZString._decompress(input.length, 6, function (index) { return reverseDict[input.charCodeAt(index)]; });
+				return LZString._d(input.length, 6, function (index) { return reverseDict[input.charCodeAt(index)]; });
 			},
 
 			compress: function (uncompressed) {
 				return LZString.compressToArray(uncompressed).join('');
 			},
 			compressToArray: function (uncompressed) {
-				return LZString._compressToArray(uncompressed, 16, getChar16Bits);
+				return LZString._c(uncompressed, 16, getChar16Bits);
 			},
-			_compressToArray: function (uncompressed, bitsPerChar, getCharFromInt) {
+			_c: function (uncompressed, bitsPerChar, getCharFromInt) {
 				if (uncompressed == null) return [];
 				var i = 0, j = 0, value = 0,
 					dictionary = {},
 					freshNode = true,
 					c = 0,
-					c0 = 1,
-					node = { 0: 3 }, // first node will always be initialised like this.
+					node = makeNode(3), // first node will always be initialised like this.
 					nextNode,
 					enlargeIn = 1,
 					dictSize = 4,
@@ -129,7 +128,6 @@ var LZString = (
 					// it was already added to the dictionary (see above).
 
 					c = uncompressed.charCodeAt(0);
-					c0 = c + 1;
 
 					// == Write first charCode token to output ==
 
@@ -164,13 +162,12 @@ var LZString = (
 					}
 
 					// Add charCode to the dictionary.
-					dictionary[c0] = node;
+					dictionary[c] = node;
 
 					for (j = 1; j < uncompressed.length; j++) {
 						c = uncompressed.charCodeAt(j);
-						c0 = c + 1;
 						// does the new charCode match an existing prefix?
-						nextNode = node[c0];
+						nextNode = node.d[c];
 						if (nextNode) {
 							// continue with next prefix
 							node = nextNode;
@@ -188,7 +185,7 @@ var LZString = (
 								freshNode = false;
 							} else {
 								// write out the current prefix token
-								value = node[0];
+								value = node.v;
 								for (i = 0; i < numBits; i++) {
 									// shifting has precedence over bitmasking
 									data_val = value >> i & 1 | data_val << 1;
@@ -202,7 +199,7 @@ var LZString = (
 
 							// Is the new charCode a new character
 							// that needs to be stored at the root?
-							if (dictionary[c0] == undefined) {
+							if (dictionary[c] == undefined) {
 								// increase token bitlength if necessary
 								if (--enlargeIn == 0) {
 									enlargeIn = 1 << numBits++;
@@ -228,19 +225,19 @@ var LZString = (
 										data_val = 0;
 									}
 								}
-								dictionary[c0] = { 0: dictSize++ };
+								dictionary[c] = makeNode(dictSize++)
 								// Note of that we already wrote
 								// the charCode token to the bitstream
 								freshNode = true;
 							}
 							// add node representing prefix + new charCode to trie
-							node[c0] = { 0: dictSize++ };
+							node.d[c] = makeNode(dictSize++)
 							// increase token bitlength if necessary
 							if (--enlargeIn == 0) {
 								enlargeIn = 1 << numBits++;
 							}
 							// set node to first charCode of new prefix
-							node = dictionary[c0];
+							node = dictionary[c];
 						}
 					}
 
@@ -250,7 +247,7 @@ var LZString = (
 						freshNode = false;
 					} else {
 						// write out the prefix token
-						value = node[0];
+						value = node.v;
 						for (i = 0; i < numBits; i++) {
 							// shifting has precedence over bitmasking
 							data_val = value >> i & 1 | data_val << 1;
@@ -263,7 +260,7 @@ var LZString = (
 					}
 
 					// Is c a new character?
-					if (dictionary[c0] == undefined) {
+					if (dictionary[c] == undefined) {
 						// increase token bitlength if necessary
 						if (--enlargeIn == 0) {
 							enlargeIn = 1 << numBits++;
@@ -315,17 +312,17 @@ var LZString = (
 			decompress: function (compressed) {
 				if (compressed == null) return "";
 				if (compressed == "") return null;
-				return LZString._decompress(compressed.length, 16, function (index) { return compressed.charCodeAt(index); });
+				return LZString._d(compressed.length, 16, function (index) { return compressed.charCodeAt(index); });
 			},
 
 			decompressFromArray: function (compressed) {
 				if (compressed == null) return "";
 				if (compressed.length == 0) return null;
-				return LZString._decompress(compressed.length, 16, function (index) { return compressed[index].charCodeAt(0); });
+				return LZString._d(compressed.length, 16, function (index) { return compressed[index].charCodeAt(0); });
 			},
 
-			_decompress: function (length, resetBits, getNextValue) {
-				var dictionary = [0, 1, 2],
+			_d: function (length, resetBits, getNextValue) {
+				var dictionary = ['', '', ''],
 					enlargeIn = 4,
 					dictSize = 4,
 					numBits = 3,
