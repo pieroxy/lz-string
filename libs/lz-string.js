@@ -10,7 +10,7 @@
 var LZString = (function () {
   // private property
   var i = 0,
-    f = String.fromCharCode,
+    fromCharCode = String.fromCharCode,
     reverseDict = {},
     Base64CharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split(''),
     //UriSafeCharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split(''),
@@ -52,10 +52,9 @@ var LZString = (function () {
     return this.d;
   }
 
-  function getChar16Bits(a) { return f(a); }
   function getCharFromBase64(a) { return Base64CharArray[a]; }
   function getCharFromURISafe(a) { return UriSafeCharArray[a]; }
-  function getCharFromUTF16(a) { return f(a + 32); }
+  function getCharFromUTF16(a) { return fromCharCode(a + 32); }
   function _node(val) { return { v: val, d: {} }; }
   function _compress(uncompressed, bitsPerChar, getCharFromInt) {
     if (uncompressed == null) return [];
@@ -225,7 +224,7 @@ var LZString = (function () {
         data_val = getNextValue(data_index++);
       }
     }
-    c = f(bits);
+    c = fromCharCode(bits);
     dictionary[3] = c;
     result.push(c);
 
@@ -255,7 +254,7 @@ var LZString = (function () {
             data_val = getNextValue(data_index++);
           }
         }
-        dictionary[dictSize] = f(bits);
+        dictionary[dictSize] = fromCharCode(bits);
         bits = dictSize++;
         if (--enlargeIn == 0) {
           enlargeIn = 1 << numBits++;
@@ -283,7 +282,7 @@ var LZString = (function () {
     return "";
   }
   function _compressToArray(uncompressed) {
-    return _compress(uncompressed, 16, getChar16Bits);
+    return _compress(uncompressed, 16, fromCharCode);
   }
   function _decompressFromArray(compressed) {
     if (compressed == null) return "";
