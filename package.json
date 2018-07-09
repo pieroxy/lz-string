@@ -1,6 +1,6 @@
 {
   "name": "lz-string",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "license": "WTFPL",
   "filename": "lz-string.js",
   "description": "LZ-based compression algorithm",

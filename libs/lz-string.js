@@ -6,13 +6,15 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.4.4
+// LZ-based compression algorithm, version 1.4.5
 var LZString = (function() {
 
 // private property
 var f = String.fromCharCode;
-var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+var Math_pow=Math.pow;
+var base="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+";
+var keyStrBase64 = base+"/=";
+var keyStrUriSafe = base+"-$";
 var baseReverseDic = {};
 
 function getBaseValue(alphabet, character) {
@@ -88,7 +90,6 @@ var LZString = {
 
   },
 
-
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (input) {
     if (input == null) return "";
@@ -108,9 +109,12 @@ var LZString = {
   },
   _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
     if (uncompressed == null) return "";
-    var i, value,
+    var i, value, bitsPerCharM1=bitsPerChar-1,
         context_dictionary= {},
+		hasOwnProperty=Object.prototype.hasOwnProperty,
+		context_dictionary_hasOwnProperty=hasOwnProperty.bind(context_dictionary),
         context_dictionaryToCreate= {},
+		context_dictionaryToCreate_hasOwnProperty=hasOwnProperty.bind(context_dictionaryToCreate),
         context_c="",
         context_wc="",
         context_w="",
@@ -120,94 +124,70 @@ var LZString = {
         context_data=[],
         context_data_val=0,
         context_data_position=0,
+        context_data_push=context_data.push.bind(context_data),
         ii;
+
+    function set_context_data(){
+       if (context_data_position == bitsPerCharM1) {
+        context_data_position = 0;
+        context_data_push(getCharFromInt(context_data_val));
+        context_data_val = 0;
+      } else {
+        context_data_position++;
+      }
+    }
+
+    function loop_context_data(n){
+      for (i=0 ; i<n ; i++) {
+        context_data_val = (context_data_val << 1) | (value&1);
+        set_context_data()
+        value = value >> 1;
+      }
+    }
 
     for (ii = 0; ii < uncompressed.length; ii += 1) {
       context_c = uncompressed.charAt(ii);
-      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
+      if (!context_dictionary_hasOwnProperty(context_c)) {
         context_dictionary[context_c] = context_dictSize++;
         context_dictionaryToCreate[context_c] = true;
       }
 
       context_wc = context_w + context_c;
-      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
+      if (context_dictionary_hasOwnProperty(context_wc)) {
         context_w = context_wc;
       } else {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+        if (context_dictionaryToCreate_hasOwnProperty(context_w)) {
           if (context_w.charCodeAt(0)<256) {
             for (i=0 ; i<context_numBits ; i++) {
               context_data_val = (context_data_val << 1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
+              set_context_data();
             }
             value = context_w.charCodeAt(0);
-            for (i=0 ; i<8 ; i++) {
-              context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
-              value = value >> 1;
-            }
-          } else {
+            loop_context_data(8);
+           } else {
             value = 1;
             for (i=0 ; i<context_numBits ; i++) {
               context_data_val = (context_data_val << 1) | value;
-              if (context_data_position ==bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
+              set_context_data();
               value = 0;
             }
             value = context_w.charCodeAt(0);
-            for (i=0 ; i<16 ; i++) {
-              context_data_val = (context_data_val << 1) | (value&1);
-              if (context_data_position == bitsPerChar-1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else {
-                context_data_position++;
-              }
-              value = value >> 1;
-            }
+            loop_context_data(16);
           }
           context_enlargeIn--;
           if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
+            context_enlargeIn = Math_pow(2, context_numBits);
             context_numBits++;
           }
           delete context_dictionaryToCreate[context_w];
         } else {
           value = context_dictionary[context_w];
-          for (i=0 ; i<context_numBits ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = value >> 1;
-          }
-
+          loop_context_data(context_numBits);
 
         }
         context_enlargeIn--;
         if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
+          context_enlargeIn = Math_pow(2, context_numBits);
           context_numBits++;
         }
         // Add wc to the dictionary.
@@ -218,104 +198,50 @@ var LZString = {
 
     // Output the code for w.
     if (context_w !== "") {
-      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+      if (context_dictionaryToCreate_hasOwnProperty(context_w)) {
         if (context_w.charCodeAt(0)<256) {
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
+            set_context_data();
           }
           value = context_w.charCodeAt(0);
-          for (i=0 ; i<8 ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = value >> 1;
-          }
+          loop_context_data(8);
         } else {
           value = 1;
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1) | value;
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
+            set_context_data();
             value = 0;
           }
           value = context_w.charCodeAt(0);
-          for (i=0 ; i<16 ; i++) {
-            context_data_val = (context_data_val << 1) | (value&1);
-            if (context_data_position == bitsPerChar-1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else {
-              context_data_position++;
-            }
-            value = value >> 1;
-          }
+          loop_context_data(16);
         }
         context_enlargeIn--;
         if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
+          context_enlargeIn = Math_pow(2, context_numBits);
           context_numBits++;
         }
         delete context_dictionaryToCreate[context_w];
       } else {
         value = context_dictionary[context_w];
-        for (i=0 ; i<context_numBits ; i++) {
-          context_data_val = (context_data_val << 1) | (value&1);
-          if (context_data_position == bitsPerChar-1) {
-            context_data_position = 0;
-            context_data.push(getCharFromInt(context_data_val));
-            context_data_val = 0;
-          } else {
-            context_data_position++;
-          }
-          value = value >> 1;
-        }
-
-
+        loop_context_data(context_numBits);
       }
       context_enlargeIn--;
       if (context_enlargeIn == 0) {
-        context_enlargeIn = Math.pow(2, context_numBits);
+        context_enlargeIn = Math_pow(2, context_numBits);
         context_numBits++;
       }
     }
 
     // Mark the end of the stream
     value = 2;
-    for (i=0 ; i<context_numBits ; i++) {
-      context_data_val = (context_data_val << 1) | (value&1);
-      if (context_data_position == bitsPerChar-1) {
-        context_data_position = 0;
-        context_data.push(getCharFromInt(context_data_val));
-        context_data_val = 0;
-      } else {
-        context_data_position++;
-      }
-      value = value >> 1;
-    }
+    loop_context_data(context_numBits);
 
     // Flush the last char
     while (true) {
       context_data_val = (context_data_val << 1);
-      if (context_data_position == bitsPerChar-1) {
-        context_data.push(getCharFromInt(context_data_val));
+      if (context_data_position == bitsPerCharM1) {
+        context_data_push(getCharFromInt(context_data_val));
         break;
       }
       else context_data_position++;
@@ -341,57 +267,43 @@ var LZString = {
         w,
         bits, resb, maxpower, power,
         c,
-        data = {val:getNextValue(0), position:resetValue, index:1};
+        data_val=getNextValue(0),
+        data_position=resetValue,
+        data_index=1;
+
+    function iterate_power(){
+      power=1;
+      while (power!=maxpower) {
+        resb = data_val & data_position;
+        data_position >>= 1;
+        if (data_position == 0) {
+          data_position = resetValue;
+          data_val = getNextValue(data_index++);
+        }
+        bits |= (resb>0 ? 1 : 0) * power;
+        power <<= 1;
+      }
+    }
 
     for (i = 0; i < 3; i += 1) {
       dictionary[i] = i;
     }
 
     bits = 0;
-    maxpower = Math.pow(2,2);
-    power=1;
-    while (power!=maxpower) {
-      resb = data.val & data.position;
-      data.position >>= 1;
-      if (data.position == 0) {
-        data.position = resetValue;
-        data.val = getNextValue(data.index++);
-      }
-      bits |= (resb>0 ? 1 : 0) * power;
-      power <<= 1;
-    }
+    maxpower = 4; //Math_pow(2,2);
+    iterate_power();
 
     switch (next = bits) {
       case 0:
-          bits = 0;
-          maxpower = Math.pow(2,8);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
+        bits = 0;
+        maxpower = 256; //Math_pow(2,8);
+        iterate_power();
         c = f(bits);
         break;
       case 1:
-          bits = 0;
-          maxpower = Math.pow(2,16);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
+        bits = 0;
+        maxpower = 65536; //Math_pow(2,16);
+        iterate_power();
         c = f(bits);
         break;
       case 2:
@@ -401,39 +313,19 @@ var LZString = {
     w = c;
     result.push(c);
     while (true) {
-      if (data.index > length) {
+      if (data_index > length) {
         return "";
       }
 
       bits = 0;
-      maxpower = Math.pow(2,numBits);
-      power=1;
-      while (power!=maxpower) {
-        resb = data.val & data.position;
-        data.position >>= 1;
-        if (data.position == 0) {
-          data.position = resetValue;
-          data.val = getNextValue(data.index++);
-        }
-        bits |= (resb>0 ? 1 : 0) * power;
-        power <<= 1;
-      }
+      maxpower = Math_pow(2,numBits);
+      iterate_power();
 
       switch (c = bits) {
         case 0:
           bits = 0;
-          maxpower = Math.pow(2,8);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
+          maxpower = 256; //Math_pow(2,8);
+          iterate_power();
 
           dictionary[dictSize++] = f(bits);
           c = dictSize-1;
@@ -441,18 +333,8 @@ var LZString = {
           break;
         case 1:
           bits = 0;
-          maxpower = Math.pow(2,16);
-          power=1;
-          while (power!=maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) {
-              data.position = resetValue;
-              data.val = getNextValue(data.index++);
-            }
-            bits |= (resb>0 ? 1 : 0) * power;
-            power <<= 1;
-          }
+          maxpower = 65536; //Math_pow(2,16);
+          iterate_power();
           dictionary[dictSize++] = f(bits);
           c = dictSize-1;
           enlargeIn--;
@@ -462,7 +344,7 @@ var LZString = {
       }
 
       if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
+        enlargeIn = Math_pow(2, numBits);
         numBits++;
       }
 
@@ -484,7 +366,7 @@ var LZString = {
       w = entry;
 
       if (enlargeIn == 0) {
-        enlargeIn = Math.pow(2, numBits);
+        enlargeIn = Math_pow(2, numBits);
         numBits++;
       }
 
@@ -494,13 +376,9 @@ var LZString = {
   return LZString;
 })();
 
+
 if (typeof define === 'function' && define.amd) {
   define(function () { return LZString; });
 } else if( typeof module !== 'undefined' && module != null ) {
-  module.exports = LZString
-} else if( typeof angular !== 'undefined' && angular != null ) {
-  angular.module('LZString', [])
-  .factory('LZString', function () {
-    return LZString;
-  });
+  module.exports = LZString;
 }
