@@ -10,16 +10,16 @@
 var LZString = (function () {
   // private property
   var i = 0,
-    StringStream_d,
-    StringStream_v,
-    StringStream_p,
-    StringStream_b,
-    StringStream_g,
     fromCharCode = String.fromCharCode,
+    streamData,
+    streamDataVal,
+    streamDataPosition,
+    streamBitsPerChar,
+    streamGetCharFromInt,
     reverseDict = {},
     base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+",
-    Base64CharArray = (base+"/=").split(''),
-    UriSafeCharArray = (base+"-$").split('');
+    Base64CharArray = (base + "/=").split(''),
+    UriSafeCharArray = (base + "-$").split('');
   while (i < 65) {
     if (i > 62) {
       reverseDict[UriSafeCharArray[i].charCodeAt(0)] = i;
@@ -27,14 +27,14 @@ var LZString = (function () {
     reverseDict[Base64CharArray[i].charCodeAt(0)] = i++;
   }
 
-  function StringStream_s(value, numBitsMask) { //streamBits
+  function streamBits(value, numBitsMask) {
     for (var i = 0; numBitsMask >>= 1; i++) {
       // shifting has precedence over bitmasking
-      StringStream_v = value >> i & 1 | StringStream_v << 1;
-      if (++StringStream_p === StringStream_b) {
-        StringStream_p = 0;
-        StringStream_d.push(StringStream_g(StringStream_v));
-        StringStream_v = 0;
+      streamDataVal = value >> i & 1 | streamDataVal << 1;
+      if (++streamDataPosition === streamBitsPerChar) {
+        streamDataPosition = 0;
+        streamData.push(streamGetCharFromInt(streamDataVal));
+        streamDataVal = 0;
       }
     }
   }
@@ -44,137 +44,139 @@ var LZString = (function () {
   function getCharFromUTF16(a) { return fromCharCode(a + 32); }
   function _node(val) { return { v: val, d: {} }; }
   function _compress(uncompressed, bitsPerChar, getCharFromInt) {
-    if (uncompressed == null) return [];
-    var i = 0, j = 0, value = 0,
-      dictionary = {},
-      freshNode = true,
-      c = 0,
-      node = _node(3), // first node will always be initialised like this.
-      nextNode,
-      dictSize = 3,
-      numBitsMask = 0b100,
+    // data - empty stream
+    streamData = [];
+
+    if (uncompressed != null) {
       // davaVal
-      StringStream_v = 0;
+      streamDataVal = 0;
       // dataPosition
-      StringStream_p = 0;
-      StringStream_b = bitsPerChar;
-      StringStream_g = getCharFromInt;
-      // data
-      StringStream_d = []; // empty stream
+      streamDataPosition = 0;
+      streamBitsPerChar = bitsPerChar;
+      streamGetCharFromInt = getCharFromInt;
+      var j = 0, value = 0,
+        dictionary = {},
+        freshNode = true,
+        c = 0,
+        node = _node(3), // first node will always be initialised like this.
+        nextNode,
+        dictSize = 3,
+        numBitsMask = 0b100;
 
-    if (uncompressed.length) {
-      // If there is a string, the first charCode is guaranteed to
-      // be new, so we write it to output stream, and add it to the
-      // dictionary. For the same reason we can initialize freshNode
-      // as true, and new_node, node and dictSize as if
-      // it was already added to the dictionary (see above).
+      if (uncompressed.length) {
+        // If there is a string, the first charCode is guaranteed to
+        // be new, so we write it to output stream, and add it to the
+        // dictionary. For the same reason we can initialize freshNode
+        // as true, and new_node, node and dictSize as if
+        // it was already added to the dictionary (see above).
 
-      c = uncompressed.charCodeAt(0);
+        c = uncompressed.charCodeAt(0);
 
-      // == Write first charCode token to output ==
+        // == Write first charCode token to output ==
 
-      // 8 or 16 bit?
-      value = c < 256 ? 0 : 1
+        // 8 or 16 bit?
+        value = c < 256 ? 0 : 1
 
-      // insert "new 8/16 bit charCode" token
-      // into bitstream (value 1)
-      StringStream_s(value, numBitsMask);
-      StringStream_s(c, value ? 0b10000000000000000 : 0b100000000);
+        // insert "new 8/16 bit charCode" token
+        // into bitstream (value 1)
+        streamBits(value, numBitsMask);
+        streamBits(c, value ? 0b10000000000000000 : 0b100000000);
 
-      // Add charCode to the dictionary.
-      dictionary[c] = node;
+        // Add charCode to the dictionary.
+        dictionary[c] = node;
 
-      for (j = 1; j < uncompressed.length; j++) {
-        c = uncompressed.charCodeAt(j);
-        // does the new charCode match an existing prefix?
-        nextNode = node.d[c];
-        if (nextNode) {
-          // continue with next prefix
-          node = nextNode;
-        } else {
-
-          // Prefix+charCode does not exist in trie yet.
-          // We write the prefix to the bitstream, and add
-          // the new charCode to the dictionary if it's new
-          // Then we set `node` to the root node matching
-          // the charCode.
-
-          if (freshNode) {
-            // Prefix is a freshly added character token,
-            // which was already written to the bitstream
-            freshNode = false;
+        for (j = 1; j < uncompressed.length; j++) {
+          c = uncompressed.charCodeAt(j);
+          // does the new charCode match an existing prefix?
+          nextNode = node.d[c];
+          if (nextNode) {
+            // continue with next prefix
+            node = nextNode;
           } else {
-            // write out the current prefix token
-            value = node.v;
-            StringStream_s(value, numBitsMask);
-          }
 
-          // Is the new charCode a new character
-          // that needs to be stored at the root?
-          if (dictionary[c] == undefined) {
+            // Prefix+charCode does not exist in trie yet.
+            // We write the prefix to the bitstream, and add
+            // the new charCode to the dictionary if it's new
+            // Then we set node to the root node matching
+            // the charCode.
+
+            if (freshNode) {
+              // Prefix is a freshly added character token,
+              // which was already written to the bitstream
+              freshNode = false;
+            } else {
+              // write out the current prefix token
+              value = node.v;
+              streamBits(value, numBitsMask);
+            }
+
+            // Is the new charCode a new character
+            // that needs to be stored at the root?
+            if (dictionary[c] == undefined) {
+              // increase token bitlength if necessary
+              if (++dictSize >= numBitsMask) {
+                numBitsMask <<= 1;
+              }
+
+
+              // insert "new 8/16 bit charCode" token,
+              // see comments above for explanation
+              value = c < 256 ? 0 : 1
+              streamBits(value, numBitsMask);
+              streamBits(c, value ? 0b10000000000000000 : 0b100000000);
+
+              dictionary[c] = _node(dictSize)
+              // Note of that we already wrote
+              // the charCode token to the bitstream
+              freshNode = true;
+            }
+            // add node representing prefix + new charCode to trie
+            node.d[c] = _node(++dictSize)
             // increase token bitlength if necessary
-            if (++dictSize >= numBitsMask) {
+            if (dictSize >= numBitsMask) {
               numBitsMask <<= 1;
             }
 
-
-            // insert "new 8/16 bit charCode" token,
-            // see comments above for explanation
-            value = c < 256 ? 0 : 1
-            StringStream_s(value, numBitsMask);
-            StringStream_s(c, value ? 0b10000000000000000 : 0b100000000);
-
-            dictionary[c] = _node(dictSize)
-            // Note of that we already wrote
-            // the charCode token to the bitstream
-            freshNode = true;
+            // set node to first charCode of new prefix
+            node = dictionary[c];
           }
-          // add node representing prefix + new charCode to trie
-          node.d[c] = _node(++dictSize)
+        }
+
+        // === Write last prefix to output ===
+        if (freshNode) {
+          // character token already written to output
+          freshNode = false;
+        } else {
+          // write out the prefix token
+          streamBits(node.v, numBitsMask);
+        }
+
+        // Is c a new character?
+        if (dictionary[c] == undefined) {
           // increase token bitlength if necessary
-          if (dictSize >= numBitsMask) {
+          if (++dictSize >= numBitsMask) {
             numBitsMask <<= 1;
           }
 
-          // set node to first charCode of new prefix
-          node = dictionary[c];
+          // insert "new 8/16 bit charCode" token,
+          // see comments above for explanation
+          value = c < 256 ? 0 : 1
+          streamBits(value, numBitsMask);
+          streamBits(c, 0b100000000 << value);
         }
-      }
-
-      // === Write last prefix to output ===
-      if (freshNode) {
-        // character token already written to output
-        freshNode = false;
-      } else {
-        // write out the prefix token
-        StringStream_s(node.v, numBitsMask);
-      }
-
-      // Is c a new character?
-      if (dictionary[c] == undefined) {
         // increase token bitlength if necessary
         if (++dictSize >= numBitsMask) {
           numBitsMask <<= 1;
         }
+      }
 
-        // insert "new 8/16 bit charCode" token,
-        // see comments above for explanation
-        value = c < 256 ? 0 : 1
-        StringStream_s(value, numBitsMask);
-        StringStream_s(c, 0b100000000 << value);
-      }
-      // increase token bitlength if necessary
-      if (++dictSize >= numBitsMask) {
-        numBitsMask <<= 1;
-      }
+      // Mark the end of the stream
+      streamBits(2, numBitsMask);
+      // Flush the last char
+      streamDataVal <<= streamBitsPerChar - streamDataPosition;
+      streamData.push(streamGetCharFromInt(streamDataVal));
     }
-
-    // Mark the end of the stream
-    StringStream_s(2, numBitsMask);
-    // Flush the last char
-    StringStream_v <<= StringStream_b - StringStream_p;
-    StringStream_d.push(StringStream_g(StringStream_v));
-    return StringStream_d;
+    return streamData;
 
   }
   function _decompress(length, resetBits, getNextValue) {
@@ -289,9 +291,8 @@ var LZString = (function () {
   return {
     compressToBase64: function (input) {
       if (input == null) return "";
-      var res = _compress(input, 6, getCharFromBase64);
-      // To produce valid Base64
-      var i = res.length % 4;
+      var res = _compress(input, 6, getCharFromBase64),
+        i = res.length % 4; // To produce valid Base64
       while (i--) {
         res.push("=");
       }
