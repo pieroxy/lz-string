@@ -6,15 +6,20 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.4.4
+// LZ-based compression algorithm, version 1.4.5
 var LZString = (function () {
   // private property
   var i = 0,
+    StringStream_d,
+    StringStream_v,
+    StringStream_p,
+    StringStream_b,
+    StringStream_g,
     fromCharCode = String.fromCharCode,
     reverseDict = {},
-    Base64CharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split(''),
-    //UriSafeCharArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$".split(''),
-    UriSafeCharArray = Base64CharArray.concat(); UriSafeCharArray[63] = '-'; UriSafeCharArray[64] = '$';
+    base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+",
+    Base64CharArray = (base+"/=").split(''),
+    UriSafeCharArray = (base+"-$").split('');
   while (i < 65) {
     if (i > 62) {
       reverseDict[UriSafeCharArray[i].charCodeAt(0)] = i;
@@ -22,34 +27,16 @@ var LZString = (function () {
     reverseDict[Base64CharArray[i].charCodeAt(0)] = i++;
   }
 
-  function StringStream(bitsPerChar, getChar) {
-    // data
-    this.d = []; // empty stream
-    // davaVal
-    this.v = 0;
-    // dataPosition
-    this.p = 0;
-    this.b = bitsPerChar;
-    this.g = getChar;
-  }
-
-  StringStream.prototype.s = function (value, numBitsMask) { //streamBits
+  function StringStream_s(value, numBitsMask) { //streamBits
     for (var i = 0; numBitsMask >>= 1; i++) {
       // shifting has precedence over bitmasking
-      this.v = value >> i & 1 | this.v << 1;
-      if (++this.p === this.b) {
-        this.p = 0;
-        this.d.push(this.g(this.v));
-        this.v = 0;
+      StringStream_v = value >> i & 1 | StringStream_v << 1;
+      if (++StringStream_p === StringStream_b) {
+        StringStream_p = 0;
+        StringStream_d.push(StringStream_g(StringStream_v));
+        StringStream_v = 0;
       }
     }
-  }
-
-  StringStream.prototype.f = function () { // finalise
-    // Flush the last char
-    this.v <<= this.b - this.p;
-    this.d.push(this.g(this.v));
-    return this.d;
   }
 
   function getCharFromBase64(a) { return Base64CharArray[a]; }
@@ -66,7 +53,14 @@ var LZString = (function () {
       nextNode,
       dictSize = 3,
       numBitsMask = 0b100,
-      stringStream = new StringStream(bitsPerChar, getCharFromInt);
+      // davaVal
+      StringStream_v = 0;
+      // dataPosition
+      StringStream_p = 0;
+      StringStream_b = bitsPerChar;
+      StringStream_g = getCharFromInt;
+      // data
+      StringStream_d = []; // empty stream
 
     if (uncompressed.length) {
       // If there is a string, the first charCode is guaranteed to
@@ -84,8 +78,8 @@ var LZString = (function () {
 
       // insert "new 8/16 bit charCode" token
       // into bitstream (value 1)
-      stringStream.s(value, numBitsMask);
-      stringStream.s(c, value ? 0b10000000000000000 : 0b100000000);
+      StringStream_s(value, numBitsMask);
+      StringStream_s(c, value ? 0b10000000000000000 : 0b100000000);
 
       // Add charCode to the dictionary.
       dictionary[c] = node;
@@ -112,7 +106,7 @@ var LZString = (function () {
           } else {
             // write out the current prefix token
             value = node.v;
-            stringStream.s(value, numBitsMask);
+            StringStream_s(value, numBitsMask);
           }
 
           // Is the new charCode a new character
@@ -127,8 +121,8 @@ var LZString = (function () {
             // insert "new 8/16 bit charCode" token,
             // see comments above for explanation
             value = c < 256 ? 0 : 1
-            stringStream.s(value, numBitsMask);
-            stringStream.s(c, value ? 0b10000000000000000 : 0b100000000);
+            StringStream_s(value, numBitsMask);
+            StringStream_s(c, value ? 0b10000000000000000 : 0b100000000);
 
             dictionary[c] = _node(dictSize)
             // Note of that we already wrote
@@ -153,7 +147,7 @@ var LZString = (function () {
         freshNode = false;
       } else {
         // write out the prefix token
-        stringStream.s(node.v, numBitsMask);
+        StringStream_s(node.v, numBitsMask);
       }
 
       // Is c a new character?
@@ -166,8 +160,8 @@ var LZString = (function () {
         // insert "new 8/16 bit charCode" token,
         // see comments above for explanation
         value = c < 256 ? 0 : 1
-        stringStream.s(value, numBitsMask);
-        stringStream.s(c, 0b100000000 << value);
+        StringStream_s(value, numBitsMask);
+        StringStream_s(c, 0b100000000 << value);
       }
       // increase token bitlength if necessary
       if (++dictSize >= numBitsMask) {
@@ -176,9 +170,11 @@ var LZString = (function () {
     }
 
     // Mark the end of the stream
-    stringStream.s(2, numBitsMask);
+    StringStream_s(2, numBitsMask);
     // Flush the last char
-    return stringStream.f();
+    StringStream_v <<= StringStream_b - StringStream_p;
+    StringStream_d.push(StringStream_g(StringStream_v));
+    return StringStream_d;
 
   }
   function _decompress(length, resetBits, getNextValue) {
