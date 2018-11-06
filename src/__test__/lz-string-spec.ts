@@ -1,4 +1,4 @@
-import { LZString } from "../lz-string";
+import * as LZString from "../lz-string";
 
 const compressionTests = (compress, decompress, uint8array_mode) => {
     it('compresses and decompresses  "Hello world!"', () => {

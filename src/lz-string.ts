@@ -23,7 +23,7 @@ const getBaseValue = (alphabet: string, character: string): number => {
   return baseReverseDic[alphabet][character];
 };
 
-const compressToBase64 = (input: string): string => {
+export const compressToBase64 = (input: string): string => {
   if (input === null || input === undefined) {
     return "";
   }
@@ -41,7 +41,7 @@ const compressToBase64 = (input: string): string => {
   }
 };
 
-const decompressFromBase64 = (input: string): any => {
+export const decompressFromBase64 = (input: string): string => {
   if (input === null || input === undefined) {
     return "";
   }
@@ -54,7 +54,7 @@ const decompressFromBase64 = (input: string): any => {
   });
 };
 
-const compressToUTF16 = (input: string): string => {
+export const compressToUTF16 = (input: string): string => {
   if (input === null || input === undefined) {
     return "";
   }
@@ -63,7 +63,7 @@ const compressToUTF16 = (input: string): string => {
   }) + " ";
 };
 
-const decompressFromUTF16 = (compressed: any): any => {
+export const decompressFromUTF16 = (compressed: string): string => {
   if (compressed === null || compressed === undefined) {
     return "";
   }
@@ -78,7 +78,7 @@ const decompressFromUTF16 = (compressed: any): any => {
 /**
  * compress into uint8array (UCS-2 big endian format)
  */
-const compressToUint8Array = (uncompressed: any): Uint8Array => {
+export const compressToUint8Array = (uncompressed: string): Uint8Array => {
   const compressed: any = compress(uncompressed);
   const buf: Uint8Array = new Uint8Array(compressed.length * 2);  // 2 bytes per character
 
@@ -96,9 +96,9 @@ const compressToUint8Array = (uncompressed: any): Uint8Array => {
 /**
  * decompress from uint8array (UCS-2 big endian format)
  */
-const decompressFromUint8Array = (compressed: any): string => {
+export const decompressFromUint8Array = (compressed: Uint8Array): string => {
   if (compressed === null || compressed === undefined) {
-    return decompress(compressed);
+    return decompress(null);
   } else {
     const buf: Array<any> = new Array(compressed.length / 2); // 2 bytes per character
     const TotalLen: number = compressed.length;
@@ -117,7 +117,7 @@ const decompressFromUint8Array = (compressed: any): string => {
 /**
  * compress into a string that is already URI encoded
  */
-const compressToEncodedURIComponent = (input: any): string => {
+export const compressToEncodedURIComponent = (input: string): string => {
   if (input === null || input === undefined) {
     return "";
   }
@@ -130,7 +130,7 @@ const compressToEncodedURIComponent = (input: any): string => {
 /**
  * decompress from an output of compressToEncodedURIComponent
  */
-const decompressFromEncodedURIComponent = (input: any): string => {
+export const decompressFromEncodedURIComponent = (input: string): string => {
   if (input === null || input === undefined) {
     return "";
   }
@@ -143,7 +143,7 @@ const decompressFromEncodedURIComponent = (input: any): string => {
   });
 };
 
-const compress = (uncompressed: string): string => {
+export const compress = (uncompressed: string): string => {
   return _compress(uncompressed, 16, (a: number): string => {
     return f(a);
   });
@@ -373,7 +373,7 @@ const _compress = (
   return context_data.join("");
 };
 
-const decompress = (compressed: any): string => {
+export const decompress = (compressed: string): string => {
   if (compressed === null || compressed === undefined) {
     return "";
   }
@@ -567,9 +567,7 @@ const _decompress = (
 
 };
 
-
-// Node.js or general JS
-export const LZString: any = {
+const LZString = {
   compress,
   compressToBase64,
   compressToEncodedURIComponent,
@@ -581,21 +579,25 @@ export const LZString: any = {
   decompressFromUTF16,
   decompressFromUint8Array,
 };
+exports.LZString = LZString;
 
-
-declare let define: any;
+/* tslint:disable */
 declare let angular: any;
-declare let exports: any;
+declare let define: any;
+declare let module: any;
 
 if (typeof define === "function" && define.amd) {
   // AMD-js
   define(() => {
-    return exports.LZString;
+    return LZString;
   });
-} else if (typeof angular !== "undefined" && angular !== null) {
+} else if (typeof module !== "undefined" && module != null ) {
+  module.exports = LZString;
+
+} else if (typeof angular !== "undefined") {
   // Angular.js
   angular.module("LZString", [])
     .factory("LZString", () => {
-      return exports.LZString;
+      return LZString;
     });
 }

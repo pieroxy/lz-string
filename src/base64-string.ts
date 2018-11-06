@@ -296,27 +296,47 @@ const compress = (input: string): string => {
 
 };
 
-// Node.js or general JS
-export const Base64String: any = {
-  compress,
-  compressToUTF16,
-  decompress,
-  decompressFromUTF16,
-};
 
-declare let define: any;
+/* tslint:disable */
 declare let angular: any;
+declare let define: any;
 declare let exports: any;
+declare let module: any;
 
 if (typeof define === "function" && define.amd) {
   // AMD-js
   define(() => {
-    return exports.Base64String;
+    return {
+      compress,
+      compressToUTF16,
+      decompress,
+      decompressFromUTF16,
+    };
   });
-} else if (typeof angular !== "undefined" && angular !== null) {
+} else if (typeof exports !== "undefined" && exports.__esModule) {
+  exports.LZString = {
+    compress,
+    compressToUTF16,
+    decompress,
+    decompressFromUTF16,
+  };
+} else if (typeof module !== "undefined" && module != null ) {
+  module.exports = {
+    compress,
+    compressToUTF16,
+    decompress,
+    decompressFromUTF16,
+  };
+
+} else if (typeof angular !== "undefined") {
   // Angular.js
-  angular.module("Base64String", [])
-    .factory("Base64String", () => {
-      return exports.Base64String;
+  angular.module("LZString", [])
+    .factory("LZString", () => {
+      return {
+        compress,
+        compressToUTF16,
+        decompress,
+        decompressFromUTF16,
+      };
     });
 }

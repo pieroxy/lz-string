@@ -1,8 +1,8 @@
 {
   "name": "lz-string",
   "version": "1.4.4",
-  "license": "WTFPL",
-  "filename": "lz-string.js",
+  "license": "MIT",
+  "filename": "libs/lz-string.js",
   "description": "LZ-based compression algorithm",
   "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
   "keywords": [
@@ -11,19 +11,22 @@
     "string"
   ],
   "main": "libs/lz-string.js",
-  "typings": "dist/lz-string.d.ts",
+  "typings": "libs/lz-string.d.ts",
   "bin": {
     "lz-string": "bin/bin.js"
   },
   "scripts": {
+    "afterBuild": "sed -i '' 's/exports.__esModule = true;/var exports = {};exports.__esModule = true;/g' libs/*-string.js",
+    "build": "npx tsc && npm run afterBuild && npm run minify",
     "test": "npm run tslint && npx jest",
-    "build": "npm run test && npx tsc",
-    "tslint": "npx tslint --project ."
+    "tslint": "npx tslint --project .",
+    "minify": "jsmin -o libs/lz-string.min.js libs/lz-string.js"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^23.3.9",
     "jest": "^23.6.0",
+    "jsmin": "^1.0.1",
     "ts-jest": "^23.10.4",
     "tslint": "^5.11.0",
     "typescript": "^3.1.3"

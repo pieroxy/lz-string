@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "dist/",
+    "outDir": "libs/",
     "rootDir": "src/",
-    "target": "es5",
-    "declaration": true
+    "target": "es3",
+    "declaration": true,
+    "importHelpers": true,
+    "noImplicitAny": false,
+    "sourceMap": false,
   },
   "exclude": [
-    "dist/**",
+    "libs/**",
     "node_modules/**"
   ],
   "rules": {
@@ -16,5 +18,9 @@
     "max-line-length": [true, 150],
     "no-bitwise": false,
     "variable-name": false
-  }
+  },
+  "files": [
+    "src/base64-string.ts",
+    "src/lz-string.ts"
+  ]
 }
