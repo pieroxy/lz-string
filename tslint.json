@@ -1,0 +1,23 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:latest"
+    ],
+    "linterOptions": {
+        "exclude": [
+            "node_modules/**",
+            "dist/**"
+        ]
+    },
+    "lib": ["es5", "es6"],
+    "jsRules": {},
+    "rules": {
+      "no-consecutive-blank-lines": false,
+      "no-console": false,
+      "array-type": [true, "generic"],
+      "max-line-length": false,
+      "no-bitwise": false,
+      "variable-name": false
+    },
+    "rulesDirectory": []
+}
