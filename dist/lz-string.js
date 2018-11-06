@@ -531,6 +531,7 @@ var _decompress = function (length, resetValue, getNextValue) {
         }
     }
 };
+// Node.js or general JS
 exports.LZString = {
     compress: compress,
     compressToBase64: compressToBase64,
@@ -543,20 +544,16 @@ exports.LZString = {
     decompressFromUTF16: decompressFromUTF16,
     decompressFromUint8Array: decompressFromUint8Array,
 };
-//
-// declare let define: any;
-// declare let angular: any;
-// declare let module: any;
-//
-// if (typeof define === "function" && define.amd) {
-//   define(() => {
-//     return LZString;
-//   });
-// } else if (typeof module !== "undefined" && module !== null && module.exports !== null) {
-//   module.exports = LZString;
-// } else if (typeof angular !== "undefined" && angular !== null) {
-//   angular.module("LZString", [])
-//     .factory("LZString", () => {
-//       return LZString;
-//     });
-// }
+if (typeof define === "function" && define.amd) {
+    // AMD-js
+    define(function () {
+        return exports.LZString;
+    });
+}
+else if (typeof angular !== "undefined" && angular !== null) {
+    // Angular.js
+    angular.module("LZString", [])
+        .factory("LZString", function () {
+        return exports.LZString;
+    });
+}

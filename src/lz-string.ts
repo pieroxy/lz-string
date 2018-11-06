@@ -567,6 +567,8 @@ const _decompress = (
 
 };
 
+
+// Node.js or general JS
 export const LZString: any = {
   compress,
   compressToBase64,
@@ -580,20 +582,20 @@ export const LZString: any = {
   decompressFromUint8Array,
 };
 
-//
-// declare let define: any;
-// declare let angular: any;
-// declare let module: any;
-//
-// if (typeof define === "function" && define.amd) {
-//   define(() => {
-//     return LZString;
-//   });
-// } else if (typeof module !== "undefined" && module !== null && module.exports !== null) {
-//   module.exports = LZString;
-// } else if (typeof angular !== "undefined" && angular !== null) {
-//   angular.module("LZString", [])
-//     .factory("LZString", () => {
-//       return LZString;
-//     });
-// }
+
+declare let define: any;
+declare let angular: any;
+declare let exports: any;
+
+if (typeof define === "function" && define.amd) {
+  // AMD-js
+  define(() => {
+    return exports.LZString;
+  });
+} else if (typeof angular !== "undefined" && angular !== null) {
+  // Angular.js
+  angular.module("LZString", [])
+    .factory("LZString", () => {
+      return exports.LZString;
+    });
+}
