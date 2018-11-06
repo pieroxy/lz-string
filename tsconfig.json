@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "outDir": "libs/",
+    "rootDir": "src/",
+    "target": "es3",
+    "declaration": true,
+    "importHelpers": true,
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "lib": ["es5", "es6"]
+  },
+  "exclude": [
+    "libs/**",
+    "node_modules/**"
+  ],
+  "rules": {
+    "array-type": [true, "generic"],
+    "max-line-length": [true, 150],
+    "no-bitwise": false,
+    "variable-name": false
+  },
+  "files": [
+    "src/base64-string.ts",
+    "src/lz-string.ts"
+  ]
+}
