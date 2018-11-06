@@ -174,16 +174,16 @@ const _compress = (
 
   for (ii = 0; ii < uncompressed.length; ii += 1) {
     context_c = uncompressed.charAt(ii);
-    if (!Object.prototype.hasOwnProperty.call(context_dictionary, context_c)) {
+    if (!(context_c in context_dictionary)) {
       context_dictionary[context_c] = context_dictSize++;
       context_dictionaryToCreate[context_c] = true;
     }
 
     context_wc = context_w + context_c;
-    if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
+    if (context_wc in context_dictionary) {
       context_w = context_wc;
     } else {
-      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+      if (context_w in context_dictionaryToCreate) {
         if (context_w.charCodeAt(0) < 256) {
           for (i = 0; i < context_numBits; i++) {
             context_data_val = (context_data_val << 1);
@@ -267,7 +267,7 @@ const _compress = (
 
   // Output the code for w.
   if (context_w !== "") {
-    if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+    if (context_w in context_dictionaryToCreate) {
       if (context_w.charCodeAt(0) < 256) {
         for (i = 0; i < context_numBits; i++) {
           context_data_val = (context_data_val << 1);
