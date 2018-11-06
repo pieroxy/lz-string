@@ -11,13 +11,23 @@
     "string"
   ],
   "main": "libs/lz-string.js",
-  "typings": "typings/lz-string.d.ts",
+  "typings": "dist/lz-string.d.ts",
   "bin": {
     "lz-string": "bin/bin.js"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "npm run tslint && npx jest",
+    "build": "npm run test && npx tsc",
+    "tslint": "npx tslint --project ."
+  },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.3"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pieroxy/lz-string.git"
@@ -30,13 +40,13 @@
   },
   "author": "pieroxy <pieroxy@pieroxy.net>",
   "autoupdate": {
-     "source": "git",
-     "target": "git://github.com/pieroxy/lz-string.git",
-     "basePath": "libs/",
-     "files": [
+    "source": "git",
+    "target": "git://github.com/pieroxy/lz-string.git",
+    "basePath": "libs/",
+    "files": [
       "lz-string.js",
       "lz-string.min.js",
       "base64-string.js"
-     ]
-   }
+    ]
+  }
 }
