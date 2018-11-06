@@ -271,9 +271,23 @@ var compress = function (input) {
     }
     return outputStr;
 };
+// Node.js or general JS
 exports.Base64String = {
     compress: compress,
     compressToUTF16: compressToUTF16,
     decompress: decompress,
     decompressFromUTF16: decompressFromUTF16,
 };
+if (typeof define === "function" && define.amd) {
+    // AMD-js
+    define(function () {
+        return exports.Base64String;
+    });
+}
+else if (typeof angular !== "undefined" && angular !== null) {
+    // Angular.js
+    angular.module("Base64String", [])
+        .factory("Base64String", function () {
+        return exports.Base64String;
+    });
+}

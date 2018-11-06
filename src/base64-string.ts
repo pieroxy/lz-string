@@ -296,9 +296,27 @@ const compress = (input: string): string => {
 
 };
 
+// Node.js or general JS
 export const Base64String: any = {
   compress,
   compressToUTF16,
   decompress,
   decompressFromUTF16,
 };
+
+declare let define: any;
+declare let angular: any;
+declare let exports: any;
+
+if (typeof define === "function" && define.amd) {
+  // AMD-js
+  define(() => {
+    return exports.Base64String;
+  });
+} else if (typeof angular !== "undefined" && angular !== null) {
+  // Angular.js
+  angular.module("Base64String", [])
+    .factory("Base64String", () => {
+      return exports.Base64String;
+    });
+}
