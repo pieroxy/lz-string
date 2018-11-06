@@ -133,14 +133,45 @@ exports.compress = function (uncompressed) {
         return f(a);
     });
 };
+/**
+ * Provide similar ES6-Map class
+ * @hidden
+ */
+var BaseMap = /** @class */ (function () {
+    function BaseMap() {
+        this.dict = {};
+    }
+    BaseMap.prototype["delete"] = function (key) {
+        if (key in this.dict) {
+            delete this.dict[key];
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    BaseMap.prototype.get = function (key) {
+        return this.dict[key];
+    };
+    BaseMap.prototype.has = function (key) {
+        return key in this.dict;
+    };
+    BaseMap.prototype.set = function (key, value) {
+        this.dict[key] = value;
+    };
+    return BaseMap;
+}());
+var getMapOrObject = function () {
+    return (typeof Map === "undefined") ? new BaseMap() : new Map();
+};
 var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
     if (uncompressed === null || uncompressed === undefined) {
         return "";
     }
     var i;
     var value;
-    var context_dictionary = {};
-    var context_dictionaryToCreate = {};
+    var context_dictionary = getMapOrObject();
+    var context_dictionaryToCreate = getMapOrObject();
     var context_c;
     var context_wc;
     var context_w = "";
@@ -153,16 +184,16 @@ var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
     var ii;
     for (ii = 0; ii < uncompressed.length; ii += 1) {
         context_c = uncompressed.charAt(ii);
-        if (!Object.prototype.hasOwnProperty.call(context_dictionary, context_c)) {
-            context_dictionary[context_c] = context_dictSize++;
-            context_dictionaryToCreate[context_c] = true;
+        if (!(context_dictionary.has(context_c))) {
+            context_dictionary.set(context_c, context_dictSize++);
+            context_dictionaryToCreate.set(context_c, true);
         }
         context_wc = context_w + context_c;
-        if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
+        if (context_dictionary.has(context_wc)) {
             context_w = context_wc;
         }
         else {
-            if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+            if (context_dictionaryToCreate.has(context_w)) {
                 if (context_w.charCodeAt(0) < 256) {
                     for (i = 0; i < context_numBits; i++) {
                         context_data_val = (context_data_val << 1);
@@ -222,10 +253,10 @@ var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
                     context_enlargeIn = Math.pow(2, context_numBits);
                     context_numBits++;
                 }
-                delete context_dictionaryToCreate[context_w];
+                context_dictionaryToCreate["delete"](context_w);
             }
             else {
-                value = context_dictionary[context_w];
+                value = context_dictionary.get(context_w);
                 for (i = 0; i < context_numBits; i++) {
                     context_data_val = (context_data_val << 1) | (value & 1);
                     if (context_data_position === bitsPerChar - 1) {
@@ -245,13 +276,13 @@ var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
                 context_numBits++;
             }
             // Add wc to the dictionary.
-            context_dictionary[context_wc] = context_dictSize++;
+            context_dictionary.set(context_wc, context_dictSize++);
             context_w = String(context_c);
         }
     }
     // Output the code for w.
     if (context_w !== "") {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+        if (context_dictionaryToCreate.has(context_w)) {
             if (context_w.charCodeAt(0) < 256) {
                 for (i = 0; i < context_numBits; i++) {
                     context_data_val = (context_data_val << 1);
@@ -311,10 +342,10 @@ var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
                 context_enlargeIn = Math.pow(2, context_numBits);
                 context_numBits++;
             }
-            delete context_dictionaryToCreate[context_w];
+            context_dictionaryToCreate["delete"](context_w);
         }
         else {
-            value = context_dictionary[context_w];
+            value = context_dictionary.get(context_w);
             for (i = 0; i < context_numBits; i++) {
                 context_data_val = (context_data_val << 1) | (value & 1);
                 if (context_data_position === bitsPerChar - 1) {

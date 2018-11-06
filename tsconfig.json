@@ -8,6 +8,7 @@
     "importHelpers": true,
     "noImplicitAny": false,
     "sourceMap": false,
+    "lib": ["es5", "es6"]
   },
   "exclude": [
     "libs/**",

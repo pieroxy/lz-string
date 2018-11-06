@@ -16,8 +16,7 @@
     "lz-string": "bin/bin.js"
   },
   "scripts": {
-    "afterBuildForMac": "sed -i '' 's/exports.__esModule = true;/var exports = {};exports.__esModule = true;/g' libs/lz-string.js",
-    "afterBuild": "sed -i 's/exports.__esModule = true;/var exports = {};exports.__esModule = true;/g' libs/lz-string.js",
+    "afterBuild": "sed -i'.bak' 's/exports.__esModule = true;/var exports = {};exports.__esModule = true;/g' libs/lz-string.js; rm libs/*.bak",
     "build": "npx tsc && npm run afterBuild && npm run minify",
     "test": "npm run tslint && npx jest",
     "tslint": "npx tslint --project .",

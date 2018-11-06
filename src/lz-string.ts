@@ -149,6 +149,38 @@ export const compress = (uncompressed: string): string => {
   });
 };
 
+/**
+ * Provide similar ES6-Map class
+ * @hidden
+ */
+class BaseMap {
+
+  private dict: any = {};
+
+  public delete(key: string): any {
+    if (key in this.dict) {
+      delete this.dict[key];
+      return true;
+    } else {
+      return false;
+    }
+  }
+  public get(key: string): any {
+    return this.dict[key];
+  }
+  public has(key: string): boolean {
+    return key in this.dict;
+  }
+  public set(key: string, value: any): void {
+    this.dict[key] = value;
+  }
+
+}
+
+const getMapOrObject = (): any => {
+  return (typeof Map === "undefined") ? new BaseMap() : new Map();
+};
+
 const _compress = (
     uncompressed: string,
     bitsPerChar: number,
@@ -159,8 +191,8 @@ const _compress = (
 
   let i: number;
   let value: any;
-  const context_dictionary = {};
-  const context_dictionaryToCreate = {};
+  const context_dictionary: any = getMapOrObject();
+  const context_dictionaryToCreate = getMapOrObject();
   let context_c: string;
   let context_wc: string;
   let context_w: string = "";
@@ -174,16 +206,16 @@ const _compress = (
 
   for (ii = 0; ii < uncompressed.length; ii += 1) {
     context_c = uncompressed.charAt(ii);
-    if (!(context_c in context_dictionary)) {
-      context_dictionary[context_c] = context_dictSize++;
-      context_dictionaryToCreate[context_c] = true;
+    if (!(context_dictionary.has(context_c))) {
+      context_dictionary.set(context_c, context_dictSize++);
+      context_dictionaryToCreate.set(context_c, true);
     }
 
     context_wc = context_w + context_c;
-    if (context_wc in context_dictionary) {
+    if (context_dictionary.has(context_wc)) {
       context_w = context_wc;
     } else {
-      if (context_w in context_dictionaryToCreate) {
+      if (context_dictionaryToCreate.has(context_w)) {
         if (context_w.charCodeAt(0) < 256) {
           for (i = 0; i < context_numBits; i++) {
             context_data_val = (context_data_val << 1);
@@ -238,9 +270,9 @@ const _compress = (
           context_enlargeIn = Math.pow(2, context_numBits);
           context_numBits++;
         }
-        delete context_dictionaryToCreate[context_w];
+        context_dictionaryToCreate.delete(context_w);
       } else {
-        value = context_dictionary[context_w];
+        value = context_dictionary.get(context_w);
         for (i = 0; i < context_numBits; i++) {
           context_data_val = (context_data_val << 1) | (value & 1);
           if (context_data_position === bitsPerChar - 1) {
@@ -259,7 +291,7 @@ const _compress = (
         context_numBits++;
       }
       // Add wc to the dictionary.
-      context_dictionary[context_wc] = context_dictSize++;
+      context_dictionary.set(context_wc, context_dictSize++);
       context_w = String(context_c);
     }
   }
@@ -267,7 +299,7 @@ const _compress = (
 
   // Output the code for w.
   if (context_w !== "") {
-    if (context_w in context_dictionaryToCreate) {
+    if (context_dictionaryToCreate.has(context_w)) {
       if (context_w.charCodeAt(0) < 256) {
         for (i = 0; i < context_numBits; i++) {
           context_data_val = (context_data_val << 1);
@@ -322,9 +354,9 @@ const _compress = (
         context_enlargeIn = Math.pow(2, context_numBits);
         context_numBits++;
       }
-      delete context_dictionaryToCreate[context_w];
+      context_dictionaryToCreate.delete(context_w);
     } else {
-      value = context_dictionary[context_w];
+      value = context_dictionary.get(context_w);
       for (i = 0; i < context_numBits; i++) {
         context_data_val = (context_data_val << 1) | (value & 1);
         if (context_data_position === bitsPerChar - 1) {
