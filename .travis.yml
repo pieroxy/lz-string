@@ -1,0 +1,29 @@
+sudo: false
+
+notifications:
+  email: false
+
+branches:
+  only:
+  - master
+
+matrix:
+  include:
+  - os: linux
+    language: node_js
+    node_js: '10.12.0'
+
+
+before_install:
+  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm
+    && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm
+    install ${TRAVIS_NODE_VERSION}
+  - node --version
+
+install:
+  - npm cache verify
+  - npm install
+
+script:
+  - npm test
+  - npm build
