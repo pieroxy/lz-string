@@ -12,7 +12,7 @@ var LZString = (function() {
 // private property
 var f = String.fromCharCode;
 var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.";
 var baseReverseDic = {};
 
 function getBaseValue(alphabet, character) {
@@ -99,7 +99,6 @@ var LZString = {
   decompressFromEncodedURIComponent:function (input) {
     if (input == null) return "";
     if (input == "") return null;
-    input = input.replace(/ /g, "+");
     return LZString._decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
   },
 
