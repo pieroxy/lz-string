@@ -1,7 +1,7 @@
 {
   "name": "lz-string",
   "version": "1.4.4",
-  "license": "WTFPL",
+  "license": "MIT",
   "filename": "lz-string.js",
   "description": "LZ-based compression algorithm",
   "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
