@@ -1,0 +1,31 @@
+# top-most EditorConfig file
+root = true
+
+# Global rules, override on case-by-case basis
+[*]
+charset = utf-8
+indent_style = tab
+tab_width = 4
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Match auto-generated format of package/bower json
+[{package,package-lock,bower}.json]
+indent_style = space
+indent_size = 2
+
+# Match auto-generated format of yml
+[*.yml]
+indent_style = space
+indent_size = 2
+
+# Ignore directories created by build process, etc.
+[/libs/**]
+charset = unset
+indent_style = unset
+tab_width = unset
+indent_size = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
