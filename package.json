@@ -1,23 +1,41 @@
 {
   "name": "lz-string",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "license": "MIT",
   "filename": "lz-string.js",
-  "description": "LZ-based compression algorithm",
+  "description": "LZ-based compression algorithm for JavaScript",
   "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
   "keywords": [
     "lz",
     "compression",
     "string"
   ],
+  "author": "pieroxy <pieroxy@pieroxy.net>",
   "main": "libs/lz-string.js",
+  "module": "libs/lz-string.esm.js",
+  "unpkg": "libs/lz-string.min.js",
   "typings": "typings/lz-string.d.ts",
+  "files": [
+    "libs/*",
+    "bin/bin.js",
+    "typings/lz-string.d.ts"
+  ],
   "bin": {
     "lz-string": "bin/bin.js"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js"
+  },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "minimist": "^1.2.0",
+    "rollup": "^1.12.1",
+    "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^4.0.4"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pieroxy/lz-string.git"
@@ -25,18 +43,15 @@
   "bugs": {
     "url": "https://github.com/pieroxy/lz-string/issues"
   },
-  "directories": {
-    "test": "tests"
-  },
-  "author": "pieroxy <pieroxy@pieroxy.net>",
   "autoupdate": {
-     "source": "git",
-     "target": "git://github.com/pieroxy/lz-string.git",
-     "basePath": "libs/",
-     "files": [
+    "source": "git",
+    "target": "git://github.com/pieroxy/lz-string.git",
+    "basePath": "libs/",
+    "files": [
       "lz-string.js",
+      "lz-string.esm.js",
       "lz-string.min.js",
       "base64-string.js"
-     ]
-   }
+    ]
+  }
 }
