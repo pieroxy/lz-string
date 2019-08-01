@@ -1,14 +1,14 @@
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  typeof angular !== 'undefined' && angular !== null ? (
-    angular.module('LZString',[])
-      .factory('LZString', function () {
-        var instance = {};
-        factory(instance);
-        return instance;
-      })
-  ) :
+typeof angular !== 'undefined' && angular !== null ? (
+  angular.module('LZString',[])
+    .factory('LZString', function () {
+      var instance = {};
+      factory(instance);
+      return instance;
+    })
+) :
 (global = global || self, factory(global.LZString = {}));
 }(this, function (exports) { 'use strict';
 

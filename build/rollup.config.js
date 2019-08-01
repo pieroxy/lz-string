@@ -74,14 +74,14 @@ export default [
 				generateBundle(opts, bundle) {
 					const filename = opts.file.replace('libs/', '');
 					const angularFactory = `
-  typeof angular !== 'undefined' && angular !== null ? (
-    angular.module('LZString',[])
-      .factory('LZString', function () {
-        var instance = {};
-        factory(instance);
-        return instance;
-      })
-  ) :`;
+typeof angular !== 'undefined' && angular !== null ? (
+  angular.module('LZString',[])
+    .factory('LZString', function () {
+      var instance = {};
+      factory(instance);
+      return instance;
+    })
+) :`;
 					bundle[filename].code = bundle[filename].code
 						.replace(
 							/(define\(\['exports'], factory\) :)/,
