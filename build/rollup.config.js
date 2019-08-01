@@ -59,6 +59,7 @@ export default [
 			file: 'libs/lz-string.js',
 			format: 'umd',
 			name: 'LZString',
+			indent: false,
 			globals,
 		},
 		plugins: [
