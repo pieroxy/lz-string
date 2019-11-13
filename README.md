@@ -16,6 +16,7 @@ If you are using one of the ports of lz-string to decode on the server what was 
 ```shell
 $ npm install -g lz-string
 $ lz-string input.js > output.txt
+$ lz-string decompress output.txt > input.js
 ```
 
 ## Home page
