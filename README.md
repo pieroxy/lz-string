@@ -38,5 +38,5 @@ This lib has numerous ports to other languages, for server side processing, most
 * **VB.NET** [by gsemac](https://github.com/gsemac/lz-string-vb)
 * **Salesforce Apex** (Java like language): [bilal did the port](https://github.com/bilalfastian/LZ4String)
 * **Kotlin:** [from Zen Liu](https://github.com/ZenLiuCN/lz-string4k)
-* **Dart:** [from skipness](https://github.com/ZenLiuCN/lz-string4k)
+* **Dart:** [from skipness](https://github.com/skipness/lzstring-dart)
 * **Haxe:** [from markknol](https://github.com/markknol/hx-lzstring)
