@@ -1,17 +1,3 @@
-(function (global, factory) {
-typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-typeof define === 'function' && define.amd ? define(['exports'], factory) :
-typeof angular !== 'undefined' && angular !== null ? (
-  angular.module('LZString',[])
-    .factory('LZString', function () {
-      var instance = {};
-      factory(instance);
-      return instance;
-    })
-) :
-(global = global || self, factory(global.LZString = {}));
-}(this, function (exports) { 'use strict';
-
 // Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
 // For licensing information see LICENSE
 //
@@ -21,10 +7,10 @@ typeof angular !== 'undefined' && angular !== null ? (
 // LZ-based compression algorithm, version 1.5.0
 
 // private property
-var f = String.fromCharCode;
-var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
-var baseReverseDic = {};
+let f = String.fromCharCode;
+const keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+const keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+let baseReverseDic = {};
 
 function getBaseValue(alphabet, character) {
   if (!baseReverseDic[alphabet]) {
@@ -36,8 +22,8 @@ function getBaseValue(alphabet, character) {
   return baseReverseDic[alphabet][character];
 }
 
-var compressToBase64 = function (input) {
-    if (input == null) { return ""; }
+export const compressToBase64 = function (input) {
+    if (input == null) return "";
     var res = _compress(input, 6, function(a){return keyStrBase64.charAt(a);});
     switch (res.length % 4) { // To produce valid Base64
     default: // When could this happen ?
@@ -48,25 +34,25 @@ var compressToBase64 = function (input) {
     }
 };
 
-var decompressFromBase64 = function (input) {
-    if (input == null) { return ""; }
-    if (input == "") { return null; }
+export const decompressFromBase64 = function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
     return _decompress(input.length, 32, function(index) { return getBaseValue(keyStrBase64, input.charAt(index)); });
 };
 
-var compressToUTF16 = function (input) {
-    if (input == null) { return ""; }
+export const compressToUTF16 = function (input) {
+    if (input == null) return "";
     return _compress(input, 15, function(a){return f(a+32);}) + " ";
 };
 
-var decompressFromUTF16 = function (compressed) {
-    if (compressed == null) { return ""; }
-    if (compressed == "") { return null; }
+export const decompressFromUTF16 = function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
     return _decompress(compressed.length, 16384, function(index) { return compressed.charCodeAt(index) - 32; });
 };
 
   //compress into uint8array (UCS-2 big endian format)
-var compressToUint8Array = function (uncompressed) {
+export const compressToUint8Array = function (uncompressed) {
     var compressed = compress(uncompressed);
     var buf=new Uint8Array(compressed.length*2); // 2 bytes per character
 
@@ -79,7 +65,7 @@ var compressToUint8Array = function (uncompressed) {
 };
 
   //decompress from uint8array (UCS-2 big endian format)
-var decompressFromUint8Array = function (compressed) {
+export const decompressFromUint8Array = function (compressed) {
     if (compressed===null || compressed===undefined){
         return decompress(compressed);
     } else {
@@ -100,25 +86,25 @@ var decompressFromUint8Array = function (compressed) {
 
 
   //compress into a string that is already URI encoded
-var compressToEncodedURIComponent = function (input) {
-    if (input == null) { return ""; }
+export const compressToEncodedURIComponent = function (input) {
+    if (input == null) return "";
     return _compress(input, 6, function(a){return keyStrUriSafe.charAt(a);});
 };
 
   //decompress from an output of compressToEncodedURIComponent
-var decompressFromEncodedURIComponent = function (input) {
-    if (input == null) { return ""; }
-    if (input == "") { return null; }
+export const decompressFromEncodedURIComponent = function (input) {
+    if (input == null) return "";
+    if (input == "") return null;
     input = input.replace(/ /g, "+");
     return _decompress(input.length, 32, function(index) { return getBaseValue(keyStrUriSafe, input.charAt(index)); });
 };
 
-var compress = function (uncompressed) {
+export const compress = function (uncompressed) {
     return _compress(uncompressed, 16, function(a){return f(a);});
 };
 
-var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
-    if (uncompressed == null) { return ""; }
+const _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
+    if (uncompressed == null) return "";
     var i, value,
         context_dictionary= {},
         context_dictionaryToCreate= {},
@@ -329,18 +315,18 @@ var _compress = function (uncompressed, bitsPerChar, getCharFromInt) {
         context_data.push(getCharFromInt(context_data_val));
         break;
       }
-      else { context_data_position++; }
+      else context_data_position++;
     }
     return context_data.join('');
 };
 
-var decompress = function (compressed) {
-    if (compressed == null) { return ""; }
-    if (compressed == "") { return null; }
+export const decompress = function (compressed) {
+    if (compressed == null) return "";
+    if (compressed == "") return null;
     return _decompress(compressed.length, 32768, function(index) { return compressed.charCodeAt(index); });
 };
 
-var _decompress = function (length, resetValue, getNextValue) {
+const _decompress = function (length, resetValue, getNextValue) {
     var dictionary = [],
         next,
         enlargeIn = 4,
@@ -501,18 +487,3 @@ var _decompress = function (length, resetValue, getNextValue) {
 
     }
 };
-
-exports.compress = compress;
-exports.compressToBase64 = compressToBase64;
-exports.compressToEncodedURIComponent = compressToEncodedURIComponent;
-exports.compressToUTF16 = compressToUTF16;
-exports.compressToUint8Array = compressToUint8Array;
-exports.decompress = decompress;
-exports.decompressFromBase64 = decompressFromBase64;
-exports.decompressFromEncodedURIComponent = decompressFromEncodedURIComponent;
-exports.decompressFromUTF16 = decompressFromUTF16;
-exports.decompressFromUint8Array = decompressFromUint8Array;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
