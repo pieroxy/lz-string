@@ -73,6 +73,9 @@ var LZString = {
     if (compressed===null || compressed===undefined){
         return LZString.decompress(compressed);
     } else {
+        compressed = JSON.parse(compressed).map(function (n) {
+          return n = +n;
+        });//insure the correct format parameters
         var buf=new Array(compressed.length/2); // 2 bytes per character
         for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
           buf[i]=compressed[i*2]*256+compressed[i*2+1];
