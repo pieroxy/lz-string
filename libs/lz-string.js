@@ -73,7 +73,7 @@ var LZString = {
     if (compressed===null || compressed===undefined){
         return LZString.decompress(compressed);
     } else {
-        var buf=new Array(compressed.length/2); // 2 bytes per character
+        var buf=new Array(Math.ceil(compressed.length/2)); // 2 bytes per character
         for (var i=0, TotalLen=buf.length; i<TotalLen; i++) {
           buf[i]=compressed[i*2]*256+compressed[i*2+1];
         }
