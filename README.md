@@ -35,6 +35,7 @@ This lib has numerous ports to other languages, for server side processing, most
 * **Go** [Austin wrote the decompression part as well](https://github.com/austinh115/lz-string-go)
 * **Elixir** [by Michael Shapiro](https://github.com/koudelka/elixir-lz-string)
 * **C++/QT** [by AmiArt](https://github.com/AmiArt/qt-lzstring)
+* **C++** [by Andrey Krasnov, another implementation in C++11](https://github.com/andykras/lz-string-cpp)
 * **VB.NET** [by gsemac](https://github.com/gsemac/lz-string-vb)
 * **Salesforce Apex** (Java like language): [bilal did the port](https://github.com/bilalfastian/LZ4String)
 * **Kotlin:** [from Zen Liu](https://github.com/ZenLiuCN/lz-string4k)
