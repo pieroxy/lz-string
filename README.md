@@ -31,6 +31,7 @@ This lib has numerous ports to other languages, for server side processing, most
 * **C#:** [by kreudom, another implementation in C#, more up to date](https://github.com/kreudom/lz-string-csharp)
 * **PHP:** [by nullpunkt](https://github.com/nullpunkt/lz-string-php)
 * **Python3:** [by eduardtomasek](https://github.com/eduardtomasek/lz-string-python)
+* **Another Python:** [by marcel-dancak](https://github.com/marcel-dancak/lz-string-python)
 * **Go** [I helped a friend to write a Go implementation of the decompression algorithm](https://github.com/pieroxy/lz-string-go)
 * **Go** [Austin wrote the decompression part as well](https://github.com/Lazarus/lz-string-go)
 * **Elixir** [by Michael Shapiro](https://github.com/koudelka/elixir-lz-string)
