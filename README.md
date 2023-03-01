@@ -42,3 +42,4 @@ This lib has numerous ports to other languages, for server side processing, most
 * **Kotlin:** [from Zen Liu](https://github.com/ZenLiuCN/lz-string4k)
 * **Dart:** [from skipness](https://github.com/skipness/lzstring-dart)
 * **Haxe:** [from markknol](https://github.com/markknol/hx-lzstring)
+* **Rust:** [from adumbidiot](https://github.com/adumbidiot/lz-str-rs)
