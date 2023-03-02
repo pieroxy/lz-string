@@ -1,22 +1,13 @@
-// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
-// This work is free. You can redistribute it and/or modify it
-// under the terms of the WTFPL, Version 2
-// For more information see LICENSE.txt or http://www.wtfpl.net/
-//
-// For more information, the home page:
-// http://pieroxy.net/blog/pages/lz-string/testing.html
-//
-// LZ-based compression algorithm, version 1.4.5
-var LZString = (function () {
+var LZStringUnsafe = (function () {
   // private property
   var i = 0,
+    reverseDict = {},
     fromCharCode = String.fromCharCode,
     streamData,
     streamDataVal,
     streamDataPosition,
     streamBitsPerChar,
     streamGetCharFromInt,
-    reverseDict = {},
     base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+",
     Base64CharArray = (base + "/=").split(''),
     UriSafeCharArray = (base + "-$").split('');
@@ -42,7 +33,6 @@ var LZString = (function () {
   function getCharFromBase64(a) { return Base64CharArray[a]; }
   function getCharFromURISafe(a) { return UriSafeCharArray[a]; }
   function getCharFromUTF16(a) { return fromCharCode(a + 32); }
-  function _node(val) { return { v: val, d: {} }; }
   function _compress(uncompressed, bitsPerChar, getCharFromInt) {
     // data - empty stream
     streamData = [];
@@ -54,12 +44,15 @@ var LZString = (function () {
       streamDataPosition = 0;
       streamBitsPerChar = bitsPerChar;
       streamGetCharFromInt = getCharFromInt;
-      var j = 0, value = 0,
-        dictionary = {},
+      var j = 0, k = 0, value = 0,
+        node = [3], // first node will always be initialised like this.
+        // we should never output the root anyway,
+        // so we initiate with terminating token
+        // Also, dictionary[1] will be overwritten
+        // by the first charCode
+        dictionary = [2, 2, node],
         freshNode = true,
         c = 0,
-        node = _node(3), // first node will always be initialised like this.
-        nextNode,
         dictSize = 3,
         numBitsMask = 0b100;
 
@@ -83,63 +76,72 @@ var LZString = (function () {
         streamBits(c, value ? 0b10000000000000000 : 0b100000000);
 
         // Add charCode to the dictionary.
-        dictionary[c] = node;
+        dictionary[1] = c;
 
+        nextchar:
         for (j = 1; j < uncompressed.length; j++) {
           c = uncompressed.charCodeAt(j);
           // does the new charCode match an existing prefix?
-          nextNode = node.d[c];
-          if (nextNode) {
-            // continue with next prefix
-            node = nextNode;
+          for (k = 1; k < node.length; k += 2) {
+            if (node[k] == c) {
+              node = node[k + 1];
+              continue nextchar;
+            }
+          }
+          // we only end up here if there is no matching char
+
+          // Prefix+charCode does not exist in trie yet.
+          // We write the prefix to the bitstream, and add
+          // the new charCode to the dictionary if it's new
+          // Then we set `node` to the root node matching
+          // the charCode.
+
+          if (freshNode) {
+            // Prefix is a freshly added character token,
+            // which was already written to the bitstream
+            freshNode = false;
           } else {
+            // write out the current prefix token
+            streamBits(node[0], numBitsMask);
+          }
 
-            // Prefix+charCode does not exist in trie yet.
-            // We write the prefix to the bitstream, and add
-            // the new charCode to the dictionary if it's new
-            // Then we set node to the root node matching
-            // the charCode.
-
-            if (freshNode) {
-              // Prefix is a freshly added character token,
-              // which was already written to the bitstream
-              freshNode = false;
-            } else {
-              // write out the current prefix token
-              value = node.v;
-              streamBits(value, numBitsMask);
-            }
-
-            // Is the new charCode a new character
-            // that needs to be stored at the root?
-            if (dictionary[c] == undefined) {
-              // increase token bitlength if necessary
-              if (++dictSize >= numBitsMask) {
-                numBitsMask <<= 1;
-              }
-
-
-              // insert "new 8/16 bit charCode" token,
-              // see comments above for explanation
-              value = c < 256 ? 0 : 1
-              streamBits(value, numBitsMask);
-              streamBits(c, value ? 0b10000000000000000 : 0b100000000);
-
-              dictionary[c] = _node(dictSize)
-              // Note of that we already wrote
-              // the charCode token to the bitstream
-              freshNode = true;
-            }
-            // add node representing prefix + new charCode to trie
-            node.d[c] = _node(++dictSize)
+          // Is the new charCode a new character
+          // that needs to be stored at the root?
+          k = 1;
+          while (dictionary[k] != c && k < dictionary.length) {
+            k += 2;
+          }
+          if (k == dictionary.length) {
             // increase token bitlength if necessary
-            if (dictSize >= numBitsMask) {
+            if (++dictSize >= numBitsMask) {
               numBitsMask <<= 1;
             }
 
-            // set node to first charCode of new prefix
-            node = dictionary[c];
+            // insert "new 8/16 bit charCode" token,
+            // see comments above for explanation
+            value = c < 256 ? 0 : 1
+            streamBits(value, numBitsMask);
+            streamBits(c, value ? 0b10000000000000000 : 0b100000000);
+
+            dictionary.push(c);
+            dictionary.push([dictSize]);
+            // Note of that we already wrote
+            // the charCode token to the bitstream
+            freshNode = true;
           }
+          // add node representing prefix + new charCode to trie
+          node.push(c);
+          node.push([++dictSize]);
+          // increase token bitlength if necessary
+          if (dictSize >= numBitsMask) {
+            numBitsMask <<= 1;
+          }
+          // set node to first charCode of new prefix
+          // k is guaranteed to be at the current charCode,
+          // since we either broke out of the while loop
+          // when it matched, or just added the new charCode
+          node = dictionary[k + 1];
+
         }
 
         // === Write last prefix to output ===
@@ -148,21 +150,25 @@ var LZString = (function () {
           freshNode = false;
         } else {
           // write out the prefix token
-          streamBits(node.v, numBitsMask);
+          streamBits(node[0], numBitsMask);
+
         }
 
         // Is c a new character?
-        if (dictionary[c] == undefined) {
+        k = 1;
+        while (dictionary[k] != c && k < dictionary.length) {
+          k += 2;
+        }
+        if (k == dictionary.length) {
           // increase token bitlength if necessary
           if (++dictSize >= numBitsMask) {
             numBitsMask <<= 1;
           }
-
           // insert "new 8/16 bit charCode" token,
           // see comments above for explanation
           value = c < 256 ? 0 : 1
           streamBits(value, numBitsMask);
-          streamBits(c, 0b100000000 << value);
+          streamBits(c, value ? 0b10000000000000000 : 0b100000000);
         }
         // increase token bitlength if necessary
         if (++dictSize >= numBitsMask) {
@@ -172,20 +178,23 @@ var LZString = (function () {
 
       // Mark the end of the stream
       streamBits(2, numBitsMask);
+
+
       // Flush the last char
       streamDataVal <<= streamBitsPerChar - streamDataPosition;
       streamData.push(streamGetCharFromInt(streamDataVal));
     }
     return streamData;
-
   }
+
   function _decompress(length, resetBits, getNextValue) {
-    var dictionary = ['', '', ''],
+    var dictionary = [0, 1, 2],
       enlargeIn = 4,
       dictSize = 4,
       numBits = 3,
       entry = "",
       result = [],
+      w = "",
       bits = 0,
       maxpower = 2,
       power = 0,
@@ -224,6 +233,7 @@ var LZString = (function () {
     }
     c = fromCharCode(bits);
     dictionary[3] = c;
+    w = c;
     result.push(c);
 
     // read rest of string
@@ -265,12 +275,12 @@ var LZString = (function () {
       if (bits > dictionary.length) {
         return null;
       }
-      entry = bits < dictionary.length ? dictionary[bits] : c + c.charAt(0);
+      entry = bits < dictionary.length ? dictionary[bits] : w + w.charAt(0);
       result.push(entry);
-      // Add c+entry[0] to the dictionary.
-      dictionary[dictSize++] = c + entry.charAt(0);
+      // Add w+entry[0] to the dictionary.
+      dictionary[dictSize++] = w + entry.charAt(0);
 
-      c = entry;
+      w = entry;
 
       if (--enlargeIn == 0) {
         enlargeIn = 1 << numBits++;
@@ -292,7 +302,7 @@ var LZString = (function () {
     compressToBase64: function (input) {
       if (input == null) return "";
       var res = _compress(input, 6, getCharFromBase64),
-        i = res.length % 4; // To produce valid Base64
+      i = res.length % 4; // To produce valid Base64
       while (i--) {
         res.push("=");
       }
@@ -360,7 +370,6 @@ var LZString = (function () {
     compress: function (uncompressed) {
       return _compressToArray(uncompressed).join('');
     },
-
     compressToArray: _compressToArray,
 
     decompress: function (compressed) {
@@ -374,12 +383,12 @@ var LZString = (function () {
 })();
 
 if (typeof define === 'function' && define.amd) {
-  define(function () { return LZString; });
+  define(function () { return LZStringUnsafe; });
 } else if (typeof module !== 'undefined' && module != null) {
-  module.exports = LZString
+  module.exports = LZStringUnsafe
 } else if (typeof angular !== 'undefined' && angular != null) {
-  angular.module('LZString', [])
-    .factory('LZString', function () {
-      return LZString;
+  angular.module('LZStringUnsafe', [])
+    .factory('LZStringUnsafe', function () {
+      return LZStringUnsafe;
     });
 }
