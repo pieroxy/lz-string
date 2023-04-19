@@ -1,5 +1,6 @@
-lz-string
+PLZSU
 =========
+Pieroxy's lz-string : Updated! [Original GitHub](https://github.com/pieroxy/lz-string) | [Original NPM](https://www.npmjs.com/package/lz-string)
 LZ-based compression algorithm for JavaScript
 
 ## Warning (migrating from version 1.3.4 - nov 2014)
