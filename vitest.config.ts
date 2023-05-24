@@ -4,11 +4,11 @@ import { defineConfig } from "vite"
 import typescript from "@rollup/plugin-typescript"
 import { resolve } from "path"
 import { typescriptPaths } from "rollup-plugin-typescript-paths"
-import tsconfigPaths from 'vite-tsconfig-paths'
-import dts from 'vite-plugin-dts'
+import tsconfigPaths from "vite-tsconfig-paths"
+import dts from "vite-plugin-dts"
 
 export default defineConfig({
-  base: './',
+  base: "./",
   plugins: [
     tsconfigPaths(),
     dts({ rollupTypes: true })
@@ -21,7 +21,7 @@ export default defineConfig({
         replacement: resolve(__dirname, "./src"),
       },
     ],
-    extensions: ['.ts']
+    extensions: [".ts"]
   },
   test: {},
   build: {
@@ -31,7 +31,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       fileName: (format) => `index.${format}.js`,
-      name: 'Jackal.js'
+      name: "Jackal.js"
     },
     rollupOptions: {
       external: [],
@@ -39,7 +39,7 @@ export default defineConfig({
         typescriptPaths({
           absolute: false,
         }),
-        typescript({ tsconfig: './tsconfig.json' }),
+        typescript({ tsconfig: "./tsconfig.json" }),
       ],
     },
   },

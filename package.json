@@ -1,6 +1,15 @@
 {
   "name": "lz-string",
-  "author": "pieroxy <pieroxy@pieroxy.net>",
+  "author": {
+    "name": "pieroxy",
+    "email": "pieroxy@pieroxy.net"
+  },
+  "contributors": [
+    {
+      "name": "Karnthis",
+      "email": "me@erinrivas.com"
+    }
+  ],
   "version": "1.5.0",
   "license": "MIT",
   "description": "LZ-based compression algorithm",
