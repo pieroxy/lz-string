@@ -6,11 +6,13 @@ import { resolve } from "path"
 import { typescriptPaths } from "rollup-plugin-typescript-paths"
 import tsconfigPaths from "vite-tsconfig-paths"
 import dts from "vite-plugin-dts"
+import eslint from "vite-plugin-eslint"
 
 export default defineConfig({
   base: "./",
   plugins: [
     tsconfigPaths(),
+    eslint(),
     dts({ rollupTypes: true })
   ],
   resolve: {
