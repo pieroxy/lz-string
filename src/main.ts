@@ -8,7 +8,8 @@
 //
 // LZ-based compression algorithm, version 1.4.5
 
-import { LZString, Dictionary, DictionaryCollection, PendingDictionary, DecompressionTracker } from '@/interfaces'
+import { LZString, DecompressionTracker } from '@/interfaces'
+import { Dictionary, DictionaryCollection, PendingDictionary } from '@/types'
 
 const LZString: LZString = (function() {
 
@@ -322,8 +323,8 @@ const LZString: LZString = {
   },
 
   _decompress: function (length, resetValue, getNextValue): string | null {
-    const dictionary: (number | string)[] = []
-    /** TODO - doesn't seem to be used. address during code cleanup */
+    const dictionary: string[] = []
+    /* TODO - doesn't seem to be used. address during code cleanup */
     // @ts-ignore
     let next: number
     let enlargeIn: number = 4
@@ -345,7 +346,7 @@ const LZString: LZString = {
     };
 
     for (i = 0; i < 3; i += 1) {
-      dictionary[i] = i;
+      dictionary[i] = String(i);
     }
     bits = 0;
     maxpower = Math.pow(2,2);
@@ -396,13 +397,13 @@ const LZString: LZString = {
       case 2:
         return "";
     }
-    /** TODO - address during code cleanup */
+    /* TODO - address during code cleanup */
     // @ts-ignore
-    dictionary[3] = c as string;
+    dictionary[3] = String(c);
     // @ts-ignore
-    w = c;
+    w = String(c);
     // @ts-ignore
-    result.push(c);
+    result.push(String(c));
     while (true) {
       if (data.index > length) {
         return "";
@@ -465,8 +466,7 @@ const LZString: LZString = {
         numBits++;
       }
       if (dictionary[c]) {
-        /** TODO - messy. address during code cleanup */
-        entry = dictionary[c] as string;
+        entry = String(dictionary[c]);
       } else {
         if (c === dictSize) {
           entry = w + w.charAt(0);
@@ -489,7 +489,7 @@ const LZString: LZString = {
   return LZString;
 })();
 
-/** TODO - shouldn't be needed after switching to vite. address during code cleanup */
+/* TODO - shouldn't be needed after switching to vite. address during code cleanup */
 // if (typeof define === 'function' && define.amd) {
 //   define(function () { return LZString; });
 // } else if( typeof module !== 'undefined' && module != null ) {
