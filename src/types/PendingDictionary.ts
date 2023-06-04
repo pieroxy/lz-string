@@ -1,1 +1,1 @@
-export type PendingDictionary = Record<string, true>
+export type PendingDictionary = Record<string, true>;

@@ -1,5 +1,5 @@
 export interface DecompressionTracker {
-  val: number,
-  position: number,
-  index: number
+  val: number;
+  position: number;
+  index: number;
 }

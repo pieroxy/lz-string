@@ -1,3 +1,3 @@
-import { Dictionary } from '@/types'
+import { Dictionary } from "@/types";
 
-export type DictionaryCollection = Record<string, Dictionary>
+export type DictionaryCollection = Record<string, Dictionary>;
