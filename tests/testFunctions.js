@@ -16,7 +16,7 @@ import {
 } from "tests/testValues.js";
 import { LZString } from "../src/main";
 
-function runTestSet(desc, compressFunc, decompressFunc, compressedTattoo) {
+export function runTestSet(desc, compressFunc, decompressFunc, compressedTattoo) {
   test(`${desc} : Hello World`, () => {
     expect(compressFunc(test_hw)).not.toEqual(test_hw);
     expect(decompressFunc(compressFunc(test_hw))).toEqual(test_hw);
