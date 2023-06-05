@@ -21,17 +21,28 @@
   "bugs": {
     "url": "https://github.com/pieroxy/lz-string/issues"
   },
-  "type": "module",
   "keywords": [
     "lz",
     "compression",
     "string"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    }
+  },
+  "type": "module",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest src.main.test.js",
+    "test:all": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts"
   },
@@ -41,6 +52,7 @@
     "@rollup/plugin-typescript": "11.1.1",
     "@typescript-eslint/eslint-plugin": "5.59.7",
     "@typescript-eslint/parser": "5.59.7",
+    "@vitest/coverage-c8": "0.31.4",
     "eslint": "8.41.0",
     "eslint-config-prettier": "8.8.0",
     "rollup-plugin-typescript-paths": "1.4.0",
