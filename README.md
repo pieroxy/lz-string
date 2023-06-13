@@ -32,6 +32,7 @@ This lib has numerous ports to other languages, for server side processing, most
 * **PHP:** [by nullpunkt](https://github.com/nullpunkt/lz-string-php)
 * **Python3:** [by eduardtomasek](https://github.com/eduardtomasek/lz-string-python)
 * **Another Python:** [by marcel-dancak](https://github.com/marcel-dancak/lz-string-python)
+* **Ruby** [by Altivi](https://github.com/Altivi/lz_string)
 * **Go** [I helped a friend to write a Go implementation of the decompression algorithm](https://github.com/pieroxy/lz-string-go)
 * **Go** [Austin wrote the decompression part as well](https://github.com/Lazarus/lz-string-go)
 * **Go** [by daku10, another implementation supports multiple encoding formats and can be used as a CLI tool](https://github.com/daku10/go-lz-string)
