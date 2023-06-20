@@ -57,7 +57,7 @@
     "eslint-config-prettier": "8.8.0",
     "rollup-plugin-typescript-paths": "1.4.0",
     "typescript": "5.0.4",
-    "vite": "4.3.8",
+    "vite": "4.3.9",
     "vite-plugin-dts": "2.3.0",
     "vite-plugin-eslint": "1.8.1",
     "vite-tsconfig-paths": "4.2.0",
