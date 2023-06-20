@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "eslint-config-prettier"
+  ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".ts"]
+      }
+    }
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  //  TODO - Remove after TS release
+  "ignorePatterns": ["main.ts", "base64-string.ts"]
+}

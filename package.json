@@ -1,23 +1,19 @@
 {
   "name": "lz-string",
-  "version": "1.5.0",
+  "author": {
+    "name": "pieroxy",
+    "email": "pieroxy@pieroxy.net"
+  },
+  "contributors": [
+    {
+      "name": "Karnthis",
+      "email": "me@erinrivas.com"
+    }
+  ],
+  "version": "2.0.0-rc.0",
   "license": "MIT",
-  "filename": "lz-string.js",
   "description": "LZ-based compression algorithm",
   "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
-  "keywords": [
-    "lz",
-    "compression",
-    "string"
-  ],
-  "main": "libs/lz-string.js",
-  "typings": "typings/lz-string.d.ts",
-  "bin": {
-    "lz-string": "bin/bin.js"
-  },
-  "scripts": {},
-  "dependencies": {},
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/pieroxy/lz-string.git"
@@ -25,18 +21,46 @@
   "bugs": {
     "url": "https://github.com/pieroxy/lz-string/issues"
   },
-  "directories": {
-    "test": "tests"
+  "keywords": [
+    "lz",
+    "compression",
+    "string"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    }
   },
-  "author": "pieroxy <pieroxy@pieroxy.net>",
-  "autoupdate": {
-    "source": "git",
-    "target": "git://github.com/pieroxy/lz-string.git",
-    "basePath": "libs/",
-    "files": [
-      "lz-string.js",
-      "lz-string.min.js",
-      "base64-string.js"
-    ]
+  "type": "module",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "test": "vitest src.main.test.js",
+    "test:all": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint . --ext .ts"
+  },
+  "devDependencies": {
+    "@btmills/prettier": "2.8.8",
+    "@rollup/plugin-commonjs": "25.0.0",
+    "@rollup/plugin-typescript": "11.1.1",
+    "@typescript-eslint/eslint-plugin": "5.59.7",
+    "@typescript-eslint/parser": "5.59.7",
+    "@vitest/coverage-c8": "0.31.4",
+    "eslint": "8.41.0",
+    "eslint-config-prettier": "8.8.0",
+    "rollup-plugin-typescript-paths": "1.4.0",
+    "typescript": "5.0.4",
+    "vite": "4.3.8",
+    "vite-plugin-dts": "2.3.0",
+    "vite-plugin-eslint": "1.8.1",
+    "vite-tsconfig-paths": "4.2.0",
+    "vitest": "0.31.1"
   }
 }
