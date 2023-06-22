@@ -61,14 +61,16 @@ export const LZString: LZString = (function () {
         return keyStrBase64.charAt(a);
       });
       switch (
-        res.length % 3 // To produce valid Base64
+        res.length % 4 // To produce valid Base64
       ) {
         default: // When could this happen ?
         case 0:
           return res;
         case 1:
-          return res + "==";
+          return res + "===";
         case 2:
+          return res + "==";
+        case 3:
           return res + "=";
       }
     },
