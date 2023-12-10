@@ -44,6 +44,7 @@
     "test": "vitest src.main.test.js",
     "test:all": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:custom": "vitest custom.test.js",
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {

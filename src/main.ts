@@ -33,6 +33,8 @@ export interface LZString {
   decompressFromUint8Array: (compressed: Uint8Array) => string | null;
   compressToEncodedURIComponent: (input: string) => string;
   decompressFromEncodedURIComponent: (input: string) => string | null;
+  compressToCustom: (uncompressed: string, dict: string) => string;
+  decompressFromCustom: (compressed: string, dict: string) => string | null;
 }
 
 export const LZString: LZString = (function () {
@@ -145,6 +147,51 @@ export const LZString: LZString = (function () {
       return LZString._decompress(input.length, 32, function (index) {
         return getBaseValue(keyStrUriSafe, input.charAt(index));
       });
+    },
+
+    compressToCustom: function (uncompressed: string, dict: string): string {
+      const compressed: string = LZString.compress(uncompressed);
+      const charsPerUnicodeChar: number = Math.ceil(Math.log(65536) / Math.log(dict.length));
+      let res: string = "";
+      
+      for (let i = 0, TotalLen = compressed.length; i < TotalLen; i++) {
+        let current_value = compressed.charCodeAt(i);
+
+        for (let j = charsPerUnicodeChar-1; j >= 0; j--) {
+          let selector = Math.floor(current_value / Math.pow(dict.length, j));
+          current_value = current_value % Math.pow(dict.length, j);
+          res += dict.charAt(selector);
+        }
+      }
+
+      return res;
+    },
+    
+    decompressFromCustom: function (compressed: string, dict: string): string | null {
+      if (compressed == null) return "";
+      if (compressed == "") return null;
+      if (dict.length < 2) return null;
+      
+      const charsPerUnicodeChar: number = Math.ceil(Math.log(65536) / Math.log(dict.length));
+
+      if (compressed.length % charsPerUnicodeChar != 0) return null;
+
+      let res: string = "";
+      let current_value;
+      let index;
+      
+      for (let i = 0, TotalLen = compressed.length; i < TotalLen; i=i+charsPerUnicodeChar) {
+        current_value = 0;
+
+        for (let j = 0; j < charsPerUnicodeChar; j++) {
+          index = dict.indexOf(compressed[i+j]);
+          current_value = current_value + (index * Math.pow(dict.length, charsPerUnicodeChar - 1 - j));
+        }
+        
+        res = res + String.fromCharCode(current_value);
+      }
+      
+      return LZString.decompress(res);
     },
 
     compress: function (uncompressed: string): string {
