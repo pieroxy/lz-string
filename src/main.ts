@@ -8,8 +8,9 @@
 //
 // LZ-based compression algorithm, version 1.4.5
 
-import { DecompressionTracker } from "@/interfaces";
-import { Dictionary, DictionaryCollection, PendingDictionary } from "@/types";
+import type { DecompressionTracker } from "./interfaces";
+import type { Dictionary, DictionaryCollection, PendingDictionary } from "./types";
+import invariant from "tiny-invariant";
 
 export interface LZString {
   _compress: (
@@ -367,6 +368,7 @@ export const LZString: LZString = (function () {
       }
       // Flush the last char
       while (true) {
+        // eslint-disable-line no-constant-condition
         context_data_val = context_data_val << 1;
         if (context_data_position == bitsPerChar - 1) {
           context_data.push(getCharFromInt(context_data_val));
@@ -386,9 +388,6 @@ export const LZString: LZString = (function () {
 
     _decompress: function (length, resetValue, getNextValue): string | null {
       const dictionary: string[] = [];
-      /* TODO - doesn't seem to be used. address during code cleanup */
-      // @ts-ignore
-      let next: number;
       let enlargeIn: number = 4;
       let dictSize: number = 4;
       let numBits: number = 3;
@@ -423,7 +422,7 @@ export const LZString: LZString = (function () {
         bits |= (resb > 0 ? 1 : 0) * power;
         power <<= 1;
       }
-      switch ((next = bits)) {
+      switch (bits) {
         case 0:
           bits = 0;
           maxpower = Math.pow(2, 8);
@@ -460,13 +459,12 @@ export const LZString: LZString = (function () {
           return "";
       }
       /* TODO - address during code cleanup */
-      // @ts-ignore
+      invariant(c! !== undefined, "No character found");
       dictionary[3] = String(c);
-      // @ts-ignore
       w = String(c);
-      // @ts-ignore
       result.push(String(c));
       while (true) {
+        // eslint-disable-line no-constant-condition
         if (data.index > length) {
           return "";
         }

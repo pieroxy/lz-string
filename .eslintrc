@@ -15,7 +15,5 @@
   "env": {
     "browser": true,
     "node": true
-  },
-  //  TODO - Remove after TS release
-  "ignorePatterns": ["main.ts", "base64-string.ts"]
+  }
 }

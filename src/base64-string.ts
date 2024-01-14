@@ -10,6 +10,8 @@
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...)
 // version 1.4.1
 
+import invariant from "tiny-invariant";
+
 interface Base64String {
   compress: (input: string) => string;
   decompress: (input: string) => string;
@@ -239,7 +241,7 @@ const Base64String: Base64String = {
     let i: number = 0;
     let flush: boolean = false;
 
-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    input = input.replace(/[^A-Za-z0-9+/=]/g, "");
 
     while (i < input.length) {
       enc1 = this._keyStr.indexOf(input.charAt(i++));
@@ -264,8 +266,7 @@ const Base64String: Base64String = {
           flush = true;
         }
       } else {
-        /* TODO - logic incomplete, should have a value but might not. address during code cleanup */
-        // @ts-ignore
+        invariant(output_! !== undefined, "Output error 1");
         output.push(String.fromCharCode(output_ | chr1));
         flush = false;
 
@@ -274,8 +275,7 @@ const Base64String: Base64String = {
           flush = true;
         }
         if (enc4 != 64) {
-          /* TODO - logic incomplete, should have a value but might not. address during code cleanup */
-          // @ts-ignore
+          invariant(output_! !== undefined, "Output error 2");
           output.push(String.fromCharCode(output_ | chr3));
           flush = false;
         }
@@ -284,8 +284,7 @@ const Base64String: Base64String = {
     }
 
     if (flush) {
-      /* TODO - logic incomplete, should have a value but might not. address during code cleanup */
-      // @ts-ignore
+      invariant(output_! !== undefined, "Output error 3");
       output.push(String.fromCharCode(output_));
       output = output.join("");
       output =

@@ -3,9 +3,11 @@ import {
   test_tattooEncodedURIComponentPlus,
   test_tattooUint8Array,
   test_tattooUTF16,
-} from "tests/testValues.js";
-import { LZString } from "dist/index.umd.js";
-import { runTestSet } from "tests/testFunctions.js";
+} from "./testValues.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { LZString } from "../dist/index.umd.js";
+import { runTestSet } from "./testFunctions.js";
 
 runTestSet(
   "DIST/UMD | Stock Compression and Decompression",
