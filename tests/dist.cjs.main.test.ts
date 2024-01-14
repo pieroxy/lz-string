@@ -1,7 +1,7 @@
 import { describe } from "vitest";
-import { LZString } from "../src/main";
+import { LZString } from "../dist/index.cjs";
 import { runAllTests } from "./testFunctions";
 
-describe("src/ (uncompiled)", () => {
+describe("dist/index.cjs (commonjs)", () => {
     runAllTests(LZString);
 });

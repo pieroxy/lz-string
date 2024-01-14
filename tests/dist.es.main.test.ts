@@ -1,39 +1,7 @@
-import {
-  test_tattooBase64,
-  test_tattooEncodedURIComponentPlus,
-  test_tattooUint8Array,
-  test_tattooUTF16,
-} from "./testValues.js";
-import { LZString } from "../dist/index.es.js";
-import { runTestSet } from "./testFunctions.js";
+import { describe } from "vitest";
+import { LZString } from "../dist/index.js";
+import { runAllTests } from "./testFunctions";
 
-runTestSet(
-  "DIST/ES | Stock Compression and Decompression",
-  LZString.compress,
-  LZString.decompress,
-  "",
-);
-runTestSet(
-  "DIST/ES | Base64 Compression and Decompression",
-  LZString.compressToBase64,
-  LZString.decompressFromBase64,
-  test_tattooBase64,
-);
-runTestSet(
-  "DIST/ES | UTF16 Compression and Decompression",
-  LZString.compressToUTF16,
-  LZString.decompressFromUTF16,
-  test_tattooUTF16,
-);
-runTestSet(
-  "DIST/ES | Uint8Array Compression and Decompression",
-  LZString.compressToUint8Array,
-  LZString.decompressFromUint8Array,
-  test_tattooUint8Array,
-);
-runTestSet(
-  "DIST/ES | EncodedURIComponent Compression and Decompression",
-  LZString.compressToEncodedURIComponent,
-  LZString.decompressFromEncodedURIComponent,
-  test_tattooEncodedURIComponentPlus,
-);
+describe("dist/index.js (esmodule)", () => {
+    runAllTests(LZString);
+});

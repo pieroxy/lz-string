@@ -1,19 +1,19 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "eslint-config-prettier"
-  ],
-  "settings": {
-    "import/resolver": {
-      "node": {
-        "paths": ["src"],
-        "extensions": [".js", ".ts"]
-      }
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "eslint-config-prettier"
+    ],
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "paths": ["src", "test"],
+                "extensions": [".ts"]
+            }
+        }
+    },
+    "env": {
+        "browser": true,
+        "node": true
     }
-  },
-  "env": {
-    "browser": true,
-    "node": true
-  }
 }
