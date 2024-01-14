@@ -9,7 +9,11 @@
 // LZ-based compression algorithm, version 1.4.5
 
 import type { DecompressionTracker } from "./interfaces";
-import type { Dictionary, DictionaryCollection, PendingDictionary } from "./types";
+import type {
+  Dictionary,
+  DictionaryCollection,
+  PendingDictionary,
+} from "./types";
 import invariant from "tiny-invariant";
 
 export interface LZString {
@@ -367,8 +371,8 @@ export const LZString: LZString = (function () {
         value = value >> 1;
       }
       // Flush the last char
+      // eslint-disable-next-line no-constant-condition
       while (true) {
-        // eslint-disable-line no-constant-condition
         context_data_val = context_data_val << 1;
         if (context_data_position == bitsPerChar - 1) {
           context_data.push(getCharFromInt(context_data_val));
@@ -463,8 +467,8 @@ export const LZString: LZString = (function () {
       dictionary[3] = String(c);
       w = String(c);
       result.push(String(c));
+      // eslint-disable-next-line no-constant-condition
       while (true) {
-        // eslint-disable-line no-constant-condition
         if (data.index > length) {
           return "";
         }
