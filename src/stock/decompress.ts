@@ -1,6 +1,6 @@
 import { _decompress } from "../_decompress";
 
-export function decompress(compressed: string): string | null {
+export function decompress(compressed: string | null) {
     if (compressed == null) return "";
     if (compressed == "") return null;
 

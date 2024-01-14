@@ -2,7 +2,7 @@ import { _decompress } from "../_decompress";
 import { getBaseValue } from "../getBaseValue";
 import keyStrBase64 from "./keyStrBase64";
 
-export function decompressFromBase64(input: string): string | null {
+export function decompressFromBase64(input: string | null) {
     if (input == null) return "";
     if (input == "") return null;
 

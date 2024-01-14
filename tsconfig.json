@@ -1,24 +1,17 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "lib": ["ESNext"],
-        "skipLibCheck": true,
-
-        /* Bundler mode */
-        "outDir": "dist",
-        "sourceMap": true,
         "declaration": true,
-        "declarationMap": true,
+        "lib": ["ESNext"],
+        "module": "ESNext",
         "moduleResolution": "Node",
         "noEmit": true,
-
-        /* Linting */
-        "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-
-        "baseUrl": "."
+        "outDir": "dist",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "ESNext"
     },
     "include": ["src"]
 }

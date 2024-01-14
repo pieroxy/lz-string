@@ -1,6 +1,6 @@
 import { decompress } from "../stock/decompress";
 
-export function decompressFromUint8Array(compressed: Uint8Array): string | null {
+export function decompressFromUint8Array(compressed: Uint8Array | null): string | null {
     if (compressed === null || compressed === undefined) {
         return decompress(compressed);
     } else {

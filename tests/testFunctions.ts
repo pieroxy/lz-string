@@ -15,14 +15,14 @@ import {
     test_tattooUTF16,
     test_undefined,
 } from "./testValues";
-import type { LZString } from "../src/main";
+import LZString from "../src";
 
 /**
  * Expected to be called from within a `describe`. This will pass the name and
  * compress / decompress pair, as well as a "known good" value for all output
  * methods.
  */
-export function runAllTests(implementation: LZString) {
+export function runAllTests(implementation: typeof LZString) {
     runTestSet("Stock Compression and Decompression", implementation.compress, implementation.decompress);
 
     runTestSet(

@@ -1,14 +1,15 @@
 import { _compress } from "../_compress";
 import keyStrBase64 from "./keyStrBase64";
 
-export function compressToBase64(input: string): string {
-    if (input == null) return "";
+export function compressToBase64(input: string | null): string {
+    if (input == null) {
+        return "";
+    }
 
-    const res: string = _compress(input, 6, (a) => keyStrBase64.charAt(a));
+    const res = _compress(input, 6, (a) => keyStrBase64.charAt(a));
 
-    switch (
-        res.length % 4 // To produce valid Base64
-    ) {
+    // To produce valid Base64
+    switch (res.length % 4) {
         default: // When could this happen ?
         case 0:
             return res;

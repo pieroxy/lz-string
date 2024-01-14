@@ -1,6 +1,6 @@
 import { compress } from "../stock/compress";
 
-export function compressToUint8Array(uncompressed: string): Uint8Array {
+export function compressToUint8Array(uncompressed: string | null): Uint8Array {
     const compressed: string = compress(uncompressed);
     const buf: Uint8Array = new Uint8Array(compressed.length * 2); // 2 bytes per character
 
