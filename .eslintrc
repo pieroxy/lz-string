@@ -1,9 +1,5 @@
 {
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "eslint-config-prettier"
-    ],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "eslint-config-prettier"],
     "settings": {
         "import/resolver": {
             "node": {

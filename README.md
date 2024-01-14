@@ -8,7 +8,7 @@ LZ-based compression algorithm for JavaScript
 > The file layout has changed in version 2, this is now a joint `commonjs` / `esmodule` project so modern build tools should be happy with it, but if importing a file directly (such as in a direct javascript project) it is important to use the correct one.
 
 > [!TIP]
-> The "old style" minified UMD file is available as `dist/index.umd.cjs` via various CDNs or package managers.
+> The "old style" minified AMD file is available as `dist/index.umd.js` via various CDNs or package managers.
 
 ## Install via [npm](https://www.npmjs.com/package/lz-string)
 

@@ -10,8 +10,6 @@
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...)
 // version 1.4.1
 
-import invariant from "tiny-invariant";
-
 interface Base64String {
     compress: (input: string) => string;
     decompress: (input: string) => string;
@@ -93,12 +91,7 @@ const Base64String: Base64String = {
                     current = (c & 16383) << 1;
                     break;
                 case 14:
-                    output.push(
-                        String.fromCharCode(
-                            current + (c >> 15) + 32,
-                            (c & 32767) + 32,
-                        ),
-                    );
+                    output.push(String.fromCharCode(current + (c >> 15) + 32, (c & 32767) + 32));
                     status = 0;
                     break;
             }
@@ -191,8 +184,7 @@ const Base64String: Base64String = {
     },
 
     // private property
-    _keyStr:
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
     decompress: function (input: string): string {
         const output: string[] = [];
@@ -205,8 +197,7 @@ const Base64String: Base64String = {
             if (i % 2 == 0) {
                 chr1 = input.charCodeAt(i / 2) >> 8;
                 chr2 = input.charCodeAt(i / 2) & 255;
-                if (i / 2 + 1 < input.length)
-                    chr3 = input.charCodeAt(i / 2 + 1) >> 8;
+                if (i / 2 + 1 < input.length) chr3 = input.charCodeAt(i / 2 + 1) >> 8;
                 else chr3 = NaN;
             } else {
                 chr1 = input.charCodeAt((i - 1) / 2) & 255;
@@ -271,7 +262,9 @@ const Base64String: Base64String = {
                     flush = true;
                 }
             } else {
-                invariant(output_! !== undefined, "Output error 1");
+                if (output_! === undefined) {
+                    throw new Error("Impossible output error 1");
+                }
                 output.push(String.fromCharCode(output_ | chr1));
                 flush = false;
 
@@ -280,7 +273,6 @@ const Base64String: Base64String = {
                     flush = true;
                 }
                 if (enc4 != 64) {
-                    invariant(output_! !== undefined, "Output error 2");
                     output.push(String.fromCharCode(output_ | chr3));
                     flush = false;
                 }
@@ -289,12 +281,12 @@ const Base64String: Base64String = {
         }
 
         if (flush) {
-            invariant(output_! !== undefined, "Output error 3");
+            if (output_! === undefined) {
+                throw new Error("Impossible output error 1");
+            }
             output.push(String.fromCharCode(output_));
             output = output.join("");
-            output =
-                String.fromCharCode(output.charCodeAt(0) | 256)
-                + output.substring(1);
+            output = String.fromCharCode(output.charCodeAt(0) | 256) + output.substring(1);
         } else {
             output = output.join("");
         }
