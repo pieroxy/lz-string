@@ -48,7 +48,7 @@
         "build": "tsc && vite build",
         "format": "prettier --write .",
         "start": "vite",
-        "test": "[ -f ./dist/eslint-config.js ] || npm run build && vitest",
+        "test": "[ -f ./dist/index.js ] || npm run build && vitest",
         "test:coverage": "vitest run src.main.test.ts --coverage",
         "lint": "eslint ."
     },
