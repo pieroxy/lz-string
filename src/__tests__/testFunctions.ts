@@ -55,7 +55,6 @@ export const test_longString_fn = () => {
     return testValue.join(" ");
 };
 
-
 /**
  * This will run a series of tests against each compress / decompress pair.
  *

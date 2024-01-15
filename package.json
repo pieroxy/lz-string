@@ -30,6 +30,9 @@
         "compression",
         "string"
     ],
+    "bin": {
+        "lz-string": "bin/cli.cjs"
+    },
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
@@ -42,6 +45,7 @@
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "files": [
+        "bin",
         "dist"
     ],
     "scripts": {
@@ -70,5 +74,8 @@
     },
     "override": {
         "prettier": "npm:@btmills/prettier@3.1.0"
+    },
+    "dependencies": {
+        "commander": "11.1.0"
     }
 }
