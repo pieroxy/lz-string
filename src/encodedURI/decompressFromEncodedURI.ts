@@ -1,8 +1,10 @@
 import keyStrUriSafe from "./keyStrUriSafe";
 import { _decompress } from "../_decompress";
 import { getBaseValue } from "../getBaseValue";
+import { deprecated } from "../utils/misc";
 
 export function decompressFromEncodedURIComponent(input: string | null) {
+    deprecated("decompressFromEncodedURIComponent()", "v2.0.0", { replacement: "decompressFromBase64URL()"})
     if (input == null) return "";
     if (input == "") return null;
 

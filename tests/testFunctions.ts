@@ -40,6 +40,13 @@ export function runAllTests(implementation: typeof LZString) {
     );
 
     runTestSet(
+        "Base64URL Compression and Decompression",
+        implementation.compressToBase64URL,
+        implementation.decompressFromBase64URL,
+        test_tattooBase64,
+    );
+
+    runTestSet(
         "UTF16 Compression and Decompression",
         implementation.compressToUTF16,
         implementation.decompressFromUTF16,
