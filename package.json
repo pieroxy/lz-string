@@ -54,7 +54,6 @@
         "start": "vite build --watch",
         "test": "[ -f ./dist/index.js ] || npm run build && vitest",
         "test:coverage": "vitest run src.main.test.ts --coverage",
-        "test:custom": "vitest custom.test.js",
         "lint": "eslint ."
     },
     "devDependencies": {
