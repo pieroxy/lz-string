@@ -15,6 +15,7 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
 import { compress, decompress } from "./stock";
 import { compressToUint8Array, decompressFromUint8Array } from "./Uint8Array";
 import { compressToUTF16, decompressFromUTF16 } from "./UTF16";
+import { compressToCustom, decompressFromCustom } from "./custom";
 
 export default {
     _compress,
@@ -34,4 +35,7 @@ export default {
 
     compressToUTF16,
     decompressFromUTF16,
+
+    compressToCustom,
+    decompressFromCustom,
 };

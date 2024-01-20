@@ -5,8 +5,8 @@ import {
     test_tattooSource,
     test_longString,
     test_complicated,
-} from "tests/testValues.js";
-import { LZString } from "../src/main";
+} from "./testValues";
+import LZString from "../src";
 
 const hex    = "0123456789ABCDEF";
 const base62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
