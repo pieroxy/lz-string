@@ -1,44 +1,45 @@
-import { defineConfig } from "vite"
+/// <reference types="vitest" />
+import { parse, relative, resolve } from "path";
+import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
+import eslint from "vite-plugin-eslint";
+import tsconfigPaths from "vite-tsconfig-paths";
 
-import typescript from "@rollup/plugin-typescript"
-import { resolve } from "path"
-import { typescriptPaths } from "rollup-plugin-typescript-paths"
-import tsconfigPaths from 'vite-tsconfig-paths'
-import dts from 'vite-plugin-dts'
+const root = resolve(__dirname, "src");
 
 export default defineConfig({
-  base: './',
-  plugins: [
-    tsconfigPaths(),
-    dts({ rollupTypes: true })
-  ],
-  resolve: {
-    preserveSymlinks: true,
-    alias: [
-      {
-        find: "@",
-        replacement: resolve(__dirname, "./src"),
-      },
-    ],
-    extensions: ['.ts']
-  },
-  build: {
-    manifest: true,
-    minify: true,
-    reportCompressedSize: true,
-    lib: {
-      entry: resolve(__dirname, "src/main.ts"),
-      fileName: (format) => `index.${format}.js`,
-      name: 'Jackal.js'
+    plugins: [tsconfigPaths(), dts({ rollupTypes: true }), eslint()],
+    build: {
+        minify: true,
+        reportCompressedSize: true,
+        sourcemap: true,
+        lib: {
+            entry: resolve(__dirname, "src/index.ts"),
+            fileName: "index",
+        },
+        rollupOptions: {
+            output: [
+                {
+                    format: "cjs",
+                    name: "LZString",
+                    entryFileNames: "[name].cjs",
+                },
+                {
+                    format: "es",
+                    chunkFileNames: "[name].js",
+                    manualChunks: (id: string) => {
+                        const { dir, name } = parse(relative(root, id));
+
+                        // If it's in node_modules then don't export
+                        return dir.startsWith(".") ? null : name || "common";
+                    },
+                },
+                {
+                    format: "umd",
+                    name: "LZString",
+                    entryFileNames: "[name].[format].js",
+                },
+            ],
+        },
     },
-    rollupOptions: {
-      external: [],
-      plugins: [
-        typescriptPaths({
-          absolute: false,
-        }),
-        typescript({ tsconfig: './tsconfig.json' }),
-      ],
-    },
-  },
-})
+});

@@ -1,67 +1,81 @@
 {
-  "name": "lz-string",
-  "author": {
-    "name": "pieroxy",
-    "email": "pieroxy@pieroxy.net"
-  },
-  "contributors": [
-    {
-      "name": "Karnthis",
-      "email": "me@erinrivas.com"
+    "name": "lz-string",
+    "author": {
+        "name": "pieroxy",
+        "email": "pieroxy@pieroxy.net"
+    },
+    "contributors": [
+        {
+            "name": "Karnthis",
+            "email": "me@erinrivas.com"
+        },
+        {
+            "name": "Ryc O'Chet",
+            "email": "rycochet@rycochet.com"
+        }
+    ],
+    "version": "2.0.0-rc.2",
+    "license": "MIT",
+    "description": "LZ-based compression algorithm",
+    "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pieroxy/lz-string.git"
+    },
+    "bugs": {
+        "url": "https://github.com/pieroxy/lz-string/issues"
+    },
+    "keywords": [
+        "lz",
+        "compression",
+        "string"
+    ],
+    "bin": {
+        "lz-string": "bin/cli.cjs"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "type": "module",
+    "main": "./dist/index.umd.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "bin",
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc && vite build",
+        "format": "prettier --write .",
+        "start": "vite build --watch",
+        "test": "[ -f ./dist/index.js ] || npm run build && vitest",
+        "test:coverage": "vitest run src.main.test.ts --coverage",
+        "lint": "eslint ."
+    },
+    "devDependencies": {
+        "@btmills/prettier": "3.1.0",
+        "@types/node": "20.11.0",
+        "@typescript-eslint/eslint-plugin": "6.18.1",
+        "@typescript-eslint/parser": "6.18.1",
+        "@vitest/coverage-v8": "1.2.0",
+        "eslint": "8.56.0",
+        "eslint-config-prettier": "9.1.0",
+        "tslib": "2.6.2",
+        "typescript": "5.3.3",
+        "vite": "5.0.11",
+        "vite-plugin-dts": "3.7.0",
+        "vite-plugin-eslint": "1.8.1",
+        "vite-tsconfig-paths": "4.2.3",
+        "vitest": "1.2.0"
+    },
+    "override": {
+        "prettier": "npm:@btmills/prettier@3.1.0"
+    },
+    "dependencies": {
+        "commander": "11.1.0"
     }
-  ],
-  "version": "2.0.0-rc.0",
-  "license": "MIT",
-  "description": "LZ-based compression algorithm",
-  "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pieroxy/lz-string.git"
-  },
-  "bugs": {
-    "url": "https://github.com/pieroxy/lz-string/issues"
-  },
-  "keywords": [
-    "lz",
-    "compression",
-    "string"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js"
-    }
-  },
-  "type": "module",
-  "main": "./dist/index.umd.js",
-  "module": "./dist/index.es.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsc && vite build",
-    "test": "vitest src.main.test.js",
-    "test:all": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "test:custom": "vitest custom.test.js",
-    "lint": "eslint . --ext .ts"
-  },
-  "devDependencies": {
-    "@btmills/prettier": "2.8.8",
-    "@rollup/plugin-commonjs": "25.0.0",
-    "@rollup/plugin-typescript": "11.1.1",
-    "@typescript-eslint/eslint-plugin": "5.59.7",
-    "@typescript-eslint/parser": "5.59.7",
-    "@vitest/coverage-c8": "0.31.4",
-    "eslint": "8.41.0",
-    "eslint-config-prettier": "8.8.0",
-    "rollup-plugin-typescript-paths": "1.4.0",
-    "typescript": "5.0.4",
-    "vite": "4.3.9",
-    "vite-plugin-dts": "2.3.0",
-    "vite-plugin-eslint": "1.8.1",
-    "vite-tsconfig-paths": "4.2.0",
-    "vitest": "0.31.1"
-  }
 }
