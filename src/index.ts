@@ -1,12 +1,8 @@
-// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
-// This work is free. You can redistribute it and/or modify it
-// under the terms of the WTFPL, Version 2
-// For more information see LICENSE.txt or http://www.wtfpl.net/
-//
-// For more information, the home page:
-// http://pieroxy.net/blog/pages/lz-string/testing.html
-//
-// LZ-based compression algorithm, version 1.4.5
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
 
 import { _compress } from "./_compress";
 import { _decompress } from "./_decompress";
