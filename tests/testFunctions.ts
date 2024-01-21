@@ -1,13 +1,14 @@
-import { test, expect, describe } from "vitest";
+import { describe } from "vitest";
 import {
     test_allUtf16,
     test_empty,
     test_hw,
     test_longString_fn,
     test_null,
-    test_randomString_fn,
     test_repeat,
     test_tattooBase64,
+    test_tattooBase64URL,
+    test_tattooBetterBase64,
     test_tattooEncodedURIComponent,
     test_tattooEncodedURIComponentPlus,
     test_tattooSource,
@@ -15,6 +16,20 @@ import {
     test_tattooUTF16,
     test_undefined,
 } from "./testValues";
+import {
+    allCharsUrlSafe_test,
+    compressKnownString_test,
+    decompressKnownString_test,
+    emptyResponse_test,
+    helloWorld_test,
+    interchangableChars_test,
+    longString_test,
+    nullResponse_test,
+    randomString_test,
+    repeatingString_test,
+    undefinedResponse_test,
+    utf16Response_test,
+} from "./suite";
 import LZString from "../src";
 
 /**
@@ -22,7 +37,7 @@ import LZString from "../src";
  * compress / decompress pair, as well as a "known good" value for all output
  * methods.
  */
-export function runAllTests(implementation: typeof LZString) {
+export function runAllTests (implementation: typeof LZString) {
     runTestSet("Stock Compression and Decompression", implementation.compress, implementation.decompress);
 
     runTestSet(
@@ -36,14 +51,14 @@ export function runAllTests(implementation: typeof LZString) {
         "BetterBase64 Compression and Decompression",
         implementation.compressToBetterBase64,
         implementation.decompressFromBetterBase64,
-        test_tattooBase64,
+        test_tattooBetterBase64,
     );
 
     runTestSet(
         "Base64URL Compression and Decompression",
         implementation.compressToBase64URL,
         implementation.decompressFromBase64URL,
-        test_tattooBase64,
+        test_tattooBase64URL,
     );
 
     runTestSet(
@@ -79,99 +94,29 @@ export function runAllTests(implementation: typeof LZString) {
  * - Compression makes thing smaller
  * - Check against a known good value
  */
-function runTestSet(desc: string, compressFunc, decompressFunc, compressedTattoo?, testEncodedURI?: boolean) {
+function runTestSet (desc: string, compressFunc, decompressFunc, compressedTattoo?, testEncodedURI?: boolean) {
     describe(desc, () => {
-        test(`"Hello World"`, () => {
-            const compressedHw = compressFunc(test_hw);
-
-            expect(compressedHw).toEqual(compressFunc(test_hw));
-            expect(compressedHw).not.toEqual(test_hw);
-            expect(decompressFunc(compressedHw)).toEqual(test_hw);
-        });
-
-        test(`null`, () => {
-            const compressedNull = compressFunc(test_null);
-
-            compressedNull instanceof Uint8Array
-                ? expect(compressedNull.length).toBe(0)
-                : expect(compressedNull).toEqual("");
-        });
-
-        test(`"" (empty string)`, () => {
-            const compressedEmpty = compressFunc(test_empty);
-
-            expect(compressedEmpty).toEqual(compressFunc(test_empty));
-            expect(compressedEmpty).not.toEqual("");
-            compressedEmpty instanceof Uint8Array
-                ? expect(compressedEmpty.length).not.toBe(0)
-                : expect(typeof compressedEmpty).toBe("string");
-            expect(decompressFunc(compressedEmpty)).toEqual(test_empty);
-        });
-
-        test(`undefined`, () => {
-            const compressedUndefined = compressFunc(test_undefined);
-
-            compressedUndefined instanceof Uint8Array
-                ? expect(compressedUndefined.length).toBe(0)
-                : expect(compressedUndefined).toBe("");
-        });
-
-        test(`utf16`, () => {
-            const compressedUtf16 = compressFunc(test_allUtf16);
-
-            expect(compressedUtf16).toEqual(compressFunc(test_allUtf16));
-            expect(compressedUtf16).not.toEqual(test_allUtf16);
-            expect(decompressFunc(compressedUtf16)).toEqual(test_allUtf16);
-        });
-
-        test(`Repeating String`, () => {
-            const compressedRepeat = compressFunc(test_repeat);
-
-            expect(compressedRepeat).toEqual(compressFunc(test_repeat));
-            expect(compressedRepeat).not.toEqual(test_repeat);
-            expect(compressedRepeat.length).toBeLessThan(test_repeat.length);
-            expect(decompressFunc(compressedRepeat)).toEqual(test_repeat);
-        });
-
-        // Note that this is designed to be uncompressible
-        test(`Random String`, () => {
-            const test_randomString = test_randomString_fn(); // Unique per test
-            const compressedRandomString = compressFunc(test_randomString);
-
-            expect(compressedRandomString).toEqual(compressFunc(test_randomString));
-            expect(compressedRandomString).not.toEqual(test_randomString);
-            expect(decompressFunc(compressedRandomString)).toEqual(test_randomString);
-        });
+        nullResponse_test(compressFunc, decompressFunc, test_null);
+        emptyResponse_test(compressFunc, decompressFunc, test_empty);
+        undefinedResponse_test(compressFunc, decompressFunc, test_undefined);
+        utf16Response_test(compressFunc, decompressFunc, test_allUtf16);
+        helloWorld_test(compressFunc, decompressFunc, test_hw);
+        repeatingString_test(compressFunc, decompressFunc, test_repeat);
+        randomString_test(compressFunc, decompressFunc);
 
         const test_longString = test_longString_fn(); // Unique per run
         const compressedLongString = compressFunc(test_longString);
 
-        test(`Long String`, () => {
-            expect(compressedLongString).toEqual(compressFunc(test_longString));
-            expect(compressedLongString).not.toEqual(test_longString);
-            expect(compressedLongString.length).toBeLessThan(test_longString.length);
-            expect(decompressFunc(compressedLongString)).toEqual(test_longString);
-        });
+        longString_test(compressFunc, decompressFunc, test_longString, compressedLongString);
 
         if (testEncodedURI) {
-            test(`All chars are URL safe`, () => {
-                expect(compressedLongString.indexOf("=")).toBe(-1);
-                expect(compressedLongString.indexOf("/")).toBe(-1);
-                expect(decompressFunc(compressedLongString)).toBe(test_longString);
-            });
-
-            test(`+ and ' ' are interchangeable in decompression`, () => {
-                expect(test_tattooSource).toEqual(decompressFunc(test_tattooEncodedURIComponent));
-            });
+            allCharsUrlSafe_test(compressFunc, decompressFunc, test_longString, compressedLongString);
+            interchangableChars_test(decompressFunc, test_tattooSource, test_tattooEncodedURIComponent);
         }
 
         if (compressedTattoo) {
-            test(`expected compression result`, () => {
-                expect(compressFunc(test_tattooSource)).toEqual(compressedTattoo);
-            });
-            test(`expected decompression result`, () => {
-                expect(decompressFunc(compressedTattoo)).toEqual(test_tattooSource);
-            });
+            compressKnownString_test(compressFunc, test_tattooSource, test_tattooEncodedURIComponent);
+            decompressKnownString_test(decompressFunc, test_tattooSource, test_tattooEncodedURIComponent);
         }
     });
 }
