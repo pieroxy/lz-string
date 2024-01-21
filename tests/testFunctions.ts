@@ -19,12 +19,12 @@ import {
 import {
     allCharsUrlSafe_test,
     compressKnownString_test,
-    decompressKnownString_test,
-    emptyResponse_test,
+    decompressKnownString_test, emptyShouldBeEmptyResponse_test,
+    emptyShouldNotBeEmptyResponse_test,
     helloWorld_test,
     interchangableChars_test,
     longString_test,
-    nullResponse_test,
+    nullShouldNotBeNullResponse_test,
     randomString_test,
     repeatingString_test,
     undefinedResponse_test,
@@ -69,8 +69,8 @@ function stockTestSet (implementation: TImplementation) {
     const { compress, decompress } = implementation
 
     describe("Stock Compression and Decompression", () => {
-        nullResponse_test(compress, decompress, test_null);
-        emptyResponse_test(compress, decompress, test_empty);
+        nullShouldNotBeNullResponse_test(compress, decompress, test_null);
+        emptyShouldNotBeEmptyResponse_test(compress, decompress, test_empty);
         undefinedResponse_test(compress, decompress, test_undefined);
         utf16Response_test(compress, decompress, test_allUtf16);
         helloWorld_test(compress, decompress, test_hw);
@@ -88,8 +88,8 @@ function base64TestSet (implementation: TImplementation) {
     const { compressToBase64, decompressFromBase64 } = implementation
 
     describe("Base64 Compression and Decompression", () => {
-        nullResponse_test(compressToBase64, decompressFromBase64, test_null);
-        emptyResponse_test(compressToBase64, decompressFromBase64, test_empty);
+        nullShouldNotBeNullResponse_test(compressToBase64, decompressFromBase64, test_null);
+        emptyShouldNotBeEmptyResponse_test(compressToBase64, decompressFromBase64, test_empty);
         undefinedResponse_test(compressToBase64, decompressFromBase64, test_undefined);
         utf16Response_test(compressToBase64, decompressFromBase64, test_allUtf16);
         helloWorld_test(compressToBase64, decompressFromBase64, test_hw);
@@ -110,8 +110,8 @@ function betterBase64TestSet (implementation: TImplementation) {
     const { compressToBetterBase64, decompressFromBetterBase64 } = implementation
 
     describe("BetterBase64 Compression and Decompression", () => {
-        nullResponse_test(compressToBetterBase64, decompressFromBetterBase64, test_null);
-        emptyResponse_test(compressToBetterBase64, decompressFromBetterBase64, test_empty);
+        nullShouldNotBeNullResponse_test(compressToBetterBase64, decompressFromBetterBase64, test_null);
+        emptyShouldBeEmptyResponse_test(compressToBetterBase64, decompressFromBetterBase64, test_empty);
         undefinedResponse_test(compressToBetterBase64, decompressFromBetterBase64, test_undefined);
         utf16Response_test(compressToBetterBase64, decompressFromBetterBase64, test_allUtf16);
         helloWorld_test(compressToBetterBase64, decompressFromBetterBase64, test_hw);
@@ -132,8 +132,8 @@ function base64URLTestSet (implementation: TImplementation) {
     const { compressToBase64URL, decompressFromBase64URL } = implementation
 
     describe("Base64URL Compression and Decompression", () => {
-        nullResponse_test(compressToBase64URL, decompressFromBase64URL, test_null);
-        emptyResponse_test(compressToBase64URL, decompressFromBase64URL, test_empty);
+        nullShouldNotBeNullResponse_test(compressToBase64URL, decompressFromBase64URL, test_null);
+        emptyShouldBeEmptyResponse_test(compressToBase64URL, decompressFromBase64URL, test_empty);
         undefinedResponse_test(compressToBase64URL, decompressFromBase64URL, test_undefined);
         utf16Response_test(compressToBase64URL, decompressFromBase64URL, test_allUtf16);
         helloWorld_test(compressToBase64URL, decompressFromBase64URL, test_hw);
@@ -154,8 +154,8 @@ function utf16TestSet (implementation: TImplementation) {
     const { compressToUTF16, decompressFromUTF16 } = implementation
 
     describe("UTF16 Compression and Decompression", () => {
-        nullResponse_test(compressToUTF16, decompressFromUTF16, test_null);
-        emptyResponse_test(compressToUTF16, decompressFromUTF16, test_empty);
+        nullShouldNotBeNullResponse_test(compressToUTF16, decompressFromUTF16, test_null);
+        emptyShouldNotBeEmptyResponse_test(compressToUTF16, decompressFromUTF16, test_empty);
         undefinedResponse_test(compressToUTF16, decompressFromUTF16, test_undefined);
         utf16Response_test(compressToUTF16, decompressFromUTF16, test_allUtf16);
         helloWorld_test(compressToUTF16, decompressFromUTF16, test_hw);
@@ -176,8 +176,8 @@ function uint8ArrayTestSet (implementation: TImplementation) {
     const { compressToUint8Array, decompressFromUint8Array } = implementation
 
     describe("Uint8Array Compression and Decompression", () => {
-        nullResponse_test(compressToUint8Array, decompressFromUint8Array, test_null);
-        emptyResponse_test(compressToUint8Array, decompressFromUint8Array, test_empty);
+        nullShouldNotBeNullResponse_test(compressToUint8Array, decompressFromUint8Array, test_null);
+        emptyShouldNotBeEmptyResponse_test(compressToUint8Array, decompressFromUint8Array, test_empty);
         undefinedResponse_test(compressToUint8Array, decompressFromUint8Array, test_undefined);
         utf16Response_test(compressToUint8Array, decompressFromUint8Array, test_allUtf16);
         helloWorld_test(compressToUint8Array, decompressFromUint8Array, test_hw);
@@ -198,8 +198,8 @@ function encodedURITestSet (implementation: TImplementation) {
     const { compressToEncodedURIComponent, decompressFromEncodedURIComponent } = implementation
 
     describe("EncodedURIComponent Compression and Decompression", () => {
-        nullResponse_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_null);
-        emptyResponse_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_empty);
+        nullShouldNotBeNullResponse_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_null);
+        emptyShouldNotBeEmptyResponse_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_empty);
         undefinedResponse_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_undefined);
         utf16Response_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_allUtf16);
         helloWorld_test(compressToEncodedURIComponent, decompressFromEncodedURIComponent, test_hw);
