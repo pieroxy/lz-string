@@ -21,6 +21,32 @@ $ lz-string input.txt > output.txt
 
 Home page for this program with examples, documentation and a live demo: http://pieroxy.net/blog/pages/lz-string/index.html
 
+## Command line
+
+If installed globally there is a command line tool available, and a test suite that can use it to show things are working properly. If other langauges build a command line tool that supports the same arguments then the test suite can be run against them too.
+
+```sh
+$ lz-string -h
+Usage: lz-string [options] [input-file]
+
+Use lz-string to compress or decompress a file
+
+Arguments:
+  input-file                  file to process, if no file then read from stdin
+
+Options:
+  -V, --version               output the version number
+  -d, --decompress            if unset then this will compress
+  -f, --format <type>         formatter to use (choices: "base64", "encodeduri", "raw", "uint8array", "utf16", default: "raw")
+  -v, --validate              validate before returning (default: true)
+  -o, --output <output-file>  output file, otherwise write to stdout
+  -q, --quiet                 don't print any error messages
+  -h, --help                  display help for command
+```
+
+> [!WARNING]
+> Currently I cannot get NodeJS to read binary files correctly, so `raw` and `uint8array` are both compress-only - Ryc
+
 ## Other languages
 
 This lib has numerous ports to other languages, for server side processing, mostly. Here they are:
