@@ -25,7 +25,7 @@ Home page for this program with examples, documentation and a live demo: http://
 
 If installed globally there is a command line tool available, and a test suite that can use it to show things are working properly. If other langauges build a command line tool that supports the same arguments then the test suite can be run against them too.
 
-```sh
+```console
 $ lz-string -h
 Usage: lz-string [options] [input-file]
 
@@ -45,7 +45,7 @@ Options:
 ```
 
 > [!WARNING]
-> Currently I cannot get NodeJS to read binary files correctly, so `raw` and `uint8array` are both compress-only - Ryc
+> Currently I cannot get NodeJS to read binary files correctly, so `raw` and `uint8array` are both compress-only, see #139 - Ryc
 
 ## Other languages
 
