@@ -6,7 +6,9 @@
 
 import { compress } from "../stock/compress";
 
-export function compressToCustom (uncompressed: string, dict: string): string {
+export function compressToCustom (uncompressed: string | null, dict: string): string {
+    if (uncompressed == null) return "";
+    
     const compressed: string = compress(uncompressed);
     const charsPerUnicodeChar: number = Math.ceil(Math.log(65536) / Math.log(dict.length));
     let res: string = "";
