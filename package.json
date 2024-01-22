@@ -14,7 +14,7 @@
             "email": "rycochet@rycochet.com"
         }
     ],
-    "version": "2.0.0-rc.2",
+    "version": "2.0.0-rc.3",
     "license": "MIT",
     "description": "LZ-based compression algorithm",
     "homepage": "http://pieroxy.net/blog/pages/lz-string/index.html",
@@ -50,27 +50,31 @@
     ],
     "scripts": {
         "build": "tsc && vite build",
-        "format": "prettier --write .",
+        "format": "npm run format:prettier && npm run format:eslint",
+        "format:prettier": "prettier --write .",
+        "format:eslint": "eslint --fix .",
         "start": "vite build --watch",
         "test": "[ -f ./dist/index.js ] || npm run build && vitest",
         "test:coverage": "vitest run src.main.test.ts --coverage",
-        "lint": "eslint ."
+        "lint": "npm run lint:prettier && npm run lint:eslint",
+        "lint:prettier": "prettier --check .",
+        "lint:eslint": "eslint ."
     },
     "devDependencies": {
         "@btmills/prettier": "3.1.0",
-        "@types/node": "20.11.0",
-        "@typescript-eslint/eslint-plugin": "6.18.1",
-        "@typescript-eslint/parser": "6.18.1",
-        "@vitest/coverage-v8": "1.2.0",
+        "@types/node": "20.11.5",
+        "@typescript-eslint/eslint-plugin": "6.19.0",
+        "@typescript-eslint/parser": "6.19.0",
+        "@vitest/coverage-v8": "1.2.1",
         "eslint": "8.56.0",
         "eslint-config-prettier": "9.1.0",
         "tslib": "2.6.2",
         "typescript": "5.3.3",
-        "vite": "5.0.11",
-        "vite-plugin-dts": "3.7.0",
+        "vite": "5.0.12",
+        "vite-plugin-dts": "3.7.1",
         "vite-plugin-eslint": "1.8.1",
-        "vite-tsconfig-paths": "4.2.3",
-        "vitest": "1.2.0"
+        "vite-tsconfig-paths": "4.3.1",
+        "vitest": "1.2.1"
     },
     "override": {
         "prettier": "npm:@btmills/prettier@3.1.0"

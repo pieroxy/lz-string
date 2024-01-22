@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 import keyStrUriSafe from "./keyStrUriSafe";
 import { _decompress } from "../_decompress";
 import { getBaseValue } from "../getBaseValue";

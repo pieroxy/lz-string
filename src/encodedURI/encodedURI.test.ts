@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 import { describe, expect, test } from "vitest";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from ".";
 import { runTestSet, test_longString_fn, test_tattooSource } from "../__tests__/testFunctions";

@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 import { test, expect, describe } from "vitest";
 import {
     test_allUtf16,
