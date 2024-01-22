@@ -45,7 +45,7 @@ Options:
 ```
 
 > [!WARNING]
-> Currently I cannot get NodeJS to read binary files correctly, so `raw` and `uint8array` are both compress-only, see #139 - Ryc
+> Currently I cannot get NodeJS to read binary files correctly, so `raw` and `uint8array` are both compress-only, see [#139](issues/139) - Ryc
 
 ## Other languages
 
