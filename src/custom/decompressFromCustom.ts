@@ -6,7 +6,7 @@
 
 import { decompress } from "../stock/decompress";
 
-export function decompressFromCustom (compressed: string, dict: string): string | null {
+export function decompressFromCustom (compressed: string | null, dict: string): string | null {
     if (compressed == null) return "";
     if (compressed == "") return null;
     if (dict.length < 2) return null;
