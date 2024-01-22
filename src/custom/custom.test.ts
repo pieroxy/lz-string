@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 import { describe, expect, test } from "vitest";
 import { compressToCustom, decompressFromCustom } from ".";
 import { test_longString_fn } from "../__tests__/testFunctions";
