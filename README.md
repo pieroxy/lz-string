@@ -44,9 +44,6 @@ Options:
   -h, --help                  display help for command
 ```
 
-> [!WARNING]
-> Currently I cannot get NodeJS to read binary files correctly, so `raw` and `uint8array` are both compress-only, see [#139](https://github.com/pieroxy/lz-string/issues/139) - Ryc
-
 ## Other languages
 
 This lib has numerous ports to other languages, for server side processing, mostly. Here they are:

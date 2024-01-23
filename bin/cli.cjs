@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#! /usr/bin/env node --enable-source-maps
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const lzString = require("../dist/index.cjs");
@@ -16,7 +16,7 @@ function compressContent(format, content) {
         default:
             return lzString.compress(content);
         case "uint8array":
-            return lzString.compressToUint8Array(content);
+            return lzString.convertFromUint8Array(lzString.compressToUint8Array(content));
         case "utf16":
             return lzString.compressToUTF16(content);
     }
@@ -32,17 +32,9 @@ function decompressContent(format, content) {
         default:
             return lzString.decompress(content);
         case "uint8array":
-            return lzString.decompressFromUint8Array(content);
+            return lzString.decompressFromUint8Array(lzString.convertToUint8Array(content));
         case "utf16":
             return lzString.decompressFromUTF16(content);
-    }
-}
-
-function loadFile(file) {
-    try {
-        return fs.readFileSync(file).toString();
-    } catch {
-        // TODO better error handling
     }
 }
 
@@ -73,11 +65,9 @@ program
                 process.exit(1);
             }
         }
-        if (decompress && ["raw", "uint8array"].includes(format)) {
-            if (!quiet) process.stderr.write(`Decompressing ${format} is currently unsupported\n`);
-            process.exit(1);
-        }
-        const unprocessed = loadFile(file, quiet);
+
+        const unprocessed = lzString.loadBinaryFile(file, quiet);
+
         if (unprocessed === undefined) {
             if (!quiet) process.stderr.write(`Unable to read ${file === process.stdin.fd ? "from stdin" : file}\n`);
             process.exit(1);
@@ -102,6 +92,6 @@ program
             if (!quiet) process.stderr.write(`Unable to process ${file}\n`);
             process.exit(1);
         }
-        fs.writeFileSync(output, processed, null);
+        lzString.saveBinaryFile(output, processed);
     })
     .parse();
