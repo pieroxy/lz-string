@@ -13,8 +13,8 @@ describe("custom", () => {
         const hex = "0123456789ABCDEF";
         const compress = (input: string | null) => compressToCustom(input, hex);
         const decompress = (input: string | null) => decompressFromCustom(input, hex);
-        
-        runTestSet<string>(compress, decompress, "");
+
+        runTestSet<string>("", compress, decompress);
     });
 
     describe("23 letter heterogram", () => {
@@ -22,7 +22,7 @@ describe("custom", () => {
         const compress = (input: string | null) => compressToCustom(input, heterogram);
         const decompress = (input: string | null) => decompressFromCustom(input, heterogram);
 
-        runTestSet<string>(compress, decompress, "");
+        runTestSet<string>("", compress, decompress);
     });
 
     describe("base62", () => {
@@ -30,6 +30,6 @@ describe("custom", () => {
         const compress = (input: string | null) => compressToCustom(input, base62);
         const decompress = (input: string | null) => decompressFromCustom(input, base62);
 
-        runTestSet<string>(compress, decompress, "");
+        runTestSet<string>("", compress, decompress);
     });
 });
