@@ -5,9 +5,9 @@
  */
 
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { readFileSync } from "fs";
 import { relative } from "path";
 import { test, describe, vi } from "vitest";
+import { loadBinaryFile } from "../node";
 
 /**
  * Folder names within testdata, with a human readable name.
@@ -36,7 +36,7 @@ export function getTestData(name: string) {
         throw new Error("Unknown test data");
     }
 
-    return cachedTestData[name] || (cachedTestData[name] = readFileSync(`testdata/${name}/data.bin`).toString());
+    return cachedTestData[name] || (cachedTestData[name] = loadBinaryFile(`testdata/${name}/data.bin`));
 }
 
 /**
@@ -102,7 +102,7 @@ export function runTestSet<T extends { length: number }>(
             });
 
             if (identifier) {
-                const knownCompressed = readFileSync(`testdata/${path}/js/${identifier}.bin`).toString();
+                const knownCompressed = loadBinaryFile(`testdata/${path}/js/${identifier}.bin`);
 
                 test("expected compression result", ({ expect }) => {
                     expect(compressFunc(rawData)).toEqual(knownCompressed);

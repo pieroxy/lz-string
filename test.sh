@@ -191,7 +191,7 @@ process_data() {
 
 printf "lz-string test runner\n\n"
 
-print_output "Data" "Method" "Compress" "Decompress" "Message"
+print_output "" "Method" "Compress" "Decompress" "Message"
 
 process_data all_ascii
 process_data all_utf16

@@ -11,7 +11,7 @@ import { convertToUint8Array, convertFromUint8Array } from "./Uint8Array";
  * Binary safe file saving for NodeJS.
  */
 export function saveBinaryFile(fileName: string, data: string | Uint8Array) {
-    writeFileSync(fileName, typeof data === "string" ? convertToUint8Array(data) : data, null);
+    writeFileSync(fileName, typeof data === "string" ? convertToUint8Array(data)! : data, null);
 }
 
 /**
@@ -19,5 +19,4 @@ export function saveBinaryFile(fileName: string, data: string | Uint8Array) {
  */
 export function loadBinaryFile(fileName: string) {
     return convertFromUint8Array(readFileSync(fileName, null));
-
 }

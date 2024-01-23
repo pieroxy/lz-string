@@ -22,9 +22,7 @@ export default defineConfig({
             fileName: "index",
         },
         rollupOptions: {
-            external: [
-                "node:fs",
-            ],
+            external: ["node:fs"],
             output: [
                 {
                     format: "cjs",

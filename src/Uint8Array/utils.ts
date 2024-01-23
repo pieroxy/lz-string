@@ -10,21 +10,25 @@
  *
  * This is binary safe rather than utf8 like TextDecoder.
  */
-export function convertToUint8Array(data: string) {
-    // Needs a single extra digit so not an even output length
-    const isOdd = data.charCodeAt(data.length - 1) % 256 === 0;
-    const buf = new Uint8Array(data.length * 2 - (isOdd ? 1 : 0)); // 2 bytes per character
+export function convertToUint8Array(data: string | null) {
+    if (typeof data === "string") {
+        // Needs a single extra digit so not an even output length
+        const isOdd = data.charCodeAt(data.length - 1) % 256 === 0;
+        const buf = new Uint8Array(data.length * 2 - (isOdd ? 1 : 0)); // 2 bytes per character
 
-    for (let i = 0; i < data.length; i++) {
-        const current_value = data.charCodeAt(i);
+        for (let i = 0; i < data.length; i++) {
+            const current_value = data.charCodeAt(i);
 
-        buf[i * 2] = current_value >>> 8;
-        if (!isOdd || i < data.length - 1) {
-            buf[i * 2 + 1] = current_value % 256;
+            buf[i * 2] = current_value >>> 8;
+            if (!isOdd || i < data.length - 1) {
+                buf[i * 2 + 1] = current_value % 256;
+            }
         }
+
+        return buf;
     }
 
-    return buf;
+    return data;
 }
 
 /**

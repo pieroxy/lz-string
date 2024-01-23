@@ -10,7 +10,12 @@ import { compressToBase64, decompressFromBase64 } from "./base64";
 import { compressToCustom, decompressFromCustom } from "./custom";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURIComponent";
 import { compress, decompress } from "./stock";
-import { convertFromUint8Array, convertToUint8Array, compressToUint8Array, decompressFromUint8Array } from "./Uint8Array";
+import {
+    convertFromUint8Array,
+    convertToUint8Array,
+    compressToUint8Array,
+    decompressFromUint8Array,
+} from "./Uint8Array";
 import { compressToUTF16, decompressFromUTF16 } from "./UTF16";
 import { loadBinaryFile, saveBinaryFile } from "./node";
 
