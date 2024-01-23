@@ -1,12 +1,9 @@
-// Copyright (c) 2013 Pieroxy <pieroxy@pieroxy.net>
-// This work is free. You can redistribute it and/or modify it
-// under the terms of the WTFPL, Version 2
-// For more information see LICENSE.txt or http://www.wtfpl.net/
-//
-// This lib is part of the lz-string project.
-// For more information, the home page:
-// http://pieroxy.net/blog/pages/lz-string/index.html
-//
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 // Base64 compression / decompression for already compressed content (gif, png, jpg, mp3, ...)
 // version 1.4.1
 

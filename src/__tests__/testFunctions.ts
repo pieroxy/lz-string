@@ -1,59 +1,43 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { test, expect } from "vitest";
+import { readFileSync } from "fs";
+import { relative } from "path";
+import { test, describe, vi } from "vitest";
 
-/** A known long text source, eaxh set of tests must have a compressed version to compare to */
-export const test_tattooSource =
-    "During tattooing, ink is injected into the skin, initiating an immune response, and cells called \"macrophages\" move into the area and \"eat up\" the ink. The macrophages carry some of the ink to the body's lymph nodes, but some that are filled with ink stay put, embedded in the skin. That's what makes the tattoo visible under the skin. Dalhousie Uiversity's Alec Falkenham is developing a topical cream that works by targeting the macrophages that have remained at the site of the tattoo. New macrophages move in to consume the previously pigment-filled macrophages and then migrate to the lymph nodes, eventually taking all the dye with them. \"When comparing it to laser-based tattoo removal, in which you see the burns, the scarring, the blisters, in this case, we've designed a drug that doesn't really have much off-target effect,\" he said. \"We're not targeting any of the normal skin cells, so you won't see a lot of inflammation. In fact, based on the process that we're actually using, we don't think there will be any inflammation at all and it would actually be anti-inflammatory.";
-
-/** All printable ascii characters  */
-export const test_allAscii = (() => {
-    const testValue: string[] = [];
-
-    for (let i = 32; i < 127; i++) {
-        testValue.push(String.fromCharCode(i));
-    }
-
-    return testValue.join("");
-})();
-
-/** All printable unicode characters */
-export const test_allUtf16 = (() => {
-    const testValue = [test_allAscii];
-
-    for (let i = 160; i < 55296; i++) {
-        testValue.push(String.fromCharCode(i));
-    }
-    for (let i = 63744; i < 65536; i++) {
-        testValue.push(String.fromCharCode(i));
-    }
-
-    return testValue.join("");
-})();
-
-/** Random (rarely compressable) string, important to be different for every test */
-export const test_randomString_fn = () => {
-    const testValue: string[] = [];
-    const randomAscii = test_allAscii.split("");
-
-    while (testValue.length < 1000) {
-        // eslint-disable-next-line prefer-spread
-        testValue.push.apply(testValue, randomAscii);
-    }
-    testValue.sort(() => Math.random() - 0.5);
-
-    return testValue.join("");
+/**
+ * Folder names within testdata, with a human readable name.
+ */
+const testDataFiles: Record<string, string> = {
+    all_ascii: "ASCII",
+    all_utf16: "UTF16",
+    lorem_ipsum: "Lorem Ipsum",
+    hello_world: '"Hello World!"',
+    pi: "10,000 digits of pi",
+    repeated: "Repeated string",
+    tattoo: "Tattoo text",
 };
 
-/** Over 10k random numbers, important to be different for every test */
-export const test_longString_fn = () => {
-    const testValue: string[] = [];
+/**
+ * Cache of the data so we only need to load it once for all tests.
+ */
+const cachedTestData: Record<string, string> = {};
 
-    while (testValue.length < 10000) {
-        testValue.push(String(Math.random()));
+/**
+ * Function to load testdata files. Caches results so it only needs to be done
+ * once.
+ */
+export function getTestData(name: string) {
+    if (!testDataFiles[name]) {
+        throw new Error("Unknown test data");
     }
 
-    return testValue.join(" ");
-};
+    return cachedTestData[name] || (cachedTestData[name] = readFileSync(`testdata/${name}/data.bin`).toString());
+}
 
 /**
  * This will run a series of tests against each compress / decompress pair.
@@ -63,101 +47,103 @@ export const test_longString_fn = () => {
  * - Check that the compression is deterministic
  * - Check that it changes the input string
  * - Check that it can decompress again
- * - Compression makes thing smaller
  * - Check against a known good value
  */
 export function runTestSet<T extends { length: number }>(
+    identifier: string,
     compressFunc: (input: string | null) => T | null,
     decompressFunc: (input: T | null) => string | null,
-    compressedTattoo?: T,
 ) {
-    test(`"Hello World"`, () => {
-        const test_hw = "Hello world!";
-        const compressedHw = compressFunc(test_hw);
-
-        expect(compressedHw).toEqual(compressFunc(test_hw));
-        expect(compressedHw).not.toEqual(test_hw);
-        expect(decompressFunc(compressedHw)).toEqual(test_hw);
-    });
-
-    test(`null`, () => {
-        const test_null = null;
-        const compressedNull = compressFunc(test_null);
+    // Specific internal behaviour
+    test(`null`, ({ expect }) => {
+        const compressedNull = compressFunc(null);
 
         compressedNull instanceof Uint8Array
             ? expect(compressedNull.length).toBe(0)
             : expect(compressedNull).toEqual("");
     });
 
-    test(`"" (empty string)`, () => {
-        const test_empty = "";
-        const compressedEmpty = compressFunc(test_empty);
-
-        expect(compressedEmpty).toEqual(compressFunc(test_empty));
-        expect(compressedEmpty).not.toEqual("");
-        compressedEmpty instanceof Uint8Array
-            ? expect(compressedEmpty.length).not.toBe(0)
-            : expect(typeof compressedEmpty).toBe("string");
-        expect(decompressFunc(compressedEmpty)).toEqual(test_empty);
-    });
-
-    test(`undefined`, () => {
-        const test_undefined = undefined;
-        // @ts-expect-error
-        const compressedUndefined = compressFunc(test_undefined);
+    // Specific internal behaviour
+    test(`undefined`, ({ expect }) => {
+        const compressedUndefined = compressFunc(undefined!);
 
         compressedUndefined instanceof Uint8Array
             ? expect(compressedUndefined.length).toBe(0)
             : expect(compressedUndefined).toBe("");
     });
 
-    test(`utf16`, () => {
-        const compressedUtf16 = compressFunc(test_allUtf16);
+    // Specific internal behaviour
+    test(`"" (empty string)`, ({ expect }) => {
+        const compressedEmpty = compressFunc("");
 
-        expect(compressedUtf16).not.toEqual(null);
-        expect(compressedUtf16).toEqual(compressFunc(test_allUtf16));
-        expect(compressedUtf16).not.toEqual(test_allUtf16);
-        expect(decompressFunc(compressedUtf16)).toEqual(test_allUtf16);
+        expect(compressedEmpty).toEqual(compressFunc(""));
+        expect(compressedEmpty).not.toEqual("");
+        compressedEmpty instanceof Uint8Array
+            ? expect(compressedEmpty.length).not.toBe(0)
+            : expect(typeof compressedEmpty).toBe("string");
+        expect(decompressFunc(compressedEmpty)).toEqual("");
     });
 
-    test(`Repeating String`, () => {
-        const test_repeat = "aaaaabaaaaacaaaaadaaaaaeaaaaa";
-        const compressedRepeat = compressFunc(test_repeat)!;
+    for (const path in testDataFiles) {
+        const name = testDataFiles[path];
 
-        expect(compressedRepeat).not.toEqual(null);
-        expect(compressedRepeat).toEqual(compressFunc(test_repeat));
-        expect(compressedRepeat).not.toEqual(test_repeat);
-        expect(compressedRepeat.length).toBeLessThan(test_repeat.length);
-        expect(decompressFunc(compressedRepeat)).toEqual(test_repeat);
-    });
+        describe(name, () => {
+            const rawData = getTestData(path);
+            const compressedData = compressFunc(rawData);
 
-    // Note that this is designed to be uncompressible
-    test(`Random String`, () => {
-        const test_randomString = test_randomString_fn(); // Unique per test
-        const compressedRandomString = compressFunc(test_randomString);
+            test("consistent", ({ expect }) => {
+                expect(compressedData).toEqual(compressFunc(rawData));
+            });
+            test("alter data", ({ expect }) => {
+                expect(compressedData).not.toEqual(rawData);
+            });
+            test("decompresses", ({ expect }) => {
+                expect(decompressFunc(compressedData)).toEqual(rawData);
+            });
 
-        expect(compressedRandomString).toEqual(compressFunc(test_randomString));
-        expect(compressedRandomString).not.toEqual(test_randomString);
-        expect(decompressFunc(compressedRandomString)).toEqual(test_randomString);
-    });
+            if (identifier) {
+                const knownCompressed = readFileSync(`testdata/${path}/js/${identifier}.bin`).toString();
 
-    test(`Long String`, () => {
-        const test_longString = test_longString_fn(); // Unique per run
-        const compressedLongString = compressFunc(test_longString)!;
-
-        expect(compressedLongString).toEqual(compressFunc(test_longString));
-        expect(compressedLongString).not.toEqual(test_longString);
-        expect(compressedLongString.length).toBeLessThan(test_longString.length);
-        expect(decompressFunc(compressedLongString)).toEqual(test_longString);
-    });
-
-    if (compressedTattoo) {
-        test(`expected compression result`, () => {
-            expect(compressFunc(test_tattooSource)).toEqual(compressedTattoo);
-        });
-
-        test(`expected decompression result`, () => {
-            expect(decompressFunc(compressedTattoo)).toEqual(test_tattooSource);
+                test("expected compression result", ({ expect }) => {
+                    expect(compressFunc(rawData)).toEqual(knownCompressed);
+                });
+                test(`expected decompression result`, ({ expect }) => {
+                    // @ts-expect-error We don't know the type
+                    expect(decompressFunc(knownCompressed)).toEqual(rawData);
+                });
+            }
         });
     }
+}
+
+export async function testMockedLZString(importPath: string, displayName: string) {
+    const relativePath = relative(process.cwd(), importPath);
+
+    describe(`${relativePath.startsWith(".") ? importPath : relativePath} (${displayName})`, async () => {
+        const LZString = await import(importPath);
+        const methods: Record<string, string> = {
+            base64: "Base64",
+            custom: "Custom",
+            encodedURIComponent: "EncodedURIComponent",
+            stock: "",
+            Uint8Array: "Uint8Array",
+            UTF16: "UTF16",
+        };
+
+        for (const path in methods) {
+            const name = methods[path];
+            const compress = `compress${name ? `To${name}` : ""}`;
+            const decompress = `decompress${name ? `From${name}` : ""}`;
+
+            vi.doMock(`../${path}/${compress}`, async (importOriginal) => ({
+                ...((await importOriginal()) as Record<string, unknown>),
+                [compress]: LZString[compress] ?? LZString.default[compress],
+            }));
+            vi.doMock(`../${path}/${decompress}`, async (importOriginal) => ({
+                ...((await importOriginal()) as Record<string, unknown>),
+                [decompress]: LZString[decompress] ?? LZString.default[decompress],
+            }));
+            await import(`../${path}/${path}.test.ts`);
+        }
+    });
 }

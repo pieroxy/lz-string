@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 import { decompress } from "../stock/decompress";
 
 export function decompressFromUint8Array(compressed: Uint8Array | null): string | null {
