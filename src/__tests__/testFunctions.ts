@@ -117,7 +117,7 @@ export function runTestSet<T extends { length: number }>(
         expect(decompressFunc(compressedEmpty)).toEqual("");
     });
 
-    runGeneralTests(identifier, compressFunc, decompressFunc)
+    runGeneralTests(identifier, compressFunc, decompressFunc);
 }
 
 /**
@@ -156,7 +156,7 @@ export function runNewerTestSet<T extends { length: number }>(
         expect(decompressFunc(compressedEmpty)).toEqual("");
     });
 
-    runGeneralTests(identifier, compressFunc, decompressFunc)
+    runGeneralTests(identifier, compressFunc, decompressFunc);
 }
 
 export async function testMockedLZString(importPath: string, displayName: string) {

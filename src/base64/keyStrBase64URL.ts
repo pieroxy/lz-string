@@ -4,4 +4,4 @@
  * SPDX-License-Identifier: MIT
  */
 
-export const keyStrBase64URL =  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+export const keyStrBase64URL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";

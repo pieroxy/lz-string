@@ -9,7 +9,7 @@ import keyStrBase64 from "./keyStrBase64";
 import { deprecated } from "../utils/misc";
 
 export function compressToBase64(input: string | null): string {
-    deprecated("compressToBase64()", "v2.0.0", { replacement: "compressToBetterBase64()"})
+    deprecated("compressToBase64()", "v2.0.0", { replacement: "compressToBetterBase64()" });
     if (input == null) {
         return "";
     }
