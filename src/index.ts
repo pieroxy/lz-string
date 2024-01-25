@@ -14,7 +14,7 @@ import {
     compressToBase64URL,
     decompressFromBase64URL,
 } from "./base64";
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURI";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURIComponent";
 import { compress, decompress } from "./stock";
 import { compressToUint8Array, decompressFromUint8Array } from "./Uint8Array";
 import { compressToUTF16, decompressFromUTF16 } from "./UTF16";

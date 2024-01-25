@@ -1,7 +1,11 @@
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 import { _compress } from "../_compress";
 import keyStrBase64 from "./keyStrBase64";
-import { _decompress } from "../_decompress";
-import { getBaseValue } from "../getBaseValue";
 
 export function compressToBetterBase64(input: string): string {
     if (!input) {
@@ -21,13 +25,4 @@ export function compressToBetterBase64(input: string): string {
             console.warn("Something in compressToBetterBase64() is very very wrong.");
             return "";
     }
-
-}
-
-export function decompressFromBetterBase64(input: string): string {
-    if (!input) {
-        return "";
-    }
-    const res = _decompress(input.length, 32, (index) => getBaseValue(keyStrBase64, input.charAt(index)));
-    return res || "";
 }

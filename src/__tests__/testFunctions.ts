@@ -39,6 +39,39 @@ export function getTestData(name: string) {
     return cachedTestData[name] || (cachedTestData[name] = readFileSync(`testdata/${name}/data.bin`).toString());
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+function runGeneralTests(identifier: string, compressFunc: (input: any) => any, decompressFunc: (input: any) => any) {
+    for (const path in testDataFiles) {
+        const name = testDataFiles[path];
+
+        describe(name, () => {
+            const rawData = getTestData(path);
+            const compressedData = compressFunc(rawData);
+
+            test("consistent", ({ expect }) => {
+                expect(compressedData).toEqual(compressFunc(rawData));
+            });
+            test("alter data", ({ expect }) => {
+                expect(compressedData).not.toEqual(rawData);
+            });
+            test("decompresses", ({ expect }) => {
+                expect(decompressFunc(compressedData)).toEqual(rawData);
+            });
+
+            if (identifier) {
+                const knownCompressed = readFileSync(`testdata/${path}/js/${identifier}.bin`).toString();
+
+                test("expected compression result", ({ expect }) => {
+                    expect(compressFunc(rawData)).toEqual(knownCompressed);
+                });
+                test(`expected decompression result`, ({ expect }) => {
+                    expect(decompressFunc(knownCompressed)).toEqual(rawData);
+                });
+            }
+        });
+    }
+}
+
 /**
  * This will run a series of tests against each compress / decompress pair.
  *
@@ -84,36 +117,46 @@ export function runTestSet<T extends { length: number }>(
         expect(decompressFunc(compressedEmpty)).toEqual("");
     });
 
-    for (const path in testDataFiles) {
-        const name = testDataFiles[path];
+    runGeneralTests(identifier, compressFunc, decompressFunc)
+}
 
-        describe(name, () => {
-            const rawData = getTestData(path);
-            const compressedData = compressFunc(rawData);
+/**
+ * This will run a series of tests against each compress / decompress pair.
+ *
+ * All tests must (where possible):
+ * - Check that it doesn't output null unless expected
+ * - Check that the compression is deterministic
+ * - Check that it changes the input string
+ * - Check that it can decompress again
+ * - Check against a known good value
+ */
+export function runNewerTestSet<T extends { length: number }>(
+    identifier: string,
+    compressFunc: (input: string) => T,
+    decompressFunc: (input: T) => string,
+) {
+    // Specific internal behaviour
+    test(`undefined`, ({ expect }) => {
+        const compressedUndefined = compressFunc(undefined!);
 
-            test("consistent", ({ expect }) => {
-                expect(compressedData).toEqual(compressFunc(rawData));
-            });
-            test("alter data", ({ expect }) => {
-                expect(compressedData).not.toEqual(rawData);
-            });
-            test("decompresses", ({ expect }) => {
-                expect(decompressFunc(compressedData)).toEqual(rawData);
-            });
+        compressedUndefined instanceof Uint8Array
+            ? expect(compressedUndefined.length).toBe(0)
+            : expect(compressedUndefined).toBe("");
+    });
 
-            if (identifier) {
-                const knownCompressed = readFileSync(`testdata/${path}/js/${identifier}.bin`).toString();
+    // Specific internal behaviour
+    test(`"" returns (empty string)`, ({ expect }) => {
+        const compressedEmpty = compressFunc("");
 
-                test("expected compression result", ({ expect }) => {
-                    expect(compressFunc(rawData)).toEqual(knownCompressed);
-                });
-                test(`expected decompression result`, ({ expect }) => {
-                    // @ts-expect-error We don't know the type
-                    expect(decompressFunc(knownCompressed)).toEqual(rawData);
-                });
-            }
-        });
-    }
+        expect(compressedEmpty).toEqual(compressFunc(""));
+        expect(compressedEmpty).toEqual("");
+        compressedEmpty instanceof Uint8Array
+            ? expect(compressedEmpty.length).not.toBe(0)
+            : expect(typeof compressedEmpty).toBe("string");
+        expect(decompressFunc(compressedEmpty)).toEqual("");
+    });
+
+    runGeneralTests(identifier, compressFunc, decompressFunc)
 }
 
 export async function testMockedLZString(importPath: string, displayName: string) {
