@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { decompress } from "../stock/decompress";
+import { decompress } from "../raw/decompress";
 import { convertFromUint8Array } from "./utils";
 
 export function decompressFromUint8Array(compressed: Uint8Array | null): string | null {

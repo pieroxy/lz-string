@@ -10,10 +10,10 @@
  *
  * This is binary safe rather than utf8 like TextDecoder.
  */
-export function convertToUint8Array(data: string | null) {
+export function convertToUint8Array(data: string | null, forceEven?: boolean) {
     if (typeof data === "string") {
         // Needs a single extra digit so not an even output length
-        const isOdd = data.charCodeAt(data.length - 1) % 256 === 0;
+        const isOdd = !forceEven && data.charCodeAt(data.length - 1) % 256 === 0;
         const buf = new Uint8Array(data.length * 2 - (isOdd ? 1 : 0)); // 2 bytes per character
 
         for (let i = 0; i < data.length; i++) {

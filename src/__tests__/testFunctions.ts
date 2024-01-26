@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { relative } from "path";
 import { test, describe, vi } from "vitest";
 import { loadBinaryFile } from "../node";
@@ -36,7 +35,7 @@ export function getTestData(name: string) {
         throw new Error("Unknown test data");
     }
 
-    return cachedTestData[name] || (cachedTestData[name] = loadBinaryFile(`testdata/${name}/data.bin`));
+    return cachedTestData[name] || (cachedTestData[name] = loadBinaryFile(`test/data/${name}/data.bin`));
 }
 
 /**
@@ -59,8 +58,8 @@ export function runTestSet<T extends { length: number }>(
         const compressedNull = compressFunc(null);
 
         compressedNull instanceof Uint8Array
-            ? expect(compressedNull.length).toBe(0)
-            : expect(compressedNull).toEqual("");
+            ? expect.soft(compressedNull.length).toBe(0)
+            : expect.soft(compressedNull).toEqual("");
     });
 
     // Specific internal behaviour
@@ -68,20 +67,20 @@ export function runTestSet<T extends { length: number }>(
         const compressedUndefined = compressFunc(undefined!);
 
         compressedUndefined instanceof Uint8Array
-            ? expect(compressedUndefined.length).toBe(0)
-            : expect(compressedUndefined).toBe("");
+            ? expect.soft(compressedUndefined.length).toBe(0)
+            : expect.soft(compressedUndefined).toBe("");
     });
 
     // Specific internal behaviour
     test(`"" (empty string)`, ({ expect }) => {
         const compressedEmpty = compressFunc("");
 
-        expect(compressedEmpty).toEqual(compressFunc(""));
-        expect(compressedEmpty).not.toEqual("");
+        expect.soft(compressedEmpty).toEqual(compressFunc(""));
+        expect.soft(compressedEmpty).not.toEqual("");
         compressedEmpty instanceof Uint8Array
-            ? expect(compressedEmpty.length).not.toBe(0)
-            : expect(typeof compressedEmpty).toBe("string");
-        expect(decompressFunc(compressedEmpty)).toEqual("");
+            ? expect.soft(compressedEmpty.length).not.toBe(0)
+            : expect.soft(typeof compressedEmpty).toBe("string");
+        expect.soft(decompressFunc(compressedEmpty)).toEqual("");
     });
 
     for (const path in testDataFiles) {
@@ -92,24 +91,24 @@ export function runTestSet<T extends { length: number }>(
             const compressedData = compressFunc(rawData);
 
             test("consistent", ({ expect }) => {
-                expect(compressedData).toEqual(compressFunc(rawData));
+                expect.soft(compressedData).toEqual(compressFunc(rawData));
             });
             test("alter data", ({ expect }) => {
-                expect(compressedData).not.toEqual(rawData);
+                expect.soft(compressedData).not.toEqual(rawData);
             });
             test("decompresses", ({ expect }) => {
-                expect(decompressFunc(compressedData)).toEqual(rawData);
+                expect.soft(decompressFunc(compressedData)).toEqual(rawData);
             });
 
             if (identifier) {
-                const knownCompressed = loadBinaryFile(`testdata/${path}/js/${identifier}.bin`);
+                const knownCompressed = loadBinaryFile(`test/data/${path}/${identifier}.bin`);
 
                 test("expected compression result", ({ expect }) => {
-                    expect(compressFunc(rawData)).toEqual(knownCompressed);
+                    expect.soft(compressFunc(rawData)).toEqual(knownCompressed);
                 });
                 test(`expected decompression result`, ({ expect }) => {
                     // @ts-expect-error We don't know the type
-                    expect(decompressFunc(knownCompressed)).toEqual(rawData);
+                    expect.soft(decompressFunc(knownCompressed)).toEqual(rawData);
                 });
             }
         });
@@ -125,7 +124,7 @@ export async function testMockedLZString(importPath: string, displayName: string
             base64: "Base64",
             custom: "Custom",
             encodedURIComponent: "EncodedURIComponent",
-            stock: "",
+            raw: "",
             Uint8Array: "Uint8Array",
             UTF16: "UTF16",
         };

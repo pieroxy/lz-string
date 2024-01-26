@@ -9,7 +9,7 @@ import { _decompress } from "./_decompress";
 import { compressToBase64, decompressFromBase64 } from "./base64";
 import { compressToCustom, decompressFromCustom } from "./custom";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURIComponent";
-import { compress, decompress } from "./stock";
+import { compress, decompress } from "./raw";
 import {
     convertFromUint8Array,
     convertToUint8Array,

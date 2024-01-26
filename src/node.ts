@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { writeFileSync, readFileSync } from "node:fs";
+import { writeFileSync, readFileSync } from "fs";
 import { convertToUint8Array, convertFromUint8Array } from "./Uint8Array";
 
 /**

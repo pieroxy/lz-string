@@ -27,7 +27,7 @@ If installed globally there is a command line tool available, and a test suite t
 
 ```console
 $ lz-string -h
-Usage: lz-string [options] [input-file]
+Usage: cli [options] [input-file]
 
 Use lz-string to compress or decompress a file
 
@@ -37,8 +37,10 @@ Arguments:
 Options:
   -V, --version               output the version number
   -d, --decompress            if unset then this will compress
-  -f, --format <type>         formatter to use (choices: "base64", "encodeduri", "raw", "uint8array", "utf16", default: "raw")
-  -v, --validate              validate before returning (default: true)
+  -e, --encoder <type>        character encoding to use (choices: "base64", "encodeduri", "raw", "uint8array", "utf16", default: "raw")
+  -v, --verify                verify before returning (default: true)
+  -b, --binary <file>         lz-string binary to use (default: "../dist/index.js")
+  -l, --legacy                use legacy mode where uint8array decompression must be an even length
   -o, --output <output-file>  output file, otherwise write to stdout
   -q, --quiet                 don't print any error messages
   -h, --help                  display help for command

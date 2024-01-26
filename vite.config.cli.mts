@@ -4,45 +4,32 @@
  * SPDX-License-Identifier: MIT
  */
 
-/// <reference types="vitest" />
-import { resolve } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import eslint from "vite-plugin-eslint";
 import tsconfigPaths from "vite-tsconfig-paths";
+import bin from "vite-plugin-bin";
 
 export default defineConfig({
-    plugins: [tsconfigPaths(), dts({ rollupTypes: true }), eslint()],
+    plugins: [tsconfigPaths(), dts({ rollupTypes: true }), eslint(), bin()],
     build: {
         minify: true,
         reportCompressedSize: true,
         sourcemap: true,
         lib: {
-            entry: resolve(__dirname, "src/index.ts"),
-            fileName: "index",
+            entry: "src/cli.ts",
+            fileName: "cli",
         },
+        outDir: "bin",
         rollupOptions: {
-            external: ["fs"],
+            external: ["child_process", "events", "fs", "path", "process"],
             output: [
                 {
                     format: "cjs",
                     name: "LZString",
                     entryFileNames: "[name].cjs",
                 },
-                {
-                    format: "es",
-                    preserveModules: true,
-                    entryFileNames: "[name].js",
-                },
-                {
-                    format: "umd",
-                    name: "LZString",
-                    entryFileNames: "[name].[format].js",
-                },
             ],
         },
-    },
-    test: {
-        root: "src",
     },
 });

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { decompress } from "../stock/decompress";
+import { decompress } from "../raw/decompress";
 
 export function decompressFromCustom(compressed: string | null, dict: string): string | null {
     if (compressed == null) return "";

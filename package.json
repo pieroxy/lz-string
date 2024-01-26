@@ -38,7 +38,13 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "require": "./dist/index.cjs"
-        }
+        },
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "import": "./dist/*.js",
+            "require": "./dist/*.cjs"
+        },
+        "./package.json": "./package.json"
     },
     "type": "module",
     "main": "./dist/index.umd.js",
@@ -49,13 +55,17 @@
         "dist"
     ],
     "scripts": {
-        "build": "tsc && vite build",
+        "build": "npm run build:lib && npm run build:cli",
+        "build:lib": "vite build",
+        "build:cli": "vite build -c vite.config.cli.mts",
         "format": "npm run format:prettier && npm run format:eslint",
         "format:prettier": "prettier --write .",
         "format:eslint": "eslint --fix .",
         "start": "vite build --watch",
+        "start:cli": "vite build -c vite.config.cli.mts --watch",
         "test": "[ -f ./dist/index.js ] || npm run build && vitest",
-        "test:coverage": "vitest run src.main.test.ts --coverage",
+        "test:ui": "[ -f ./dist/index.js ] || npm run build && vitest --coverage --ui",
+        "test:coverage": "[ -f ./dist/index.js ] || npm run build && vitest run --coverage",
         "lint": "npm run lint:prettier && npm run lint:eslint",
         "lint:prettier": "prettier --check .",
         "lint:eslint": "eslint ."
@@ -66,20 +76,21 @@
         "@typescript-eslint/eslint-plugin": "6.19.0",
         "@typescript-eslint/parser": "6.19.0",
         "@vitest/coverage-v8": "1.2.1",
+        "@vitest/ui": "1.2.2",
+        "commander": "11.1.0",
         "eslint": "8.56.0",
         "eslint-config-prettier": "9.1.0",
         "tslib": "2.6.2",
         "typescript": "5.3.3",
         "vite": "5.0.12",
+        "vite-plugin-bin": "1.0.2",
         "vite-plugin-dts": "3.7.1",
         "vite-plugin-eslint": "1.8.1",
         "vite-tsconfig-paths": "4.3.1",
         "vitest": "1.2.1"
     },
     "override": {
-        "prettier": "npm:@btmills/prettier@3.1.0"
-    },
-    "dependencies": {
-        "commander": "11.1.0"
+        "prettier": "npm:@btmills/prettier@3.1.0",
+        "rollup": "npm:@rollup/wasm-node"
     }
 }

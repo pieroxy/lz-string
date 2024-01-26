@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { compress } from "../stock/compress";
+import { compress } from "../raw/compress";
 
 export function compressToUint8Array(uncompressed: string | null): Uint8Array {
     const compressed: string = compress(uncompressed);

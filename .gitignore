@@ -1,4 +1,5 @@
 # Created folders
+bin
 coverage
 dist
 node_modules
@@ -9,3 +10,6 @@ npm-debug.log*
 # Editors, should be in a global .gitignore
 .idea
 .vscode
+
+# Testing files
+*.tmp
