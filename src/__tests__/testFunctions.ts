@@ -92,7 +92,7 @@ export function runTestSet<T extends { length: number }>(
         const compressedNull = compressFunc(null);
 
         compressedNull instanceof Uint8Array
-            ? expect(compressedNull.length).toBe(0)
+            ? expect(compressedNull.byteLength).toBe(0)
             : expect(compressedNull).toEqual("");
     });
 
@@ -101,7 +101,7 @@ export function runTestSet<T extends { length: number }>(
         const compressedUndefined = compressFunc(undefined!);
 
         compressedUndefined instanceof Uint8Array
-            ? expect(compressedUndefined.length).toBe(0)
+            ? expect(compressedUndefined.byteLength).toBe(0)
             : expect(compressedUndefined).toBe("");
     });
 
@@ -112,7 +112,7 @@ export function runTestSet<T extends { length: number }>(
         expect(compressedEmpty).toEqual(compressFunc(""));
         expect(compressedEmpty).not.toEqual("");
         compressedEmpty instanceof Uint8Array
-            ? expect(compressedEmpty.length).not.toBe(0)
+            ? expect(compressedEmpty.byteLength).not.toBe(0)
             : expect(typeof compressedEmpty).toBe("string");
         expect(decompressFunc(compressedEmpty)).toEqual("");
     });
@@ -140,7 +140,7 @@ export function runNewerTestSet<T extends { length: number }>(
         const compressedUndefined = compressFunc(undefined!);
 
         compressedUndefined instanceof Uint8Array
-            ? expect(compressedUndefined.length).toBe(0)
+            ? expect(compressedUndefined.byteLength).toBe(0)
             : expect(compressedUndefined).toBe("");
     });
 
@@ -148,11 +148,10 @@ export function runNewerTestSet<T extends { length: number }>(
     test(`"" returns (empty string)`, ({ expect }) => {
         const compressedEmpty = compressFunc("");
 
-        expect(compressedEmpty).toEqual(compressFunc(""));
-        expect(compressedEmpty).toEqual("");
         compressedEmpty instanceof Uint8Array
-            ? expect(compressedEmpty.length).not.toBe(0)
-            : expect(typeof compressedEmpty).toBe("string");
+            ? expect(compressedEmpty.byteLength).not.toBe(0)
+            : expect(compressedEmpty).toBe("");
+        
         expect(decompressFunc(compressedEmpty)).toEqual("");
     });
 
