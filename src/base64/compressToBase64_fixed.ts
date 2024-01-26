@@ -7,7 +7,7 @@
 import { _compress } from "../_compress";
 import keyStrBase64 from "./keyStrBase64";
 
-export function compressToBetterBase64(input: string): string {
+export function compressToBase64_fixed(input: string): string {
     if (!input) {
         return "";
     }

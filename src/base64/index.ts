@@ -5,6 +5,6 @@
  */
 
 export { compressToBase64 } from "./compressToBase64";
-export { compressToBetterBase64 } from "./compressToBetterBase64";
+export { compressToBase64_fixed } from "./compressToBase64_fixed";
 export { decompressFromBase64 } from "./decompressFromBase64";
-export { decompressFromBetterBase64 } from "./decompressFromBetterBase64";
+export { decompressFromBase64_fixed } from "./decompressFromBase64_fixed";
