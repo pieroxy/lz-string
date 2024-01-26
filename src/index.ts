@@ -11,9 +11,11 @@ import {
     decompressFromBase64,
     compressToBetterBase64,
     decompressFromBetterBase64,
+} from "./base64";
+import {
     compressToBase64URL,
     decompressFromBase64URL,
-} from "./base64";
+} from "./base64URL";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURIComponent";
 import { compress, decompress } from "./stock";
 import { compressToUint8Array, decompressFromUint8Array } from "./Uint8Array";
@@ -31,6 +33,7 @@ export default {
     decompressFromBase64,
     compressToBetterBase64,
     decompressFromBetterBase64,
+    
     compressToBase64URL,
     decompressFromBase64URL,
 
