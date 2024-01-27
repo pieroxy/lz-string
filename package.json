@@ -73,7 +73,7 @@
     "devDependencies": {
         "@btmills/prettier": "3.1.0",
         "@types/node": "20.11.5",
-        "@typescript-eslint/eslint-plugin": "6.19.0",
+        "@typescript-eslint/eslint-plugin": "6.19.1",
         "@typescript-eslint/parser": "6.19.0",
         "@vitest/coverage-v8": "1.2.2",
         "@vitest/ui": "1.2.2",
