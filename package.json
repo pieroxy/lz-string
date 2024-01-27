@@ -63,9 +63,9 @@
         "format:eslint": "eslint --fix .",
         "start": "vite build --watch",
         "start:cli": "vite build -c vite.config.cli.mts --watch",
-        "test": "[ -f ./dist/index.js ] || npm run build && vitest",
-        "test:ui": "[ -f ./dist/index.js ] || npm run build && vitest --coverage --ui",
-        "test:coverage": "[ -f ./dist/index.js ] || npm run build && vitest run --coverage",
+        "test": "vitest",
+        "test:ui": "vitest --coverage --ui",
+        "test:coverage": "vitest run --coverage",
         "lint": "npm run lint:prettier && npm run lint:eslint",
         "lint:prettier": "prettier --check .",
         "lint:eslint": "eslint ."

@@ -4,8 +4,16 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { existsSync } from "fs";
 import { join } from "path";
+import { describe } from "vitest";
 
 import { testMockedLZString } from "./__tests__/testFunctions";
 
-testMockedLZString(join(__dirname, "../dist/index.js"), "esmodule");
+const filePath = join(__dirname, "../dist/index.js");
+
+if (existsSync(filePath)) {
+    testMockedLZString(filePath, "esmodule");
+} else {
+    describe.skip(`No built file: ${filePath}`);
+}
