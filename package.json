@@ -87,7 +87,7 @@
         "vite-plugin-dts": "3.7.1",
         "vite-plugin-eslint": "1.8.1",
         "vite-tsconfig-paths": "4.3.1",
-        "vitest": "1.2.1"
+        "vitest": "1.2.2"
     },
     "override": {
         "prettier": "npm:@btmills/prettier@3.1.0",
