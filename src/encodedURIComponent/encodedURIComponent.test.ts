@@ -5,6 +5,7 @@
  */
 
 import { describe, test } from "vitest";
+
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from ".";
 import { getTestData, runTestSet } from "../__tests__/testFunctions";
 

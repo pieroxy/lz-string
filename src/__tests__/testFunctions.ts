@@ -5,7 +5,8 @@
  */
 
 import { relative } from "path";
-import { test, describe, vi } from "vitest";
+import { describe, test, vi } from "vitest";
+
 import { loadBinaryFile } from "../node";
 
 /**
@@ -60,6 +61,7 @@ export function runTestSet<T extends { length: number }>(
         compressedNull instanceof Uint8Array
             ? expect.soft(compressedNull.length).toBe(0)
             : expect.soft(compressedNull).toEqual("");
+        expect.soft(decompressFunc(null)).toEqual("");
     });
 
     // Specific internal behaviour
@@ -69,6 +71,8 @@ export function runTestSet<T extends { length: number }>(
         compressedUndefined instanceof Uint8Array
             ? expect.soft(compressedUndefined.length).toBe(0)
             : expect.soft(compressedUndefined).toBe("");
+        // @ts-expect-error Overriding type for testing
+        expect.soft(decompressFunc(undefined)).toEqual("");
     });
 
     // Specific internal behaviour
@@ -81,6 +85,8 @@ export function runTestSet<T extends { length: number }>(
             ? expect.soft(compressedEmpty.length).not.toBe(0)
             : expect.soft(typeof compressedEmpty).toBe("string");
         expect.soft(decompressFunc(compressedEmpty)).toEqual("");
+        // @ts-expect-error Overriding type for testing
+        expect.soft(decompressFunc("")).toEqual(null);
     });
 
     for (const path in testDataFiles) {

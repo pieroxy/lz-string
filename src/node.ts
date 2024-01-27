@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { writeFileSync, readFileSync } from "fs";
-import { convertToUint8Array, convertFromUint8Array } from "./Uint8Array";
+import { readFileSync, writeFileSync } from "fs";
+
+import { convertFromUint8Array, convertToUint8Array } from "./Uint8Array";
 
 /**
  * Binary safe file saving for NodeJS.

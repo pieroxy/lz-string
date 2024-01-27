@@ -5,6 +5,7 @@
  */
 
 import { describe } from "vitest";
+
 import { compressToUint8Array, convertFromUint8Array, convertToUint8Array, decompressFromUint8Array } from ".";
 import { runTestSet } from "../__tests__/testFunctions";
 

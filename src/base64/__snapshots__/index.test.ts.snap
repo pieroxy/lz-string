@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`base64/index.ts > was the change deliberate? 1`] = `
+{
+  "compressToBase64": [Function],
+  "decompressFromBase64": [Function],
+}
+`;

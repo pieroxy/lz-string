@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Uint8Array/index.ts > was the change deliberate? 1`] = `
+{
+  "compressToUint8Array": [Function],
+  "convertFromUint8Array": [Function],
+  "convertToUint8Array": [Function],
+  "decompressFromUint8Array": [Function],
+}
+`;

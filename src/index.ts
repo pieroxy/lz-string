@@ -9,15 +9,15 @@ import { _decompress } from "./_decompress";
 import { compressToBase64, decompressFromBase64 } from "./base64";
 import { compressToCustom, decompressFromCustom } from "./custom";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURIComponent";
+import { loadBinaryFile, saveBinaryFile } from "./node";
 import { compress, decompress } from "./raw";
 import {
+    compressToUint8Array,
     convertFromUint8Array,
     convertToUint8Array,
-    compressToUint8Array,
     decompressFromUint8Array,
 } from "./Uint8Array";
 import { compressToUTF16, decompressFromUTF16 } from "./UTF16";
-import { loadBinaryFile, saveBinaryFile } from "./node";
 
 export default {
     _compress,

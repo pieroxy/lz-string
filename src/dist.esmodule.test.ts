@@ -5,6 +5,7 @@
  */
 
 import { join } from "path";
+
 import { testMockedLZString } from "./__tests__/testFunctions";
 
 testMockedLZString(join(__dirname, "../dist/index.js"), "esmodule");

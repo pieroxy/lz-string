@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UTF16/index.ts > was the change deliberate? 1`] = `
+{
+  "compressToUTF16": [Function],
+  "decompressFromUTF16": [Function],
+}
+`;

@@ -1,0 +1,8 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`raw/index.ts > was the change deliberate? 1`] = `
+{
+  "compress": [Function],
+  "decompress": [Function],
+}
+`;

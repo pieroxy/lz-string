@@ -4,5 +4,16 @@
     "semi": true,
     "singleQuote": false,
     "tabWidth": 4,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+    "importOrder": ["", "<THIRD_PARTY_MODULES>", "", "^[.]", ""],
+    "importOrderTypeScriptVersion": "5.0.0",
+    "overrides": [
+        {
+            "files": "*.md",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }

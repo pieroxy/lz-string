@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { describe } from "vitest";
+import { describe, test } from "vitest";
+
 import { compressToCustom, decompressFromCustom } from ".";
 import { runTestSet } from "../__tests__/testFunctions";
 
@@ -31,5 +32,13 @@ describe("custom", () => {
         const decompress = (input: string | null) => decompressFromCustom(input, base62);
 
         runTestSet<string>("", compress, decompress);
+    });
+
+    describe("short dictionary", () => {
+        const dict = "a";
+
+        test(dict, ({ expect }) => {
+            expect.soft(decompressFromCustom("any string", dict)).toEqual(null);
+        });
     });
 });

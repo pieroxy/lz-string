@@ -5,10 +5,10 @@
  */
 
 import { defineConfig } from "vite";
+import bin from "vite-plugin-bin";
 import dts from "vite-plugin-dts";
 import eslint from "vite-plugin-eslint";
 import tsconfigPaths from "vite-tsconfig-paths";
-import bin from "vite-plugin-bin";
 
 export default defineConfig({
     plugins: [tsconfigPaths(), dts({ rollupTypes: true }), eslint(), bin()],

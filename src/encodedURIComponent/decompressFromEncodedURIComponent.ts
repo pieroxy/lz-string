@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-import keyStrUriSafe from "./keyStrUriSafe";
 import { _decompress } from "../_decompress";
 import { getBaseValue } from "../getBaseValue";
+import keyStrUriSafe from "./keyStrUriSafe";
 
 export function decompressFromEncodedURIComponent(input: string | null) {
     if (input == null) return "";

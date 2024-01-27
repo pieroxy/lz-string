@@ -5,6 +5,7 @@
  */
 
 /// <reference types="vitest" />
+
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
@@ -43,6 +44,11 @@ export default defineConfig({
         },
     },
     test: {
-        root: "src",
+        coverage: {
+            include: ["src/**"],
+            reporter: ["cobertura", "html", "text"],
+        },
+        reporters: ["junit", "default"],
+        outputFile: "junit-reports/TEST-vitest.xml",
     },
 });

@@ -5,6 +5,7 @@
  */
 
 import { describe } from "vitest";
+
 import { compressToUTF16, decompressFromUTF16 } from ".";
 import { runTestSet } from "../__tests__/testFunctions";
 

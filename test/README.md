@@ -55,11 +55,11 @@ The command will run each encoder against all test data files (the `data.bin` fi
 
 Potential results:
 
--   `‼` Failure - error from the command.
--   `✘` Failure - data doesn't match.
--   `✔` Success - data matches.
--   `⊕` Success - new data file created.
--   `–` Skip - no data file to compare against (and no permission to write).
+- `‼` Failure - error from the command.
+- `✘` Failure - data doesn't match.
+- `✔` Success - data matches.
+- `⊕` Success - new data file created.
+- `–` Skip - no data file to compare against (and no permission to write).
 
 If there are any errors then it will display them in the `Message` column.
 

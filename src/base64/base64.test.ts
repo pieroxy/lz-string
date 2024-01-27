@@ -5,6 +5,7 @@
  */
 
 import { describe } from "vitest";
+
 import { compressToBase64, decompressFromBase64 } from ".";
 import { runTestSet } from "../__tests__/testFunctions";
 

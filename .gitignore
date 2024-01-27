@@ -2,6 +2,7 @@
 bin
 coverage
 dist
+junit-reports
 node_modules
 
 # If npm fails

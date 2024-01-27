@@ -1,11 +1,16 @@
 #! /usr/bin/env node --enable-source-maps
-/* eslint-disable @typescript-eslint/no-var-requires */
-
+/*
+ * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
+ *
+ * SPDX-License-Identifier: MIT
+ */
 import { accessSync, constants, existsSync } from "fs";
 import { Option, program } from "commander";
-import { convertFromUint8Array, convertToUint8Array } from "./Uint8Array";
-import { loadBinaryFile, saveBinaryFile } from "./node";
 
+import { loadBinaryFile, saveBinaryFile } from "./node";
+import { convertFromUint8Array, convertToUint8Array } from "./Uint8Array";
+
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const pkg = require("../package.json");
 const encoders = ["base64", "encodeduri", "raw", "uint8array", "utf16"];
 
