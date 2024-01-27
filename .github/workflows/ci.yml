@@ -13,6 +13,9 @@ on:
   schedule:
     - cron: '15 21 * * 0'
 
+env:
+  NODEJS: 20.x
+
 jobs:
   eslint:
     name: lint:eslint
@@ -25,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: lts
+          node-version: $NODEJS
       - run: npm ci
 
       - name: Run ESLint
@@ -45,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: lts
+          node-version: $NODEJS
       - run: npm ci
 
       - name: Run Prettier
@@ -61,7 +64,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: lts
+          node-version: $NODEJS
       - run: npm ci
 
       - name: Run Vitest
@@ -99,7 +102,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: lts
+          node-version: $NODEJS
       - run: npm ci
 
       - run: npm run build --if-present
