@@ -66,19 +66,15 @@ jobs:
     name: lint:prettier
     runs-on: ubuntu-latest
     permissions:
-      checks: write
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - run: npm ci
 
       - name: Run Prettier
         uses: creyD/prettier_action@v4.3
         with:
           dry: true
+          prettier_version: "npm:@btmills/prettier@3.1.0"
           prettier_options: --check src/**/*.ts
           prettier_plugins: "@ianvs/prettier-plugin-sort-import"
 
