@@ -14,6 +14,31 @@ on:
     - cron: "15 21 * * 0"
 
 jobs:
+  analyze:
+    name: Analyze
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 360
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "javascript-typescript"
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
+
   eslint:
     name: lint:eslint
     runs-on: ubuntu-latest
@@ -51,8 +76,11 @@ jobs:
       - run: npm ci
 
       - name: Run Prettier
-        run: npm run lint:prettier
-        continue-on-error: true
+        uses: creyD/prettier_action@v4.3
+        with:
+          dry: true
+          prettier_options: --check src/**/*.ts
+          prettier_plugins: "@ianvs/prettier-plugin-sort-import"
 
   vitest:
     name: test:coverage
@@ -93,7 +121,7 @@ jobs:
           path: code-coverage-results.md
 
   build:
-    needs: [eslint, vitest]
+    needs: [eslint, prettier, vitest]
     if: ${{ always() && !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
