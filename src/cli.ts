@@ -1,4 +1,4 @@
-#! /usr/bin/env node --enable-source-maps
+#! /usr/bin/env -S node --enable-source-maps
 /*
  * SPDX-FileCopyrightText: 2013 Pieroxy <pieroxy@pieroxy.net>
  *
