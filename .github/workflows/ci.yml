@@ -50,6 +50,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          cache: "npm"
       - run: npm ci
 
       - name: Run ESLint
@@ -72,6 +73,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          cache: "npm"
       - run: npm ci
 
       - name: Run Prettier
@@ -93,6 +95,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          cache: "npm"
       - run: npm ci
 
       - name: Run Vitest
@@ -121,13 +124,18 @@ jobs:
 
   build:
     needs: [eslint, prettier, vitest]
-    if: ${{ always() && !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          cache: "npm"
       - run: npm ci
 
       - run: npm run build --if-present
+
+      - name: Test ESModule build
+        run: cd test && ./test.sh js
+      - name: Test CommonJS build
+        run: cd test && ./test.sh cjs
