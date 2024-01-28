@@ -6,9 +6,9 @@
 
 import { describe } from "vitest";
 
-import { compress, decompress } from ".";
-import { runTestSet } from "../__tests__/testFunctions";
+import { compress, decompress } from "..";
+import { runTestSet } from "../../__tests__/testFunctions";
 
-describe("base64", () => {
+describe("raw", () => {
     runTestSet("", compress, decompress);
 });

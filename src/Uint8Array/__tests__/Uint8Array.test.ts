@@ -6,8 +6,8 @@
 
 import { describe } from "vitest";
 
-import { compressToUint8Array, convertFromUint8Array, convertToUint8Array, decompressFromUint8Array } from ".";
-import { runTestSet } from "../__tests__/testFunctions";
+import { compressToUint8Array, convertFromUint8Array, convertToUint8Array, decompressFromUint8Array } from "..";
+import { runTestSet } from "../../__tests__/testFunctions";
 
 describe("Uint8Array", () => {
     const safeCompressToUint8Array = (data: string | null) => convertFromUint8Array(compressToUint8Array(data));

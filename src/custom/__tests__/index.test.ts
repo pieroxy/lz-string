@@ -6,9 +6,9 @@
 
 import { describe, test } from "vitest";
 
-import * as index from "./index";
+import * as index from "../index";
 
-describe("UTF16/index.ts", () => {
+describe("custom/index.ts", () => {
     test("was the change deliberate?", ({ expect }) => {
         expect(index).toMatchSnapshot();
     });

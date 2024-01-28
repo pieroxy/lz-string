@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`index.ts > was the change deliberate? 1`] = `
+{
+  "_compress": [Function],
+  "_decompress": [Function],
+  "compress": [Function],
+  "compressToBase64": [Function],
+  "compressToCustom": [Function],
+  "compressToEncodedURIComponent": [Function],
+  "compressToUTF16": [Function],
+  "compressToUint8Array": [Function],
+  "convertFromUint8Array": [Function],
+  "convertToUint8Array": [Function],
+  "decompress": [Function],
+  "decompressFromBase64": [Function],
+  "decompressFromCustom": [Function],
+  "decompressFromEncodedURIComponent": [Function],
+  "decompressFromUTF16": [Function],
+  "decompressFromUint8Array": [Function],
+  "loadBinaryFile": [Function],
+  "saveBinaryFile": [Function],
+}
+`;

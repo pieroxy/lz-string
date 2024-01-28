@@ -6,9 +6,9 @@
 
 import { describe, test } from "vitest";
 
-import * as index from "./index";
+import * as index from "../index";
 
-describe("encodedURIComponent/index.ts", () => {
+describe("base64/index.ts", () => {
     test("was the change deliberate?", ({ expect }) => {
         expect(index).toMatchSnapshot();
     });

@@ -6,9 +6,9 @@
 
 import { describe, test } from "vitest";
 
-import * as index from "./index";
+import index from "../index";
 
-describe("Uint8Array/index.ts", () => {
+describe("index.ts", () => {
     test("was the change deliberate?", ({ expect }) => {
         expect(index).toMatchSnapshot();
     });

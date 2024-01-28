@@ -8,9 +8,9 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { describe } from "vitest";
 
-import { testMockedLZString } from "./__tests__/testFunctions";
+import { testMockedLZString } from "./testFunctions";
 
-const filePath = join(__dirname, "../dist/index.js");
+const filePath = join(__dirname, "../../dist/index.js");
 
 if (existsSync(filePath)) {
     testMockedLZString(filePath, "esmodule");

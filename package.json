@@ -64,6 +64,7 @@
         "start": "vite build --watch",
         "start:cli": "vite build -c vite.config.cli.mts --watch",
         "test": "vitest",
+        "test:bench": "vitest bench",
         "test:ui": "vitest --coverage --ui",
         "test:coverage": "vitest run --coverage",
         "lint": "npm run lint:prettier && npm run lint:eslint",

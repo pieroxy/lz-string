@@ -6,8 +6,8 @@
 
 import { describe, test } from "vitest";
 
-import { compressToCustom, decompressFromCustom } from ".";
-import { runTestSet } from "../__tests__/testFunctions";
+import { compressToCustom, decompressFromCustom } from "..";
+import { runTestSet } from "../../__tests__/testFunctions";
 
 describe("custom", () => {
     describe("hex", () => {

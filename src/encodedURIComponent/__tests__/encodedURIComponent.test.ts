@@ -6,10 +6,10 @@
 
 import { describe, test } from "vitest";
 
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from ".";
-import { getTestData, runTestSet } from "../__tests__/testFunctions";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "..";
+import { getTestData, runTestSet } from "../../__tests__/testFunctions";
 
-describe("encodedURI", () => {
+describe("encodedURIComponent", () => {
     runTestSet("encodeduri", compressToEncodedURIComponent, decompressFromEncodedURIComponent);
 
     const test_longString = getTestData("pi");

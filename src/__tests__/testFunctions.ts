@@ -12,9 +12,9 @@ import { loadBinaryFile } from "../node";
 /**
  * Folder names within testdata, with a human readable name.
  */
-const testDataFiles: Record<string, string> = {
-    all_ascii: "ASCII",
-    all_utf16: "UTF16",
+export const testDataFiles: Record<string, string> = {
+    all_ascii: "All ASCII",
+    all_utf16: "All UTF16",
     lorem_ipsum: "Lorem Ipsum",
     hello_world: '"Hello World!"',
     pi: "10,000 digits of pi",
@@ -148,7 +148,7 @@ export async function testMockedLZString(importPath: string, displayName: string
                 ...((await importOriginal()) as Record<string, unknown>),
                 [decompress]: LZString[decompress] ?? LZString.default[decompress],
             }));
-            await import(`../${path}/${path}.test.ts`);
+            await import(`../${path}/__tests__/${path}.test.ts`);
         }
     });
 }
