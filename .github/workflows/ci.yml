@@ -7,11 +7,11 @@ name: "CI"
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   schedule:
-    - cron: '15 21 * * 0'
+    - cron: "15 21 * * 0"
 
 jobs:
   eslint:
@@ -20,7 +20,6 @@ jobs:
     permissions:
       contents: read
       security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,6 +40,9 @@ jobs:
   prettier:
     name: lint:prettier
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -56,6 +58,8 @@ jobs:
     name: test:coverage
     runs-on: ubuntu-latest
     permissions:
+      checks: write
+      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
@@ -88,11 +92,7 @@ jobs:
           path: code-coverage-results.md
 
   build:
-    needs: [
-       eslint,
-       prettier,
-       vitest
-    ]
+    needs: [eslint, prettier, vitest]
     if: ${{ always() && !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     steps:

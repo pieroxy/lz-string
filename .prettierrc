@@ -10,7 +10,7 @@
     "importOrderTypeScriptVersion": "5.0.0",
     "overrides": [
         {
-            "files": "*.md",
+            "files": ["*.md", "*.yml"],
             "options": {
                 "tabWidth": 2
             }
