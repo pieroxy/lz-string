@@ -80,7 +80,6 @@ jobs:
           dry: true
           prettier_version: "npm:@btmills/prettier@3.1.0"
           prettier_options: --check src/**/*.ts --config ./.prettierrc
-          prettier_plugins: "@ianvs/prettier-plugin-sort-import"
 
   vitest:
     name: test:coverage
