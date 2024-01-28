@@ -74,6 +74,7 @@ jobs:
 
       - name: Code Coverage Summary Report
         uses: irongut/CodeCoverageSummary@v1.3.0
+        if: always()
         with:
           filename: coverage/**/cobertura-coverage.xml
           badge: true
@@ -92,7 +93,7 @@ jobs:
           path: code-coverage-results.md
 
   build:
-    needs: [eslint, prettier, vitest]
+    needs: [eslint, vitest]
     if: ${{ always() && !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
