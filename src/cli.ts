@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 import { accessSync, constants, existsSync, readFileSync } from "fs";
-import { Option, program } from "commander";
 import { join } from "path";
+import { Option, program } from "commander";
 
 import { loadBinaryFile, saveBinaryFile } from "./node";
 import { convertFromUint8Array, convertToUint8Array } from "./Uint8Array";
