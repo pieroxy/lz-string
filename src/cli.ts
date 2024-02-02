@@ -4,21 +4,22 @@
  *
  * SPDX-License-Identifier: MIT
  */
-import { accessSync, constants, existsSync } from "fs";
+import { accessSync, constants, existsSync, readFileSync } from "fs";
 import { Option, program } from "commander";
+import { join } from "path";
 
 import { loadBinaryFile, saveBinaryFile } from "./node";
 import { convertFromUint8Array, convertToUint8Array } from "./Uint8Array";
 
-/* eslint-disable-next-line @typescript-eslint/no-var-requires */
-const pkg = require("../package.json");
-const encoders = ["base64", "encodeduri", "raw", "uint8array", "utf16"];
+const pkg = JSON.parse(readFileSync(join(__dirname, "..", "package.json")).toString());
+const encoders = ["base64", "custom", "encodeduri", "raw", "uint8array", "utf16"];
 
 program
     .version(pkg.version)
     .description("Use lz-string to compress or decompress a file")
     .addOption(new Option("-d, --decompress", "if unset then this will compress"))
     .addOption(new Option("-e, --encoder <type>", "character encoding to use").choices(encoders).default("raw"))
+    .addOption(new Option("-c, --custom", "dictionary for custom encoder"))
     .addOption(new Option("-v, --verify", "verify before returning").default(true))
     .addOption(new Option("-o, --output <output-file>", "output file, otherwise write to stdout"))
     .addOption(new Option("-q, --quiet", "don't print any error messages"))
@@ -30,46 +31,46 @@ program
     .showHelpAfterError()
     .action(
         (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            file = process.stdin.fd as any,
+            file = process.stdin.fd,
             {
-                lib,
+                custom: customDict,
                 decompress: isDecompress,
                 encoder,
                 legacy: isLegacy,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                output = process.stdout.fd as any,
+                lib,
+                output = process.stdout.fd,
                 quiet: isQuiet,
                 validate: isValidate,
             }: {
-                lib: string;
+                custom: string;
                 decompress: boolean;
                 encoder: string;
                 legacy: boolean;
-                output: string;
+                lib: string;
+                output: string | number;
                 quiet: boolean;
                 validate: boolean;
             },
         ) => {
             import(lib).then((lzString) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const isStdin = file !== (process.stdin.fd as any);
+                const isStdin = file !== process.stdin.fd;
                 const {
                     compress,
                     compressToBase64,
-                    // compressToCustom,
+                    compressToCustom,
                     compressToEncodedURIComponent,
                     compressToUint8Array,
                     compressToUTF16,
                     decompress,
                     decompressFromBase64,
-                    // decompressFromCustom,
+                    decompressFromCustom,
                     decompressFromEncodedURIComponent,
                     decompressFromUint8Array,
                     decompressFromUTF16,
                 } = lzString?.default || lzString;
                 const compressContent: Record<string, (arg: string) => string> = {
                     base64: compressToBase64,
+                    custom: (arg) => compressToCustom(arg, customDict),
                     encodeduri: compressToEncodedURIComponent,
                     raw: compress,
                     uint8array: (arg) => convertFromUint8Array(compressToUint8Array(arg)),
@@ -77,6 +78,7 @@ program
                 };
                 const decompressContent: Record<string, (arg: string) => string> = {
                     base64: decompressFromBase64,
+                    custom: (arg) => decompressFromCustom(arg, customDict),
                     encodeduri: decompressFromEncodedURIComponent,
                     raw: decompress,
                     uint8array: (arg) => decompressFromUint8Array(convertToUint8Array(arg, isLegacy)),

@@ -52,7 +52,7 @@ export function getTestData(name: string) {
 export function runTestSet<T extends { length: number }>(
     identifier: string,
     compressFunc: (input: string | null) => T | null,
-    decompressFunc: (input: T | null) => string | null,
+    decompressFunc: (input: T | null) => string | null | undefined,
 ) {
     // Specific internal behaviour
     test(`null`, ({ expect }) => {

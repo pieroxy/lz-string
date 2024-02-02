@@ -10,34 +10,30 @@ export interface DecompressionTracker {
     index: number;
 }
 
-export function _decompress(length: number, resetValue: number, getNextValue: (a: number) => number): string | null {
+export function _decompress(length: number, resetValue: number, getNextValue: (a: number) => number) {
     const dictionary: string[] = [];
-    let enlargeIn: number = 4;
-    let dictSize: number = 4;
-    let numBits: number = 3;
-    let entry: string = "";
     const result: string[] = [];
-    let i: number;
-    let w: string;
-    let bits: number;
-    let resb: number;
-    let maxpower: number;
-    let power: number;
-    let c: string | number;
     const data: DecompressionTracker = {
         val: getNextValue(0),
         position: resetValue,
         index: 1,
     };
+    let enlargeIn = 4;
+    let dictSize = 4;
+    let numBits = 3;
+    let entry = "";
+    let c: string | number;
+    let bits = 0;
+    let maxpower = Math.pow(2, 2);
+    let power = 1;
 
-    for (i = 0; i < 3; i += 1) {
+    for (let i = 0; i < 3; i += 1) {
         dictionary[i] = String(i);
     }
-    bits = 0;
-    maxpower = Math.pow(2, 2);
-    power = 1;
+
     while (power != maxpower) {
-        resb = data.val & data.position;
+        const resb = data.val & data.position;
+
         data.position >>= 1;
         if (data.position == 0) {
             data.position = resetValue;
@@ -52,7 +48,8 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
             maxpower = Math.pow(2, 8);
             power = 1;
             while (power != maxpower) {
-                resb = data.val & data.position;
+                const resb = data.val & data.position;
+
                 data.position >>= 1;
                 if (data.position == 0) {
                     data.position = resetValue;
@@ -63,12 +60,14 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
             }
             c = String.fromCharCode(bits);
             break;
+
         case 1:
             bits = 0;
             maxpower = Math.pow(2, 16);
             power = 1;
             while (power != maxpower) {
-                resb = data.val & data.position;
+                const resb = data.val & data.position;
+
                 data.position >>= 1;
                 if (data.position == 0) {
                     data.position = resetValue;
@@ -79,6 +78,7 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
             }
             c = String.fromCharCode(bits);
             break;
+
         case 2:
             return "";
     }
@@ -86,10 +86,11 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
         throw new Error("No character found");
     }
     dictionary[3] = String(c);
-    w = String(c);
+    let w = String(c);
     result.push(String(c));
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    const forever = true;
+
+    while (forever) {
         if (data.index > length) {
             return "";
         }
@@ -97,7 +98,8 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
         maxpower = Math.pow(2, numBits);
         power = 1;
         while (power != maxpower) {
-            resb = data.val & data.position;
+            const resb = data.val & data.position;
+
             data.position >>= 1;
             if (data.position == 0) {
                 data.position = resetValue;
@@ -112,7 +114,8 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
                 maxpower = Math.pow(2, 8);
                 power = 1;
                 while (power != maxpower) {
-                    resb = data.val & data.position;
+                    const resb = data.val & data.position;
+
                     data.position >>= 1;
                     if (data.position == 0) {
                         data.position = resetValue;
@@ -125,12 +128,14 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
                 c = dictSize - 1;
                 enlargeIn--;
                 break;
+
             case 1:
                 bits = 0;
                 maxpower = Math.pow(2, 16);
                 power = 1;
                 while (power != maxpower) {
-                    resb = data.val & data.position;
+                    const resb = data.val & data.position;
+
                     data.position >>= 1;
                     if (data.position == 0) {
                         data.position = resetValue;
@@ -143,6 +148,7 @@ export function _decompress(length: number, resetValue: number, getNextValue: (a
                 c = dictSize - 1;
                 enlargeIn--;
                 break;
+
             case 2:
                 return result.join("");
         }
