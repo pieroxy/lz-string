@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import keyStrBase64 from "../base64/keyStrBase64";
-
 /**
  * Otherwise known as hexadecimal.
  */
@@ -42,7 +40,7 @@ export const customBase62Dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk
  * Base64 dictionary:
  * https://datatracker.ietf.org/doc/html/rfc4648#section-4
  */
-export const customBase64Dict = keyStrBase64;
+export const customBase64Dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /**
  * A simple dictionary for safe source-code inclusion. Effectively base91, as
