@@ -75,7 +75,7 @@
         "@btmills/prettier": "3.2.4",
         "@ianvs/prettier-plugin-sort-imports": "4.1.1",
         "@microsoft/eslint-formatter-sarif": "3.0.0",
-        "@types/node": "20.11.18",
+        "@types/node": "20.11.19",
         "@typescript-eslint/eslint-plugin": "7.0.1",
         "@typescript-eslint/parser": "7.0.1",
         "@vitest/coverage-v8": "1.2.2",
