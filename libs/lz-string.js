@@ -13,16 +13,16 @@ var LZString = (function() {
 var f = String.fromCharCode;
 var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 var keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
-var baseReverseDic = {};
+var baseReverseDic = new Map();
 
 function getBaseValue(alphabet, character) {
-  if (!baseReverseDic[alphabet]) {
-    baseReverseDic[alphabet] = {};
+  if (!baseReverseDic.has(alphabet)) {
+    baseReverseDic.set(alphabet, new Map());
     for (var i=0 ; i<alphabet.length ; i++) {
-      baseReverseDic[alphabet][alphabet.charAt(i)] = i;
+      baseReverseDic.get(alphabet).set(alphabet.charAt(i), i);
     }
   }
-  return baseReverseDic[alphabet][character];
+  return baseReverseDic.get(alphabet).get(character);
 }
 
 var LZString = {
@@ -109,8 +109,8 @@ var LZString = {
   _compress: function (uncompressed, bitsPerChar, getCharFromInt) {
     if (uncompressed == null) return "";
     var i, value,
-        context_dictionary= {},
-        context_dictionaryToCreate= {},
+        context_dictionary= new Map(),
+        context_dictionaryToCreate= new Map(),
         context_c="",
         context_wc="",
         context_w="",
@@ -124,16 +124,16 @@ var LZString = {
 
     for (ii = 0; ii < uncompressed.length; ii += 1) {
       context_c = uncompressed.charAt(ii);
-      if (!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)) {
-        context_dictionary[context_c] = context_dictSize++;
-        context_dictionaryToCreate[context_c] = true;
+      if (!context_dictionary.has(context_c)) {
+        context_dictionary.set(context_c, context_dictSize++);
+        context_dictionaryToCreate.set(context_c, true);
       }
 
       context_wc = context_w + context_c;
-      if (Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)) {
+      if (context_dictionary.has(context_wc)) {
         context_w = context_wc;
       } else {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+        if (context_dictionaryToCreate.has(context_w)) {
           if (context_w.charCodeAt(0)<256) {
             for (i=0 ; i<context_numBits ; i++) {
               context_data_val = (context_data_val << 1);
@@ -188,9 +188,9 @@ var LZString = {
             context_enlargeIn = Math.pow(2, context_numBits);
             context_numBits++;
           }
-          delete context_dictionaryToCreate[context_w];
+          context_dictionaryToCreate.delete(context_w);
         } else {
-          value = context_dictionary[context_w];
+          value = context_dictionary.get(context_w);
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1) | (value&1);
             if (context_data_position == bitsPerChar-1) {
@@ -211,14 +211,14 @@ var LZString = {
           context_numBits++;
         }
         // Add wc to the dictionary.
-        context_dictionary[context_wc] = context_dictSize++;
+        context_dictionary.set(context_wc, context_dictSize++);
         context_w = String(context_c);
       }
     }
 
     // Output the code for w.
     if (context_w !== "") {
-      if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)) {
+      if (context_dictionaryToCreate.has(context_w)) {
         if (context_w.charCodeAt(0)<256) {
           for (i=0 ; i<context_numBits ; i++) {
             context_data_val = (context_data_val << 1);
@@ -273,9 +273,9 @@ var LZString = {
           context_enlargeIn = Math.pow(2, context_numBits);
           context_numBits++;
         }
-        delete context_dictionaryToCreate[context_w];
+        context_dictionaryToCreate.delete(context_w);
       } else {
-        value = context_dictionary[context_w];
+        value = context_dictionary.get(context_w);
         for (i=0 ; i<context_numBits ; i++) {
           context_data_val = (context_data_val << 1) | (value&1);
           if (context_data_position == bitsPerChar-1) {
