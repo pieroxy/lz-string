@@ -5,9 +5,18 @@
  */
 
 import { compress } from "../raw/compress";
+import { getCustomDictionary } from "./dictionaries";
 
+/**
+ * Custom dictionary support, this is not ready for production use yet, so lock
+ * the versions if using.
+ *
+ * @alpha
+ */
 export function compressToCustom(uncompressed: string | null, dict: string): string {
     if (uncompressed == null) return "";
+
+    dict = getCustomDictionary(dict);
 
     const compressed: string = compress(uncompressed);
     const charsPerUnicodeChar: number = Math.ceil(Math.log(65536) / Math.log(dict.length));

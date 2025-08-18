@@ -5,10 +5,20 @@
  */
 
 import { decompress } from "../raw/decompress";
+import { getCustomDictionary } from "./dictionaries";
 
-export function decompressFromCustom(compressed: string | null, dict: string): string | null {
+/**
+ * Custom dictionary support, this is not ready for production use yet, so lock
+ * the versions if using.
+ *
+ * @alpha
+ */
+export function decompressFromCustom(compressed: string | null, dict: string) {
     if (compressed == null) return "";
     if (compressed == "") return null;
+
+    dict = getCustomDictionary(dict);
+
     if (dict.length < 2) return null;
 
     const charsPerUnicodeChar: number = Math.ceil(Math.log(65536) / Math.log(dict.length));

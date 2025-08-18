@@ -19,7 +19,7 @@ program
     .description("Use lz-string to compress or decompress a file")
     .addOption(new Option("-d, --decompress", "if unset then this will compress"))
     .addOption(new Option("-e, --encoder <type>", "character encoding to use").choices(encoders).default("raw"))
-    .addOption(new Option("-c, --custom", "dictionary for custom encoder"))
+    .addOption(new Option("-c, --custom <dict>", "dictionary for custom encoder"))
     .addOption(new Option("-v, --verify", "verify before returning").default(true))
     .addOption(new Option("-o, --output <output-file>", "output file, otherwise write to stdout"))
     .addOption(new Option("-q, --quiet", "don't print any error messages"))
