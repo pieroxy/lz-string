@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`isCompressed/index.ts > was the change deliberate? 1`] = `
+{
+  "isCompressed": [Function],
+}
+`;
