@@ -9,6 +9,7 @@ import { _decompress } from "./_decompress";
 import { compressToBase64, decompressFromBase64 } from "./base64";
 import { compressToCustom, decompressFromCustom } from "./custom";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "./encodedURIComponent";
+import { isCompressed } from "./isCompressed";
 import { loadBinaryFile, saveBinaryFile } from "./node";
 import { compress, decompress } from "./raw";
 import {
@@ -38,4 +39,5 @@ export default {
     decompressFromUTF16,
     loadBinaryFile,
     saveBinaryFile,
+    isCompressed
 };
