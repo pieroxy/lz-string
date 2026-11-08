@@ -3,6 +3,16 @@
 exports[`custom/index.ts > was the change deliberate? 1`] = `
 {
   "compressToCustom": [Function],
+  "customBase16Dict": "0123456789ABCDEF",
+  "customBase32Dict": "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",
+  "customBase32HexDict": "0123456789ABCDEEFGHIJKLMNOPQRSTU",
+  "customBase36Dict": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  "customBase58Dict": "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
+  "customBase62Dict": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  "customBase64Dict": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+  "customBase95Dict": " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~",
+  "customSafeDict": " !#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~",
   "decompressFromCustom": [Function],
+  "getCustomDictionary": [Function],
 }
 `;

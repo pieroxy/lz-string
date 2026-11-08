@@ -27,9 +27,8 @@ describe("custom", () => {
     });
 
     describe("base62", () => {
-        const base62 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        const compress = (input: string | null) => compressToCustom(input, base62);
-        const decompress = (input: string | null) => decompressFromCustom(input, base62);
+        const compress = (input: string | null) => compressToCustom(input, "base62");
+        const decompress = (input: string | null) => decompressFromCustom(input, "base62");
 
         runTestSet<string>("", compress, decompress);
     });
